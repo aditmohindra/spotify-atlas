@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: spotify_atlas_postgres
+    environment:
+      POSTGRES_USER: spotify_atlas
+      POSTGRES_PASSWORD: spotify_atlas_password
+      POSTGRES_DB: spotify_atlas
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spotify_atlas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: spotify_atlas_qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6333/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  qdrant_data:

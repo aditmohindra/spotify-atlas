@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+.env.local
+
+# Docker
+postgres_data/
+qdrant_data/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML
+*.pkl
+*.npy
+*.model
