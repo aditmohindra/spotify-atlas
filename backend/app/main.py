@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.health import router as health_router
 from app.api.auth import router as auth_router
 from app.api.ingest import router as ingest_router
+from app.api.features import router as features_router
 
 app = FastAPI(
     title="Spotify Atlas",
@@ -21,6 +22,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(ingest_router)
+app.include_router(features_router)
 
 @app.get("/")
 def root():
