@@ -150,3 +150,16 @@ async def get_playlist_tracks(token: str, playlist_id: str) -> list:
             break
         offset += 50
     return results
+
+async def get_artists_batch(token: str, artist_ids: list) -> list:
+    results = []
+    for i in range(0, len(artist_ids), 50):
+        batch = artist_ids[i:i+50]
+        data = await spotify_get(
+            "/artists",
+            token,
+            params={"ids": ",".join(batch)}
+        )
+        results.extend(data.get("artists", []))
+        print(f"  Fetched artist details {i+len(batch)}/{len(artist_ids)}")
+    return results

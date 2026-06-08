@@ -214,6 +214,11 @@ async def run_ingestion(user_id: int, db: Session):
             print(f"  Skipping playlist '{playlist.get('name')}': {e}")
             continue
 
+        for item in playlist_tracks:
+            track_data = item.get("track", {})
+            if not track_data or not track_data.get("id"):
+                continue
+
             artist_data = track_data.get("artists", [{}])[0]
             if artist_data.get("id"):
                 existing_artist = db.query(Artist).filter(
@@ -236,3 +241,63 @@ async def run_ingestion(user_id: int, db: Session):
 
     print(f"\nIngestion complete: {stats}")
     return stats
+
+async def enrich_artists(user_id: int, db: Session):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise Exception(f"User {user_id} not found")
+
+    token = await get_valid_token(user, db)
+
+    from app.services.spotify import get_artists_batch
+
+    artists = db.query(Artist).filter(
+        (Artist.genres == None) | (Artist.genres == [])
+    ).all()
+
+    print(f"Enriching {len(artists)} artists with full details...")
+
+    artist_ids = [a.spotify_artist_id for a in artists]
+
+    full_artists = await get_artists_batch(token, artist_ids)
+
+    enriched = 0
+    for artist_data in full_artists:
+        if not artist_data:
+            continue
+        artist = db.query(Artist).filter(
+            Artist.spotify_artist_id == artist_data["id"]
+        ).first()
+        if artist:
+            artist.genres = artist_data.get("genres", [])
+            artist.popularity = artist_data.get("popularity")
+            enriched += 1
+
+    db.commit()
+    print(f"Enriched {enriched} artists with genres and popularity")
+    return {"enriched": enriched}
+
+async def enrich_artists_lastfm(user_id: int, db: Session):
+    from app.services.lastfm import enrich_artists_with_lastfm
+
+    artists = db.query(Artist).filter(
+        (Artist.genres == None) | (Artist.genres == [])
+    ).all()
+
+    print(f"Enriching {len(artists)} artists with Last.fm tags...")
+
+    results = await enrich_artists_with_lastfm(artists)
+
+    enriched = 0
+    for spotify_artist_id, tags in results.items():
+        if tags:
+            artist = db.query(Artist).filter(
+                Artist.spotify_artist_id == spotify_artist_id
+            ).first()
+            if artist:
+                artist.genres = tags
+                enriched += 1
+
+    db.commit()
+    print(f"Enriched {enriched} artists with Last.fm tags")
+    return {"enriched": enriched}
