@@ -1,0 +1,149 @@
+from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, ARRAY, Text, JSON
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+from app.database.connection import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    spotify_id = Column(String, unique=True, index=True, nullable=False)
+    display_name = Column(String, nullable=True)
+    email = Column(String, nullable=True)
+    access_token = Column(Text, nullable=True)
+    refresh_token = Column(Text, nullable=True)
+    token_expires_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    listening_events = relationship("ListeningEvent", back_populates="user")
+    eras = relationship("UserEra", back_populates="user")
+
+
+class Artist(Base):
+    __tablename__ = "artists"
+
+    id = Column(Integer, primary_key=True, index=True)
+    spotify_artist_id = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+    genres = Column(ARRAY(String), nullable=True)
+    popularity = Column(Integer, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    tracks = relationship("Track", back_populates="artist")
+
+
+class Album(Base):
+    __tablename__ = "albums"
+
+    id = Column(Integer, primary_key=True, index=True)
+    spotify_album_id = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+    release_date = Column(String, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    tracks = relationship("Track", back_populates="album")
+
+
+class Track(Base):
+    __tablename__ = "tracks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    spotify_track_id = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+    artist_id = Column(Integer, ForeignKey("artists.id"), nullable=True)
+    album_id = Column(Integer, ForeignKey("albums.id"), nullable=True)
+    popularity = Column(Integer, nullable=True)
+    danceability = Column(Float, nullable=True)
+    energy = Column(Float, nullable=True)
+    valence = Column(Float, nullable=True)
+    tempo = Column(Float, nullable=True)
+    acousticness = Column(Float, nullable=True)
+    instrumentalness = Column(Float, nullable=True)
+    feature_document = Column(Text, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    artist = relationship("Artist", back_populates="tracks")
+    album = relationship("Album", back_populates="tracks")
+    listening_events = relationship("ListeningEvent", back_populates="track")
+    embedding = relationship("TrackEmbedding", back_populates="track", uselist=False)
+    coordinates = relationship("TrackCoordinate", back_populates="track", uselist=False)
+    cluster = relationship("TrackCluster", back_populates="track", uselist=False)
+
+
+class ListeningEvent(Base):
+    __tablename__ = "listening_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
+    played_at = Column(DateTime, nullable=True)
+    source = Column(String, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    user = relationship("User", back_populates="listening_events")
+    track = relationship("Track", back_populates="listening_events")
+
+
+class TrackEmbedding(Base):
+    __tablename__ = "track_embeddings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    track_id = Column(Integer, ForeignKey("tracks.id"), unique=True, nullable=False)
+    model = Column(String, nullable=False)
+    vector = Column(ARRAY(Float), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    track = relationship("Track", back_populates="embedding")
+
+
+class TrackCoordinate(Base):
+    __tablename__ = "track_coordinates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    track_id = Column(Integer, ForeignKey("tracks.id"), unique=True, nullable=False)
+    x = Column(Float, nullable=False)
+    y = Column(Float, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    track = relationship("Track", back_populates="coordinates")
+
+
+class TrackCluster(Base):
+    __tablename__ = "track_clusters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    track_id = Column(Integer, ForeignKey("tracks.id"), unique=True, nullable=False)
+    cluster_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    track = relationship("Track", back_populates="cluster")
+
+
+class ClusterLabel(Base):
+    __tablename__ = "cluster_labels"
+
+    id = Column(Integer, primary_key=True, index=True)
+    cluster_id = Column(Integer, unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    keywords = Column(ARRAY(String), nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+
+class UserEra(Base):
+    __tablename__ = "user_eras"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    era_id = Column(Integer, nullable=False)
+    title = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    mood = Column(String, nullable=True)
+    start_date = Column(DateTime, nullable=True)
+    end_date = Column(DateTime, nullable=True)
+    dominant_clusters = Column(ARRAY(Integer), nullable=True)
+    key_tracks = Column(ARRAY(String), nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    user = relationship("User", back_populates="eras")
