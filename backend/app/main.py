@@ -4,6 +4,7 @@ from app.api.health import router as health_router
 from app.api.auth import router as auth_router
 from app.api.ingest import router as ingest_router
 from app.api.features import router as features_router
+from app.api.embeddings import router as embeddings_router
 
 app = FastAPI(
     title="Spotify Atlas",
@@ -23,6 +24,7 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(ingest_router)
 app.include_router(features_router)
+app.include_router(embeddings_router)
 
 @app.get("/")
 def root():
