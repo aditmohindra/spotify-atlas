@@ -36,10 +36,20 @@ def run_umap(vectors: np.ndarray, n_neighbors: int = 15, min_dist: float = 0.1):
     print(f"Running UMAP on {len(vectors)} vectors...")
     print(f"Parameters: n_neighbors={n_neighbors}, min_dist={min_dist}")
     
+    # reducer = umap.UMAP(
+    #     n_components=2,
+    #     n_neighbors=n_neighbors,
+    #     min_dist=min_dist,
+    #     metric="cosine",
+    #     random_state=42,
+    #     verbose=True
+    # )
+
     reducer = umap.UMAP(
         n_components=2,
-        n_neighbors=n_neighbors,
-        min_dist=min_dist,
+        n_neighbors=50,
+        min_dist=0.05,
+        spread=1.5,
         metric="cosine",
         random_state=42,
         verbose=True
