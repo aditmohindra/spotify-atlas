@@ -20,6 +20,7 @@ interface Community {
   top_artists: string[];
   rarity: string;
   track_count: number;
+  archetype: string | null;
 }
 
 interface TasteProfile {
@@ -79,19 +80,23 @@ export default function ProfilePage() {
   };
 
   const handleExpand = (cluster_id: number) => {
-    if (expanded === cluster_id) {
-      setExpanded(null);
-      return;
-    }
+    if (expanded === cluster_id) { setExpanded(null); return; }
     setExpanded(cluster_id);
     if (!relatedMap[cluster_id]) {
       fetch(`http://127.0.0.1:8000/clusters/${cluster_id}/related`)
         .then(r => r.json())
-        .then(data => {
-          setRelatedMap(prev => ({ ...prev, [cluster_id]: data.related }));
-        });
+        .then(data => setRelatedMap(prev => ({ ...prev, [cluster_id]: data.related })));
     }
   };
+
+  const archetypeBreakdown = (() => {
+    if (!profile) return [];
+    const map: Record<string, number> = {};
+    for (const c of profile.communities) {
+      if (c.archetype) map[c.archetype] = (map[c.archetype] || 0) + c.percentage;
+    }
+    return Object.entries(map).sort((a, b) => b[1] - a[1]);
+  })();
 
   const top5 = profile?.communities.slice(0, 5) ?? [];
   const rest = profile?.communities.slice(5, 30) ?? [];
@@ -100,6 +105,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#07071a] text-white">
       <div className="max-w-2xl mx-auto px-6 py-16">
 
+        {/* Header */}
         <div className="mb-10">
           <div className="text-white/30 text-xs tracking-widest uppercase mb-3">Spotify Atlas</div>
           <h1 className="text-3xl font-medium tracking-tight mb-2">Your Musical Identity</h1>
@@ -108,14 +114,15 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <div className="mb-8 p-4 rounded-xl border border-white/6 bg-white/2">
+        {/* AI Summary */}
+        <div className="mb-8 p-5 rounded-xl border border-white/6 bg-white/2">
           {summary ? (
             <div className="space-y-3">
               {summary.split("\n").map((line, i) => {
-                if (line.startsWith("# ")) {
+                if (line.startsWith("Title:")) {
                   return (
                     <h3 key={i} className="text-white font-medium text-base">
-                      {line.replace("# ", "").replace(/\*\*/g, "")}
+                      {line.replace("Title:", "").trim()}
                     </h3>
                   );
                 }
@@ -127,11 +134,8 @@ export default function ProfilePage() {
                 );
               })}
               <button
-                onClick={() => {
-                  localStorage.removeItem('taste_summary');
-                  setSummary(null);
-                }}
-                className="text-white/20 hover:text-white/40 text-xs transition-colors mt-1"
+                onClick={() => { localStorage.removeItem('taste_summary'); setSummary(null); }}
+                className="text-white/20 hover:text-white/50 text-xs transition-colors mt-1"
               >
                 ↺ Regenerate
               </button>
@@ -142,11 +146,41 @@ export default function ProfilePage() {
               disabled={summaryLoading}
               className="text-white/50 hover:text-white/80 text-sm transition-colors disabled:opacity-40"
             >
-              {summaryLoading ? "Generating summary..." : "✦ Generate AI taste summary"}
+              {summaryLoading ? "Reading your library..." : "✦ Reveal your musical identity"}
             </button>
           )}
         </div>
 
+        {/* Archetype Breakdown */}
+        {archetypeBreakdown.length > 0 && (
+          <div className="mb-8">
+            <div className="text-white/30 text-xs tracking-widest uppercase mb-4">Your Identity</div>
+            <div className="space-y-3">
+              {archetypeBreakdown.map(([archetype, pct], i) => (
+                <div key={archetype} className="flex items-center gap-3">
+                  <div className="text-white/70 text-sm w-52 flex-shrink-0 truncate"
+                    style={{ opacity: 1 - i * 0.12 }}>
+                    {archetype}
+                  </div>
+                  <div className="flex-1 h-px bg-white/8 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${(pct / archetypeBreakdown[0][1]) * 100}%`,
+                        background: `rgba(255,255,255,${0.35 - i * 0.04})`
+                      }}
+                    />
+                  </div>
+                  <div className="text-white/25 text-xs font-mono w-10 text-right flex-shrink-0">
+                    {pct.toFixed(1)}%
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Time range filter */}
         <div className="flex gap-2 mb-8">
           {TIME_RANGES.map(tr => (
             <button
@@ -201,7 +235,12 @@ export default function ProfilePage() {
                               </span>
                             )}
                           </div>
-                          <div className="text-white/35 text-xs pl-4">{c.canonical_name}</div>
+                          <div className="flex items-center gap-2 pl-4">
+                            <span className="text-white/30 text-xs">{c.canonical_name}</span>
+                            {c.archetype && (
+                              <span className="text-white/20 text-xs">· {c.archetype}</span>
+                            )}
+                          </div>
                         </div>
                         <div className="text-right flex-shrink-0">
                           <div className="text-white font-medium text-sm">{c.percentage}%</div>
@@ -209,7 +248,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="mt-2 mx-5">
-                        <div className="h-1 rounded-full overflow-hidden bg-white/5">
+                        <div className="h-px rounded-full overflow-hidden bg-white/5">
                           <div
                             className="h-full rounded-full"
                             style={{ width: `${(c.percentage / top5[0].percentage) * 100}%`, background: color }}
@@ -239,9 +278,7 @@ export default function ProfilePage() {
                           </div>
                           {related && related.length > 0 && (
                             <div className="pt-2 border-t border-white/5">
-                              <div className="text-white/25 text-xs uppercase tracking-widest mb-2">
-                                Closest Communities
-                              </div>
+                              <div className="text-white/25 text-xs uppercase tracking-widest mb-2">Closest Communities</div>
                               <div className="space-y-1">
                                 {related.map(r => (
                                   <div key={r.cluster_id} className="flex items-center gap-2">

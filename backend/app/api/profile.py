@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case
+from sqlalchemy import text
 from app.database.connection import get_db
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -9,18 +9,18 @@ router = APIRouter()
 
 
 def compute_taste_profile(user_id: int, db: Session, since: str = None):
-    from app.models.models import ListeningEvent, Track, TrackCluster, ClusterLabel, Artist
+    from app.models.models import ListeningEvent, Track, TrackCluster, Artist
+
+    query = db.query(
+        ListeningEvent.track_id,
+        ListeningEvent.source
+    ).filter(ListeningEvent.user_id == user_id)
 
     source_filter = None
     if since == "30days":
         source_filter = ["top_short_term", "recently_played"]
     elif since == "6months":
         source_filter = ["top_short_term", "top_medium_term", "recently_played", "saved_tracks"]
-
-    query = db.query(
-        ListeningEvent.track_id,
-        ListeningEvent.source
-    ).filter(ListeningEvent.user_id == user_id)
 
     if source_filter:
         query = query.filter(ListeningEvent.source.in_(source_filter))
@@ -32,11 +32,11 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
         weight = 1.0
         if source == "saved_tracks":
             weight = 2.0
-        elif source and source.startswith("top_short"):
+        elif source and "top_short" in source:
             weight = 3.0
-        elif source and source.startswith("top_medium"):
+        elif source and "top_medium" in source:
             weight = 2.5
-        elif source and source.startswith("top_long"):
+        elif source and "top_long" in source:
             weight = 2.0
         elif source and source.startswith("playlist_"):
             weight = 1.5
@@ -66,7 +66,19 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
     if total_weight == 0:
         return {"user_id": user_id, "total_weight": 0, "communities": []}
 
-    labels = {l.cluster_id: l for l in db.query(ClusterLabel).all()}
+    label_rows = db.execute(text(
+        "SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype FROM cluster_labels"
+    )).fetchall()
+    labels = {
+        r[0]: {
+            "name": r[1],
+            "canonical_name": r[2],
+            "description": r[3],
+            "keywords": r[4] or [],
+            "cluster_archetype": r[5]
+        }
+        for r in label_rows
+    }
 
     tracks_info = db.query(
         Track.id,
@@ -94,7 +106,6 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
 
         top_artists = [a for a, _ in sorted(artist_weights.items(), key=lambda x: x[1], reverse=True)[:3]]
 
-        # Rarity based on cluster size relative to total library
         total_tracks_in_cluster = len(tids)
         if total_tracks_in_cluster <= 20:
             rarity = "Extremely Rare"
@@ -109,15 +120,16 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
 
         communities.append({
             "cluster_id": cluster_id,
-            "name": label.name if label else f"Cluster {cluster_id}",
-            "canonical_name": label.canonical_name if label else "",
-            "description": label.description if label else "",
-            "keywords": label.keywords if label else [],
+            "name": label["name"] if label else f"Cluster {cluster_id}",
+            "canonical_name": label["canonical_name"] if label else "",
+            "description": label["description"] if label else "",
+            "keywords": label["keywords"] if label else [],
             "percentage": percentage,
             "weight": round(weight, 1),
             "top_artists": top_artists,
             "rarity": rarity,
-            "track_count": total_tracks_in_cluster
+            "track_count": total_tracks_in_cluster,
+            "archetype": label["cluster_archetype"] if label else None
         })
 
     return {
@@ -149,86 +161,73 @@ async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):
         for c in top5
     ])
 
-    prompt = f"""
-        You are Spotify Atlas.
+    prompt = f"""You are the narrator of Spotify Atlas, a premium musical identity product.
+    You are not a music critic. You are not summarizing genres. You are not writing Spotify Wrapped copy.
+    You are writing a personality result based on someone's listening history.
 
-        You are not a music critic.
+    Tone:
+    - mythic
+    - intimate
+    - slightly melancholic
+    - self-aware
+    - emotionally precise
+    - premium, not cheesy
 
-        You are not a genre classifier.
+    Inspirations:
+    - Pokemon Mystery Dungeon personality intro
+    - Kingdom Hearts opening monologue
+    - a Hogwarts house result that actually hurts a little
+    - a friend who knows your taste too well
 
-        You are a cultural anthropologist studying a person's identity through their listening history.
+    Their top 5 music communities are:
+    {top5_text}
 
-        Your task is to answer one question:
+    Your task:
+    Find the hidden pattern between these communities.
+    Do not explain each community one by one.
+    Instead, answer: "What kind of person keeps returning to this exact combination of worlds?"
 
-        "What kind of person ends up with THIS exact combination of music communities?"
+    Look for:
+    - contradiction
+    - longing
+    - escapism
+    - ambition
+    - nostalgia
+    - internet identity
+    - emotional self-protection
+    - obsession with complete worlds
+    - the difference between who they are publicly and where they go privately
 
-        Their top communities are:
+    Rules:
+    - Write in second person. Speak directly to them. Use "you" naturally.
+    - Reference 1-3 specific communities or artists only when they support the psychological insight.
+    - Do NOT list genres.
+    - Do NOT say they have diverse, eclectic, unique, varied, or broad taste.
+    - Do NOT use vague praise.
+    - Do NOT sound like a horoscope.
+    - Do NOT over-explain the data.
+    - The profile should feel earned from years of listening.
+    - The final sentence should be the sharpest and most uncanny line.
+    - Plain text only. No markdown. No title.
+    - Maximum 4 sentences.
+    - Every sentence must reveal something about the listener, not just the music.
 
-        {top5_text}
+    Banned words: diverse, eclectic, unique, journey, tapestry, blend, fusion, genre, playlist, sonic, soundscape, vibe, vibes, explores, celebrates
 
-        Write a Musical Identity Profile.
+    Bad output: "You have a diverse taste that blends Toronto R&B, anime soundtracks, and underground rap into a unique sonic journey."
 
-        Rules:
+    Good output: "You are drawn to worlds that feel complete enough to disappear into. October's Very Own gives your loneliness a city, while Velvet Room Visitor and SoundCloud corners give it secret rooms that most people never find. You do not just replay songs because you like them; you replay places where a version of you still makes sense. The pattern is not that you escape reality — it is that you keep building better ones."
 
-        - Do NOT summarize genres.
-        - Do NOT explain the communities individually.
-        - Do NOT list artists repeatedly.
-        - Do NOT say they have "diverse" or "eclectic" taste.
-        - Do NOT compliment the user.
-        - Do NOT make generic observations.
-
-        Instead:
-
-        - Identify the hidden thread connecting these communities.
-        - Look for contradictions.
-        - Look for obsessions.
-        - Look for recurring themes.
-        - Look for evidence of curiosity, nostalgia, escapism, ambition, rebellion, internet culture, storytelling, fandom, exploration, etc.
-        - Focus on what the combination reveals about the listener.
-        - Make an observation that would be impossible from a Spotify Wrapped genre chart.
-        - The profile should feel slightly uncanny in its accuracy.
-        - It should read like someone studied this person's listening history for years.
-
-        Examples of strong observations:
-
-        - "You seem drawn to complete worlds rather than individual songs. The same instinct that leads you toward obscure internet music scenes also pulls you toward game soundtracks, anime communities, and artists with deeply invested fanbases."
-
-        - "Most listeners separate mainstream music from niche interests. Your profile suggests the opposite. You move freely between global pop culture and small online communities, treating both as parts of the same ecosystem."
-
-        - "This listening history belongs to someone who enjoys discovery almost as much as the music itself. Many of your communities reward digging deeper, learning context, and finding connections that casual listeners never see."
-
-        Bad observations:
-
-        - "You enjoy a wide variety of music."
-
-        - "You have diverse taste."
-
-        - "You listen to many genres."
-
-        - "You like both mainstream and underground artists."
-
-        Output format:
-
-        # Musical Identity
-
-        [A title of 2-5 words that captures the listener's core pattern]
-
-        [One paragraph, 150-250 words]
-
-        The paragraph should focus almost entirely on the listener rather than the music.
-
-        The final sentence should be the strongest insight in the entire profile and should feel memorable enough that a user would screenshot it and share it.
-        - Do not use markdown formatting. No # headers, no **bold**. Plain text only.
-        """
+    Return only the finished identity profile."""
 
     response = httpx.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}", "Content-Type": "application/json"},
         json={
-            "model": "gpt-4o-mini",
+            "model": "gpt-4o",
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 200,
-            "temperature": 0.85
+            "max_tokens": 300,
+            "temperature": 0.9
         },
         timeout=30.0
     )
