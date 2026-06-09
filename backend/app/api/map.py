@@ -42,10 +42,13 @@ async def get_map_data(db: Session = Depends(get_db)):
 
 @router.get("/map/clusters")
 async def get_clusters(db: Session = Depends(get_db)):
-    from app.models.models import Track, Artist, TrackCluster
+    from app.models.models import Track, Artist, TrackCluster, TrackCoordinate
     from collections import defaultdict
+    import statistics
 
     clusters = db.query(TrackCluster).all()
+    coords = db.query(TrackCoordinate).all()
+    coord_map = {c.track_id: c for c in coords}
 
     cluster_tracks = defaultdict(list)
     for c in clusters:
@@ -53,16 +56,41 @@ async def get_clusters(db: Session = Depends(get_db)):
 
     result = []
     for cluster_id, track_ids in cluster_tracks.items():
+        if cluster_id == -1:
+            continue
+
+        xs = [coord_map[tid].x for tid in track_ids if tid in coord_map]
+        ys = [coord_map[tid].y for tid in track_ids if tid in coord_map]
+
+        if not xs:
+            continue
+
+        centroid_x = statistics.mean(xs)
+        centroid_y = statistics.mean(ys)
+
         sample = db.query(Track, Artist).join(
             Artist, Track.artist_id == Artist.id
-        ).filter(Track.id.in_(track_ids[:3])).all()
+        ).filter(Track.id.in_(track_ids[:5])).all()
+
+        top_artists = {}
+        all_tracks = db.query(Track, Artist).join(
+            Artist, Track.artist_id == Artist.id
+        ).filter(Track.id.in_(track_ids)).all()
+
+        for t, a in all_tracks:
+            top_artists[a.name] = top_artists.get(a.name, 0) + 1
+
+        sorted_artists = sorted(top_artists.items(), key=lambda x: x[1], reverse=True)
 
         result.append({
             "cluster_id": cluster_id,
             "track_count": len(track_ids),
+            "centroid_x": centroid_x,
+            "centroid_y": centroid_y,
+            "top_artists": [a for a, _ in sorted_artists[:3]],
             "sample_tracks": [
                 {"name": t.name, "artist": a.name}
-                for t, a in sample
+                for t, a in sample[:3]
             ]
         })
 

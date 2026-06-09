@@ -1,64 +1,89 @@
 import { TrackPoint } from "@/hooks/useMapData";
 
-interface TrackSidebarProps {
+const CLUSTER_COLORS = [
+  "#60a5fa","#34d399","#f87171","#fbbf24","#a78bfa",
+  "#f472b6","#38bdf8","#4ade80","#fb923c","#e879f9",
+  "#22d3ee","#86efac","#fca5a5","#fde68a","#c4b5fd",
+  "#f9a8d4","#7dd3fc","#6ee7b7","#fcd34d","#d8b4fe",
+];
+
+function getClusterColor(id: number): string {
+  if (id === -1) return "#ffffff20";
+  return CLUSTER_COLORS[id % CLUSTER_COLORS.length];
+}
+
+interface Props {
   track: TrackPoint | null;
   onClose: () => void;
 }
 
-export default function TrackSidebar({ track, onClose }: TrackSidebarProps) {
+export default function TrackSidebar({ track, onClose }: Props) {
   if (!track) return null;
+  const color = getClusterColor(track.cluster_id);
 
   return (
-    <div className="absolute top-0 right-0 h-full w-80 bg-black/90 border-l border-white/10 p-6 z-10 flex flex-col gap-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-white font-medium text-lg leading-tight">
-            {track.name}
-          </h2>
-          <p className="text-white/60 text-sm mt-1">{track.artist}</p>
+    <div
+      className="absolute top-0 right-0 h-full w-72 flex flex-col z-10"
+      style={{
+        background: "rgba(7,7,26,0.97)",
+        borderLeft: "1px solid rgba(255,255,255,0.06)"
+      }}
+    >
+      <div className="px-5 pt-5 pb-4 border-b border-white/5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-white text-sm font-medium leading-snug truncate">
+              {track.name}
+            </h2>
+            <p className="text-white/40 text-xs mt-1 truncate">{track.artist}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-white/20 hover:text-white/60 transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
+          >
+            ✕
+          </button>
         </div>
-        <button
-          onClick={onClose}
-          className="text-white/40 hover:text-white text-xl leading-none mt-1"
-        >
-          ×
-        </button>
       </div>
 
-      <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
+      <div className="px-5 py-4 flex flex-col gap-4 flex-1">
         <div>
-          <p className="text-white/40 text-xs uppercase tracking-wider mb-1">
-            Cluster
-          </p>
-          <p className="text-white/80 text-sm">
-            {track.cluster_id === -1 ? "Unclassified" : `Cluster ${track.cluster_id}`}
-          </p>
+          <div className="text-white/25 text-xs uppercase tracking-widest mb-2">Cluster</div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ background: color, boxShadow: `0 0 6px ${color}` }} />
+            <span className="text-white/70 text-xs font-mono">
+              {track.cluster_id === -1 ? "Unclassified" : `Cluster ${track.cluster_id}`}
+            </span>
+          </div>
         </div>
 
         <div>
-          <p className="text-white/40 text-xs uppercase tracking-wider mb-1">
-            Position
-          </p>
-          <p className="text-white/80 text-sm font-mono">
+          <div className="text-white/25 text-xs uppercase tracking-widest mb-2">Coordinates</div>
+          <div className="text-white/40 text-xs font-mono">
             {track.x.toFixed(1)}, {track.y.toFixed(1)}
-          </p>
+          </div>
         </div>
 
         <div>
-          <p className="text-white/40 text-xs uppercase tracking-wider mb-1">
-            Track ID
-          </p>
-          <p className="text-white/80 text-sm font-mono">{track.id}</p>
+          <div className="text-white/25 text-xs uppercase tracking-widest mb-2">Track ID</div>
+          <div className="text-white/40 text-xs font-mono">{track.id}</div>
         </div>
       </div>
 
-      <div className="mt-auto">
+      <div className="px-5 pb-5">
         <a
           href={`https://open.spotify.com/track/${track.spotify_id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full text-center bg-green-500 hover:bg-green-400 text-black font-medium text-sm py-2.5 rounded-lg transition-colors"
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-medium transition-all"
+          style={{
+            background: "#1db954",
+            color: "#000"
+          }}
         >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
           Open in Spotify
         </a>
       </div>
