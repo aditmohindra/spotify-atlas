@@ -94,6 +94,19 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
 
         top_artists = [a for a, _ in sorted(artist_weights.items(), key=lambda x: x[1], reverse=True)[:3]]
 
+        # Rarity based on cluster size relative to total library
+        total_tracks_in_cluster = len(tids)
+        if total_tracks_in_cluster <= 20:
+            rarity = "Extremely Rare"
+        elif total_tracks_in_cluster <= 50:
+            rarity = "Rare"
+        elif total_tracks_in_cluster <= 100:
+            rarity = "Niche"
+        elif total_tracks_in_cluster <= 200:
+            rarity = "Underground"
+        else:
+            rarity = "Core"
+
         communities.append({
             "cluster_id": cluster_id,
             "name": label.name if label else f"Cluster {cluster_id}",
@@ -102,7 +115,9 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
             "keywords": label.keywords if label else [],
             "percentage": percentage,
             "weight": round(weight, 1),
-            "top_artists": top_artists
+            "top_artists": top_artists,
+            "rarity": rarity,
+            "track_count": total_tracks_in_cluster
         })
 
     return {
@@ -134,18 +149,77 @@ async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):
         for c in top5
     ])
 
-    prompt = f"""You are writing a one-paragraph musical identity summary for someone's Spotify Atlas profile.
+    prompt = f"""
+        You are Spotify Atlas.
 
-    Their top 5 music communities are:
-    {top5_text}
+        You are not a music critic.
 
-    Write exactly one paragraph (3-4 sentences) that:
-    - Feels personal and insightful, not generic
-    - Names specific communities and artists
-    - Reveals something the person might not have realized about themselves
-    - Has personality — like a music journalist wrote it, not an algorithm
+        You are not a genre classifier.
 
-    Do not start with "You" or "Your". Do not use the word "diverse"."""
+        You are a cultural anthropologist studying a person's identity through their listening history.
+
+        Your task is to answer one question:
+
+        "What kind of person ends up with THIS exact combination of music communities?"
+
+        Their top communities are:
+
+        {top5_text}
+
+        Write a Musical Identity Profile.
+
+        Rules:
+
+        - Do NOT summarize genres.
+        - Do NOT explain the communities individually.
+        - Do NOT list artists repeatedly.
+        - Do NOT say they have "diverse" or "eclectic" taste.
+        - Do NOT compliment the user.
+        - Do NOT make generic observations.
+
+        Instead:
+
+        - Identify the hidden thread connecting these communities.
+        - Look for contradictions.
+        - Look for obsessions.
+        - Look for recurring themes.
+        - Look for evidence of curiosity, nostalgia, escapism, ambition, rebellion, internet culture, storytelling, fandom, exploration, etc.
+        - Focus on what the combination reveals about the listener.
+        - Make an observation that would be impossible from a Spotify Wrapped genre chart.
+        - The profile should feel slightly uncanny in its accuracy.
+        - It should read like someone studied this person's listening history for years.
+
+        Examples of strong observations:
+
+        - "You seem drawn to complete worlds rather than individual songs. The same instinct that leads you toward obscure internet music scenes also pulls you toward game soundtracks, anime communities, and artists with deeply invested fanbases."
+
+        - "Most listeners separate mainstream music from niche interests. Your profile suggests the opposite. You move freely between global pop culture and small online communities, treating both as parts of the same ecosystem."
+
+        - "This listening history belongs to someone who enjoys discovery almost as much as the music itself. Many of your communities reward digging deeper, learning context, and finding connections that casual listeners never see."
+
+        Bad observations:
+
+        - "You enjoy a wide variety of music."
+
+        - "You have diverse taste."
+
+        - "You listen to many genres."
+
+        - "You like both mainstream and underground artists."
+
+        Output format:
+
+        # Musical Identity
+
+        [A title of 2-5 words that captures the listener's core pattern]
+
+        [One paragraph, 150-250 words]
+
+        The paragraph should focus almost entirely on the listener rather than the music.
+
+        The final sentence should be the strongest insight in the entire profile and should feel memorable enough that a user would screenshot it and share it.
+        - Do not use markdown formatting. No # headers, no **bold**. Plain text only.
+        """
 
     response = httpx.post(
         "https://api.openai.com/v1/chat/completions",

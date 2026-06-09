@@ -2,6 +2,13 @@
 
 import { useEffect, useState } from "react";
 
+interface RelatedCluster {
+  cluster_id: number;
+  name: string;
+  canonical_name: string;
+  similarity: number;
+}
+
 interface Community {
   cluster_id: number;
   name: string;
@@ -11,6 +18,8 @@ interface Community {
   percentage: number;
   weight: number;
   top_artists: string[];
+  rarity: string;
+  track_count: number;
 }
 
 interface TasteProfile {
@@ -43,22 +52,47 @@ export default function ProfilePage() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [timeRange, setTimeRange] = useState("all");
+  const [relatedMap, setRelatedMap] = useState<Record<number, RelatedCluster[]>>({});
 
   useEffect(() => {
     setLoading(true);
     fetch(`http://127.0.0.1:8000/profile/taste?user_id=1&time_range=${timeRange}`)
       .then(r => r.json())
-      .then(data => { setProfile(data); setLoading(false); });
+      .then(data => { setProfile(data); setLoading(false); })
+      .catch(err => { console.error(err); setLoading(false); });
   }, [timeRange]);
+
+  useEffect(() => {
+    const cached = localStorage.getItem('taste_summary');
+    if (cached) setSummary(cached);
+  }, []);
 
   const loadSummary = () => {
     setSummaryLoading(true);
     fetch("http://127.0.0.1:8000/profile/summary?user_id=1")
       .then(r => r.json())
-      .then(data => { setSummary(data.summary); setSummaryLoading(false); });
+      .then(data => {
+        setSummary(data.summary);
+        localStorage.setItem('taste_summary', data.summary);
+        setSummaryLoading(false);
+      });
   };
 
-  const totalPct = profile?.communities.reduce((sum, c) => sum + c.percentage, 0) ?? 0;
+  const handleExpand = (cluster_id: number) => {
+    if (expanded === cluster_id) {
+      setExpanded(null);
+      return;
+    }
+    setExpanded(cluster_id);
+    if (!relatedMap[cluster_id]) {
+      fetch(`http://127.0.0.1:8000/clusters/${cluster_id}/related`)
+        .then(r => r.json())
+        .then(data => {
+          setRelatedMap(prev => ({ ...prev, [cluster_id]: data.related }));
+        });
+    }
+  };
+
   const top5 = profile?.communities.slice(0, 5) ?? [];
   const rest = profile?.communities.slice(5, 30) ?? [];
 
@@ -74,22 +108,45 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        {/* AI Summary */}
         <div className="mb-8 p-4 rounded-xl border border-white/6 bg-white/2">
           {summary ? (
-            <p className="text-white/60 text-sm leading-relaxed">{summary}</p>
+            <div className="space-y-3">
+              {summary.split("\n").map((line, i) => {
+                if (line.startsWith("# ")) {
+                  return (
+                    <h3 key={i} className="text-white font-medium text-base">
+                      {line.replace("# ", "").replace(/\*\*/g, "")}
+                    </h3>
+                  );
+                }
+                if (line.trim() === "") return null;
+                return (
+                  <p key={i} className="text-white/55 text-sm leading-relaxed">
+                    {line.replace(/\*\*/g, "")}
+                  </p>
+                );
+              })}
+              <button
+                onClick={() => {
+                  localStorage.removeItem('taste_summary');
+                  setSummary(null);
+                }}
+                className="text-white/20 hover:text-white/40 text-xs transition-colors mt-1"
+              >
+                ↺ Regenerate
+              </button>
+            </div>
           ) : (
             <button
               onClick={loadSummary}
               disabled={summaryLoading}
-              className="text-white/40 hover:text-white/70 text-xs transition-colors"
+              className="text-white/50 hover:text-white/80 text-sm transition-colors disabled:opacity-40"
             >
-              {summaryLoading ? "Generating your identity summary..." : "✦ Generate AI summary of your taste →"}
+              {summaryLoading ? "Generating summary..." : "✦ Generate AI taste summary"}
             </button>
           )}
         </div>
 
-        {/* Time range filter */}
         <div className="flex gap-2 mb-8">
           {TIME_RANGES.map(tr => (
             <button
@@ -120,10 +177,11 @@ export default function ProfilePage() {
                 {top5.map((c, i) => {
                   const color = getColor(c.cluster_id);
                   const isExpanded = expanded === c.cluster_id;
+                  const related = relatedMap[c.cluster_id];
                   return (
                     <button
                       key={c.cluster_id}
-                      onClick={() => setExpanded(isExpanded ? null : c.cluster_id)}
+                      onClick={() => handleExpand(c.cluster_id)}
                       className="w-full text-left rounded-xl p-4 transition-all"
                       style={{
                         background: isExpanded ? `${color}12` : "rgba(255,255,255,0.03)",
@@ -136,6 +194,12 @@ export default function ProfilePage() {
                           <div className="flex items-center gap-2 mb-0.5">
                             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
                             <span className="text-white font-medium text-sm truncate">{c.name}</span>
+                            {(c.rarity === "Extremely Rare" || c.rarity === "Rare") && (
+                              <span className="text-xs px-1.5 py-0.5 rounded-full flex-shrink-0"
+                                style={{ background: `${color}25`, color, fontSize: "10px" }}>
+                                {c.rarity}
+                              </span>
+                            )}
                           </div>
                           <div className="text-white/35 text-xs pl-4">{c.canonical_name}</div>
                         </div>
@@ -152,28 +216,48 @@ export default function ProfilePage() {
                           />
                         </div>
                       </div>
-                    {isExpanded && (
-                    <div className="mt-3 mx-5 pt-3 border-t border-white/5 space-y-2">
-                        {c.top_artists.length > 0 && (
-                        <div className="flex gap-2 flex-wrap">
-                            {c.top_artists.map(a => (
-                            <span key={a} className="text-white/50 text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/8">
-                                {a}
-                            </span>
+
+                      {isExpanded && (
+                        <div className="mt-3 mx-5 pt-3 border-t border-white/5 space-y-3">
+                          {c.top_artists.length > 0 && (
+                            <div className="flex gap-2 flex-wrap">
+                              {c.top_artists.map(a => (
+                                <span key={a} className="text-white/50 text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/8">
+                                  {a}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <p className="text-white/40 text-xs leading-relaxed">{c.description}</p>
+                          <div className="flex gap-1.5 flex-wrap">
+                            {c.keywords.map(kw => (
+                              <span key={kw} className="text-xs px-2 py-0.5 rounded-full"
+                                style={{ background: `${color}20`, color }}>
+                                {kw}
+                              </span>
                             ))}
+                          </div>
+                          {related && related.length > 0 && (
+                            <div className="pt-2 border-t border-white/5">
+                              <div className="text-white/25 text-xs uppercase tracking-widest mb-2">
+                                Closest Communities
+                              </div>
+                              <div className="space-y-1">
+                                {related.map(r => (
+                                  <div key={r.cluster_id} className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                      style={{ background: getColor(r.cluster_id), opacity: 0.6 }} />
+                                    <span className="text-white/50 text-xs flex-1 truncate">{r.name}</span>
+                                    <span className="text-white/20 text-xs font-mono flex-shrink-0">
+                                      {Math.round(r.similarity * 100)}%
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        )}
-                        <p className="text-white/40 text-xs leading-relaxed">{c.description}</p>
-                        <div className="flex gap-1.5 flex-wrap">
-                        {c.keywords.map(kw => (
-                            <span key={kw} className="text-xs px-2 py-0.5 rounded-full"
-                            style={{ background: `${color}20`, color }}>
-                            {kw}
-                            </span>
-                        ))}
-                        </div>
-                    </div>
-                    )}
+                      )}
                     </button>
                   );
                 })}

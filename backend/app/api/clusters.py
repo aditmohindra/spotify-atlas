@@ -29,7 +29,6 @@ async def get_labels(db: Session = Depends(get_db)):
         ]
     }
 
-
 @router.get("/clusters/status")
 async def naming_status(db: Session = Depends(get_db)):
     from app.models.models import TrackCluster, ClusterLabel
@@ -41,3 +40,9 @@ async def naming_status(db: Session = Depends(get_db)):
         "remaining": total - named,
         "completion_pct": round(named / total * 100, 1) if total > 0 else 0
     }
+
+@router.get("/clusters/{cluster_id}/related")
+async def get_related_clusters(cluster_id: int, db: Session = Depends(get_db)):
+    from app.services.cluster_relations import get_related_clusters
+    related = get_related_clusters(cluster_id, db)
+    return {"cluster_id": cluster_id, "related": related}
