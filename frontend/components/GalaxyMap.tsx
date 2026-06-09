@@ -97,7 +97,8 @@ export default function GalaxyMap() {
         ctx.textAlign = "center";
         ctx.fillStyle = color;
         ctx.globalAlpha = 0.6;
-        ctx.fillText(`${cl.cluster_id}`, sx, sy - baseSize - 5);
+        const label = cl.name ?? `${cl.cluster_id}`;
+        ctx.fillText(label, sx, sy - baseSize - 5);
         ctx.globalAlpha = 1;
       }
     }
@@ -316,7 +317,8 @@ export default function GalaxyMap() {
               className="text-xs mt-1 font-mono"
               style={{ color: getClusterColor(hoveredTrack.cluster_id) }}
             >
-              cluster {hoveredTrack.cluster_id === -1 ? "—" : hoveredTrack.cluster_id}
+              {clusters.find(c => c.cluster_id === hoveredTrack.cluster_id)?.name ?? 
+               (hoveredTrack.cluster_id === -1 ? "unclassified" : `cluster ${hoveredTrack.cluster_id}`)}
             </div>
           </div>
         </div>
@@ -324,6 +326,7 @@ export default function GalaxyMap() {
 
       <TrackSidebar
         track={selectedTrack}
+        cluster={clusters.find(c => c.cluster_id === selectedTrack?.cluster_id)}
         onClose={() => setSelectedTrack(null)}
       />
     </div>

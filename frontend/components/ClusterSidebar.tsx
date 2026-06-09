@@ -76,26 +76,25 @@ export default function ClusterSidebar({ clusters, selectedCluster, onSelectClus
                 border: isSelected ? `1px solid ${color}30` : "1px solid transparent",
               }}
             >
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full flex-shrink-0 transition-all"
+                <div className="flex items-center gap-2.5 mb-1">
+                <div
+                  className="w-2 h-2 rounded-full flex-shrink-0 transition-all"
                   style={{
                     background: color,
                     opacity: isSelected ? 1 : 0.6,
                     boxShadow: isSelected ? `0 0 6px ${color}80` : "none"
                   }}
                 />
-                <span className="text-white/60 text-xs group-hover:text-white/80 transition-colors flex-1 truncate">
-                  {cluster.top_artists[0] ?? `Cluster ${cluster.cluster_id}`}
+                <span className="text-white/80 text-xs font-medium truncate">
+                  {cluster.name ?? `Cluster ${cluster.cluster_id}`}
                 </span>
-                <span className="text-white/20 text-xs flex-shrink-0 font-mono">
+                <span className="text-white/20 text-xs ml-auto flex-shrink-0 font-mono">
                   {cluster.track_count}
                 </span>
               </div>
-              {cluster.top_artists.length > 1 && (
-                <div className="text-white/25 text-xs mt-0.5 pl-4.5 truncate">
-                  {cluster.top_artists.slice(1, 3).join(" · ")}
-                </div>
-              )}
+              <div className="text-white/30 text-xs pl-4.5 truncate">
+                {cluster.canonical_name ?? cluster.top_artists.slice(0, 2).join(" · ")}
+              </div>
             </button>
           );
         })}
