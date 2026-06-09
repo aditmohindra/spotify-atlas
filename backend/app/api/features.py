@@ -42,3 +42,9 @@ async def sample_documents(db: Session = Depends(get_db)):
             for t in tracks
         ]
     }
+
+@router.post("/features/rebuild-clean")
+async def trigger_rebuild_clean(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    from app.services.features import rebuild_documents_clean
+    background_tasks.add_task(rebuild_documents_clean, db)
+    return {"message": "Document cleaning started"}

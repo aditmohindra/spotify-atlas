@@ -167,3 +167,51 @@ async def run_feature_engineering(user_id: int, db: Session):
     print(f"Built feature documents for {documented} tracks")
 
     return {"tracks_with_documents": documented}
+
+def clean_document_artist_moods(document: str, artist_names: set) -> str:
+    if not document:
+        return document
+    
+    lines = document.split("\n")
+    cleaned_lines = []
+    
+    for line in lines:
+        if line.startswith("Moods:"):
+            tags = [t.strip() for t in line[7:].split(",")]
+            cleaned_tags = [t for t in tags if t.lower() not in artist_names]
+            if cleaned_tags:
+                cleaned_lines.append("Moods: " + ", ".join(cleaned_tags))
+        else:
+            cleaned_lines.append(line)
+    
+    return "\n".join(cleaned_lines)
+
+
+async def rebuild_documents_clean(db):
+    from app.models.models import Artist
+
+    print("Building artist name filter set...")
+    artists = db.query(Artist).all()
+    artist_names = set()
+    for artist in artists:
+        artist_names.add(artist.name.lower().strip())
+        if " " in artist.name:
+            for part in artist.name.lower().split():
+                if len(part) > 3:
+                    artist_names.add(part)
+
+    print(f"Filtering {len(artist_names)} artist name tokens from mood tags...")
+
+    tracks = db.query(Track).filter(Track.feature_document != None).all()
+    cleaned = 0
+
+    for track in tracks:
+        artist = db.query(Artist).filter(Artist.id == track.artist_id).first()
+        original_doc = track.feature_document
+        clean_doc = clean_document_artist_moods(original_doc, artist_names)
+        track.feature_document = clean_doc
+        cleaned += 1
+
+    db.commit()
+    print(f"Cleaned {cleaned} documents")
+    return {"cleaned": cleaned}
