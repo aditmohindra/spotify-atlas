@@ -129,6 +129,7 @@ class ClusterLabel(Base):
     canonical_name = Column(String, nullable=True)
     description = Column(Text, nullable=True)
     keywords = Column(ARRAY(String), nullable=True)
+    cluster_archetype = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
 

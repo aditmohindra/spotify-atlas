@@ -4,10 +4,46 @@ import httpx
 from sqlalchemy.orm import Session
 from collections import defaultdict
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+BANNED_WORDS_ANYWHERE = [
+    "collective", "revival", "circuit", "network", "sessions", "grooves",
+    "vibes", "beats", "anthems", "escape", "retreat", "lounge", "journey",
+    "fusion", "chronicles", "dreamscape", "soundscape", "echoes", "pulse",
+    "rhythms", "paradise", "oasis", "universe", "realm", "hangout", "vortex",
+    "dreamers", "sanctuary", "neon", "nights", "nostalgia", "guild",
+    "society", "club", "party", "underground", "aesthetic", "after dark",
+    "brigade", "crew", "squad", "nation", "culture", "world", "night" "dream",
+    "dreamscape", "anime", "otaku", "k-pop", "asian", "late night", "pixelated", 
+    "trap house"
+]
+
+FILLER_SUFFIXES = [
+    "Jams", "Anthems", "Vibes", "Party", "Parties", "Raves", "Circle",
+    "Club", "Hour", "Mix", "Energy", "Sessions", "Lounge", "Nights",
+    "Night", "Drive", "Cypher", "Set", "Fest", "Event", "Hangout",
+    "Culture", "Rhythm", "Rhythms", "Diaries", "Echoes", "Revival",
+    "Narratives", "Scene", "World", "Era", "Movement", "Experience"
+]
+
+def clean_display_name(name: str) -> str:
+    for suffix in FILLER_SUFFIXES:
+        name = name.replace(f" & {suffix}", "")
+        if name.endswith(f" {suffix}"):
+            name = name[:-len(f" {suffix}")]
+    return name.strip()
+
+
+def is_name_acceptable(name: str) -> bool:
+    name_lower = name.lower()
+    for banned in BANNED_WORDS_ANYWHERE:
+        if banned in name_lower:
+            return False
+    return True
 
 
 def get_cluster_data(cluster_id: int, db: Session) -> dict:
@@ -55,54 +91,126 @@ def get_cluster_data(cluster_id: int, db: Session) -> dict:
         "moods": list(moods)[:15]
     }
 
-
 def name_cluster_sync(cluster_data: dict) -> dict:
-    prompt = f"""You are a music scene journalist writing for Pitchfork, NTS Radio, and Resident Advisor. You name music communities the way a human would — with cultural specificity, not poetic filler.
+    prompt = f"""You are a cultural anthropologist, not a music journalist.
 
-    Given data about a cluster of {cluster_data['track_count']} tracks from someone's Spotify library:
+    Your task is NOT to name music. Your task is to identify the specific human community hiding inside this Spotify cluster.
 
-    Top artists: {', '.join(cluster_data['top_artists'][:6])}
-    Sample tracks: {', '.join(cluster_data['top_tracks'][:8])}
-    Genres: {', '.join(cluster_data['genres'][:10])}
+    Cluster data:
+    Tracks: {cluster_data['track_count']}
+    Top artists: {', '.join(cluster_data['top_artists'][:10])}
+    Sample tracks: {', '.join(cluster_data['top_tracks'][:12])}
+    Genres: {', '.join(cluster_data['genres'][:15])}
     Mood tags: {', '.join(cluster_data['moods'][:10])}
 
-    Generate TWO names:
+    STEP 0 — Think like an anthropologist. Do NOT name the music yet.
+    Answer internally:
+    - Who are these people? (age, identity, lifestyle)
+    - Where do they spend time online? (subreddits, Discord servers, TikTok niches)
+    - What do they wear? What memes do they know?
+    - What fandoms overlap with this music?
+    - What would instantly signal membership in this group to an outsider?
 
-    1. display_name: A fun, evocative 2-4 word name. Culturally specific. Think Boiler Room set titles, NTS show names, music blog categories. Should make someone immediately want to click it.
+    STEP 1 — Find the password.
+    Every real music scene has a password. A password is a word, phrase, place, object, meme, website, fandom reference, inside joke, or cultural artifact that instantly signals membership.
 
-    2. canonical_name: A descriptive 2-5 word name that explains what music is actually in here. Genre + scene + geography or era when relevant. This is the explainer underneath the fun name.
+    Examples of finding the password:
+    - Persona OSTs → password = "Velvet Room" → "Velvet Room Visitor"
+    - One Piece covers → password = "Thousand Sunny" → "Thousand Sunny Study Hall"
+    - Playboi Carti leaks → password = "Google Drive" → "Carti Leaks Folder"
+    - Fred again.. fans → password = "Boiler Room" → "Boiler Room Regular"
+    - Hardstyle gym culture → password = "Villain Arc" → "Gym Villain Arc"
+    - Michigan scam rap → password = "BabyTron" → "Michigan Scammer's Club"
+    - Drake / OVO → password = "October's Very Own" → "OVO Sweatpants Season"
+    - Pokemon OSTs → password = "Professor Oak" → "Professor Oak's MP3 Player"
 
-    BANNED WORDS — never use these:
-    Neon, Dream, Dreamscape, Dreamwave, Dreams, Odyssey, Reverie, Collective, Sanctuary, Society, Vibes, Chronicles, Echoes, Celestial, Ethereal, Cosmic, Phantom, Elysian, Whispers, Luminous, Galactic
+    DO NOT reuse example words unless the cluster GENUINELY contains that scene.
+    Examples show specificity — they are not templates.
 
-    GOOD display_name examples:
-    - "Gym Villain Arc" (for aggressive trap/rap)
-    - "3AM SoundCloud Scroll" (for bedroom rap/emo rap)
-    - "Punjabi Party Pulse" (for bhangra/desi pop)
-    - "Memphis Nightmare Society" (for Memphis rap/horrorcore)
-    - "Berlin Warehouse Sunday" (for techno/acid house)
-    - "Anime Soul Kitchen" (for Japanese OST/city pop)
-    - "YSL Parking Lot" (for Atlanta trap)
-    - "Post-Breakup Playlist" (for sad R&B/emo)
+    STEP 2 — Name source priority:
+    1. Specific fandom password (game title, anime, artist label, specific album)
+    2. Internet culture artifact (subreddit, meme, platform moment)
+    3. Physical place or event that defines the scene
+    4. Activity or lifestyle behavior
+    5. Geographic scene
+    6. Genre — LAST RESORT ONLY
 
-    GOOD canonical_name examples:
-    - "Atlanta Melodic Trap"
-    - "UK Drill & Grime"
-    - "Japanese City Pop & Anime OST"
-    - "Acid House & Warehouse Techno"
-    - "Bedroom Emo Rap"
-    - "Bhangra & Desi Pop"
+    STEP 3 — Genericity test.
+    "Could this name appear as a Spotify editorial playlist?"
+    If YES → reject and try again.
 
-    Also generate:
-    - description: exactly one sentence, references specific artists, explains the sound
-    - keywords: exactly 3 words that capture the essence
+    STEP 4 — Specificity test.
+    "If I swapped this name onto a different cluster, would it still fit?"
+    If YES → too generic → try again.
 
-    Respond with ONLY valid JSON:
+    TONE: The name can be funny or internet-native, but must still feel premium.
+    Good: "Terminally Online", "Magic City Parking Lot", "Missed My Flight Home"
+    Bad: "Discord Sewer Kids", "TikTok Brainrot Goblins" (cheap, cringe, unserious)
+
+    LENGTH: Prefer 2-4 words. Specificity beats brevity.
+    "Professor Oak's MP3 Player" → keep
+    "r/hiphopheads at 2AM" → keep
+    Never shorten if shortening removes the reference.
+
+    ABSOLUTELY FORBIDDEN WORDS:
+    Sessions, Grooves, Vibes, Beats, Anthems, Escape, Retreat, Lounge, Journey,
+    Revival, Fusion, Collective, Chronicles, Dream, Dreamscape, Soundscape, Echoes,
+    Pulse, Rhythms, Paradise, Oasis, Universe, Realm, Hangout, Vortex, Dreamers,
+    Sanctuary, Neon, Nostalgia, Guild, Society, Underground, Aesthetic,
+    Brigade, Crew, Squad, Nation, Culture, World, Circuit, Network,
+    Takeover, Renaissance, Diaries, Archives, Corner, Hub, Zone,
+    Night, Drive, Cypher, Energy, Mix, Essential, Playlist, Files
+
+    canonical_name: Explain the music to someone who has never heard the display_name.
+    Format: [Geography / Platform / Fandom] + [Primary Sound]
+    canonical_name must be boring, clean, and factual. No slang, no vibe words, no "online/digital/internet" unless the platform is genuinely the defining feature.
+
+    Good: K-Pop & Hyperpop, SoundCloud Cloud Rap, European Hard Dance, Anime OST & J-Pop, UK Garage & House, Toronto R&B & Hip-Hop
+    Bad: K-Pop FANdom, Internet Rap & Cloud Vibes, Online Neo-Psychedelic Chill, Digital Bassline & Garage, European Dance & Electronica
+
+    description: One sentence. Mention specific artists. What makes this cluster distinct?
+
+    keywords: Exactly 3 words.
+
+    password: The single cultural artifact or reference the name is built around.
+
+    why_this_name: One sentence explaining why this name fits better than a generic one.
+
+    DISPLAY NAME RULE:
+    The display_name should be the password itself, or the password plus ONE meaningful modifier.
+    Do NOT add generic music/event words after the password.
+
+    Bad: "Konoha Jams & Anthems" → Good: "Konoha Training Arc"
+    Bad: "Coachella Sunset Vibes" → Good: "Coachella Wristband"  
+    Bad: "Compton Storytellers Circle" → Good: "Compton Narratives"
+    Bad: "ISOxo Discord Raves" → Good: "ISOxo Mosh Pit"
+    Bad: "2-Step Telegram Party" → Good: "2-Step Telegram"
+
+    Before finalizing, remove any trailing generic word.
+    If the name ends with Jams, Anthems, Vibes, Party, Raves, Circle, Club, Mix, Energy, Sessions, Lounge — delete it.
+    Most of the time the shorter name is stronger.
+
+    TRUST THE PASSWORD:
+    If the password is already specific and recognizable, use it as the display_name with no additions.
+
+    Bad: "Warped Tour Revival" → Good: "Warped Tour"
+    Bad: "Blood Gulch Echoes" → Good: "Blood Gulch"
+    Bad: "Shibuya Crossing Rhythm" → Good: "Shibuya Crossing"
+    Bad: "A-Trak Remix Culture" → Good: "A-Trak Remix"
+    Bad: "Freetekno Rave" → Good: "Freetekno"
+
+    Ask: "Is the password alone enough for an insider to recognize this community?"
+    If YES → use the password alone.
+    If NO → add ONE meaningful modifier.
+
+    Return ONLY valid JSON:
     {{
-    "display_name": "fun evocative name",
-    "canonical_name": "descriptive genre name",
-    "description": "one sentence about the sound and artists",
-    "keywords": ["word1", "word2", "word3"]
+        "display_name": "",
+        "canonical_name": "",
+        "password": "",
+        "why_this_name": "",
+        "description": "",
+        "keywords": ["", "", ""]
     }}"""
 
     response = httpx.post(
@@ -112,10 +220,10 @@ def name_cluster_sync(cluster_data: dict) -> dict:
             "Content-Type": "application/json"
         },
         json={
-            "model": "gpt-4o-mini",
+            "model": "gpt-4o",
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 256,
-            "temperature": 0.8
+            "max_tokens": 400,
+            "temperature": 0.9
         },
         timeout=30.0
     )
@@ -128,10 +236,13 @@ def name_cluster_sync(cluster_data: dict) -> dict:
         text = "\n".join(lines[1:-1])
 
     result = json.loads(text)
+    result["display_name"] = clean_display_name(result["display_name"])
     assert "display_name" in result
     assert "canonical_name" in result
-    assert "description" in result
-    assert "keywords" in result
+
+    # Log password and reasoning for debugging
+    if "password" in result:
+        print(f"    password: {result['password']} — {result.get('why_this_name', '')}")
 
     return result
 
@@ -170,6 +281,7 @@ async def run_cluster_naming(db: Session):
 
             named += 1
             print(f"  [{named}/{len(to_name)}] Cluster {cluster_id}: {result['display_name']} / {result['canonical_name']}")
+            time.sleep(0.5)
 
         except Exception as e:
             failed += 1
