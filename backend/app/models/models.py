@@ -126,6 +126,7 @@ class ClusterLabel(Base):
     id = Column(Integer, primary_key=True, index=True)
     cluster_id = Column(Integer, unique=True, nullable=False)
     name = Column(String, nullable=False)
+    canonical_name = Column(String, nullable=True)
     description = Column(Text, nullable=True)
     keywords = Column(ARRAY(String), nullable=True)
     created_at = Column(DateTime, server_default=func.now())
