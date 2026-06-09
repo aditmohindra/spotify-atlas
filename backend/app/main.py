@@ -8,6 +8,7 @@ from app.api.embeddings import router as embeddings_router
 from app.api.qdrant import router as qdrant_router
 from app.api.map import router as map_router
 from app.api.clusters import router as clusters_router
+from app.api.profile import router as profile_router
 
 app = FastAPI(
     title="Spotify Atlas",
@@ -31,6 +32,7 @@ app.include_router(embeddings_router)
 app.include_router(qdrant_router)
 app.include_router(map_router)
 app.include_router(clusters_router)
+app.include_router(profile_router)
 
 @app.get("/")
 def root():
