@@ -89,3 +89,69 @@ async def get_related_clusters(cluster_id: int, db: Session = Depends(get_db)):
     from app.services.cluster_relations import get_related_clusters
     related = get_related_clusters(cluster_id, db)
     return {"cluster_id": cluster_id, "related": related}
+
+@router.get("/clusters/{cluster_id}/detail")
+async def get_cluster_detail(cluster_id: int, user_id: int = 1, db: Session = Depends(get_db)):
+    from sqlalchemy import text
+
+    label = db.execute(text(
+        "SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype FROM cluster_labels WHERE cluster_id = :id"
+    ), {"id": cluster_id}).fetchone()
+
+    if not label:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Community not found")
+
+    artists = db.execute(text("""
+        SELECT a.name, COUNT(*) as cnt
+        FROM track_clusters tc
+        JOIN tracks t ON t.id = tc.track_id
+        JOIN artists a ON a.id = t.artist_id
+        WHERE tc.cluster_id = :id
+        GROUP BY a.name
+        ORDER BY cnt DESC
+        LIMIT 5
+    """), {"id": cluster_id}).fetchall()
+
+    tracks = db.execute(text("""
+        SELECT t.name, a.name as artist, t.spotify_track_id
+        FROM track_clusters tc
+        JOIN tracks t ON t.id = tc.track_id
+        JOIN artists a ON a.id = t.artist_id
+        WHERE tc.cluster_id = :id
+        ORDER BY RANDOM()
+        LIMIT 8
+    """), {"id": cluster_id}).fetchall()
+
+    track_count = db.execute(text(
+        "SELECT COUNT(*) FROM track_clusters WHERE cluster_id = :id"
+    ), {"id": cluster_id}).scalar()
+
+    user_percentage = None
+    user_community = db.execute(text("""
+        SELECT 
+            SUM(CASE 
+                WHEN le.source = 'saved_tracks' THEN 2.0
+                WHEN le.source LIKE '%top_short%' THEN 3.0
+                WHEN le.source LIKE '%top_medium%' THEN 2.5
+                WHEN le.source LIKE '%top_long%' THEN 2.0
+                WHEN le.source LIKE 'playlist_%' THEN 1.5
+                ELSE 1.0
+            END) as weight
+        FROM listening_events le
+        JOIN track_clusters tc ON tc.track_id = le.track_id
+        WHERE tc.cluster_id = :id AND le.user_id = :uid
+    """), {"id": cluster_id, "uid": user_id}).fetchone()
+
+    return {
+        "cluster_id": label[0],
+        "name": label[1],
+        "canonical_name": label[2],
+        "description": label[3],
+        "keywords": label[4] or [],
+        "archetype": label[5],
+        "track_count": track_count,
+        "top_artists": [r[0] for r in artists],
+        "sample_tracks": [{"name": r[0], "artist": r[1], "spotify_id": r[2]} for r in tracks],
+        "user_weight": round(user_community[0] or 0, 1)
+    }

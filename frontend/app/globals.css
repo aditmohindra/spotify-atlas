@@ -4,127 +4,186 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
+/* ─── Atlas design tokens ─────────────────────────────────────────────────── */
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Backgrounds */
+  --background:       #f7f8f5;
+  --background-soft:  #eef3ec;
+  --surface:          #ffffff;
+  --surface-soft:     #f1f5f0;
+
+  /* Border */
+  --border:           #dde6dd;
+
+  /* Spotify green scale */
+  --green:            #1db954;
+  --green-dark:       #0f7f3a;
+  --green-soft:       #e8f8ef;
+  --green-glow:       rgba(29, 185, 84, 0.16);
+
+  /* Text */
+  --ink:              #101828;
+  --muted:            #667085;
+  --faint:            #98a2b3;
+
+  /* Border radii */
+  --radius-sm:        12px;
+  --radius-md:        20px;
+  --radius-lg:        28px;
+  --radius-hero:      32px;
+
+  /* Shadows */
+  --shadow-card:      0 1px 3px 0 rgba(16,24,40,0.06), 0 1px 2px -1px rgba(16,24,40,0.04);
+  --shadow-card-hover: 0 4px 12px 0 rgba(16,24,40,0.10), 0 2px 4px -1px rgba(16,24,40,0.06);
+  --shadow-green:     0 0 0 3px var(--green-glow);
+
+  /* Fonts */
+  --font-sans:        var(--font-dm-sans), system-ui, sans-serif;
+  --font-serif:       var(--font-playfair), Georgia, serif;
+  --font-mono:        var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Shadcn/ui compatibility — map to Atlas equivalents */
+  --foreground:       var(--ink);
+  --card:             var(--surface);
+  --card-foreground:  var(--ink);
+  --primary:          var(--green);
+  --primary-foreground: #ffffff;
+  --secondary:        var(--surface-soft);
+  --secondary-foreground: var(--ink);
+  --accent:           var(--green-soft);
+  --accent-foreground: var(--green-dark);
+  --muted-foreground: var(--muted);
+  --ring:             var(--green);
+  --input:            var(--border);
+  --radius:           20px;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* ─── Tailwind v4 theme mapping ───────────────────────────────────────────── */
+
+@theme inline {
+  /* Colors — these produce utilities like bg-background, text-ink, etc. */
+  --color-background:       var(--background);
+  --color-background-soft:  var(--background-soft);
+  --color-surface:          var(--surface);
+  --color-surface-soft:     var(--surface-soft);
+  --color-border:           var(--border);
+
+  --color-green:            var(--green);
+  --color-green-dark:       var(--green-dark);
+  --color-green-soft:       var(--green-soft);
+
+  --color-ink:              var(--ink);
+  --color-muted:            var(--muted);
+  --color-faint:            var(--faint);
+
+  /* shadcn/ui compatibility */
+  --color-background:       var(--background);
+  --color-foreground:       var(--foreground);
+  --color-card:             var(--card);
+  --color-card-foreground:  var(--card-foreground);
+  --color-primary:          var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary:        var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent:           var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted:            var(--background-soft);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-ring:             var(--ring);
+  --color-input:            var(--input);
+
+  /* Border radius */
+  --radius-sm:   var(--radius-sm);
+  --radius-md:   var(--radius-md);
+  --radius-lg:   var(--radius-lg);
+  --radius-hero: var(--radius-hero);
+
+  /* Typography */
+  --font-sans:  var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono:  var(--font-mono);
 }
+
+/* ─── Base styles ─────────────────────────────────────────────────────────── */
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
-    @apply font-sans;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  body {
+    background-color: var(--background);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* Headings use DM Sans by default; override with font-serif for hero titles */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--ink);
+    line-height: 1.25;
+  }
+}
+
+/* ─── Atlas utility classes ───────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Typography roles */
+  .font-hero {
+    font-family: var(--font-serif);
+  }
+  .font-ui {
+    font-family: var(--font-sans);
+  }
+  .font-stat {
+    font-family: var(--font-mono);
+  }
+
+  /* Eyebrow label (small uppercase, wide tracking) */
+  .text-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;   /* 11px */
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Atlas card shadows */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  .shadow-green {
+    box-shadow: var(--shadow-green);
+  }
+
+  /* Green glow background tint */
+  .bg-green-glow {
+    background-color: var(--green-glow);
+  }
+
+  /* Hover lift transition for cards */
+  .hover-lift {
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Border radius tokens */
+  .rounded-atlas-sm   { border-radius: var(--radius-sm); }
+  .rounded-atlas-md   { border-radius: var(--radius-md); }
+  .rounded-atlas-lg   { border-radius: var(--radius-lg); }
+  .rounded-atlas-hero { border-radius: var(--radius-hero); }
 }

@@ -147,7 +147,6 @@ async def get_taste_profile(
 ):
     return compute_taste_profile(user_id, db, time_range if time_range != "all" else None)
 
-
 @router.get("/profile/summary")
 async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):
     import httpx
@@ -155,6 +154,12 @@ async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):
 
     profile = compute_taste_profile(user_id, db)
     top5 = profile["communities"][:5]
+
+    archetype_weights: dict = {}
+    for c in profile["communities"]:
+        if c["archetype"]:
+            archetype_weights[c["archetype"]] = archetype_weights.get(c["archetype"], 0) + c["percentage"]
+    top_archetype = max(archetype_weights, key=archetype_weights.get) if archetype_weights else "Explorer"
 
     top5_text = "\n".join([
         f"- {c['name']} ({c['canonical_name']}): {c['percentage']}%, top artists: {', '.join(c['top_artists'])}"
@@ -182,43 +187,37 @@ async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):
     Their top 5 music communities are:
     {top5_text}
 
+    Their dominant identity: {top_archetype}
+
     Your task:
     Find the hidden pattern between these communities.
     Do not explain each community one by one.
     Instead, answer: "What kind of person keeps returning to this exact combination of worlds?"
 
-    Look for:
-    - contradiction
-    - longing
-    - escapism
-    - ambition
-    - nostalgia
-    - internet identity
-    - emotional self-protection
-    - obsession with complete worlds
-    - the difference between who they are publicly and where they go privately
+    Look for: contradiction, longing, escapism, ambition, nostalgia, internet identity, emotional self-protection, obsession with complete worlds.
 
     Rules:
-    - Write in second person. Speak directly to them. Use "you" naturally.
-    - Reference 1-3 specific communities or artists only when they support the psychological insight.
+    - Write in second person. Use "you" naturally.
+    - Reference 1-3 specific communities or artists only when they support the insight.
     - Do NOT list genres.
-    - Do NOT say they have diverse, eclectic, unique, varied, or broad taste.
     - Do NOT use vague praise.
-    - Do NOT sound like a horoscope.
-    - Do NOT over-explain the data.
     - The profile should feel earned from years of listening.
     - The final sentence should be the sharpest and most uncanny line.
-    - Plain text only. No markdown. No title.
-    - Maximum 4 sentences.
-    - Every sentence must reveal something about the listener, not just the music.
+    - Plain text only. No markdown.
+    - Maximum 4 sentences. Every sentence must reveal something about the listener.
 
-    Banned words: diverse, eclectic, unique, journey, tapestry, blend, fusion, genre, playlist, sonic, soundscape, vibe, vibes, explores, celebrates
+    Banned words: diverse, eclectic, unique, journey, tapestry, blend, fusion, genre, playlist, sonic, soundscape, vibe, vibes, explores, celebrates, realm, realms, echo, echoes, weave, weaver, whisper, cosmos, astral, infinite, dawn
 
-    Bad output: "You have a diverse taste that blends Toronto R&B, anime soundtracks, and underground rap into a unique sonic journey."
+    Also write a TITLE on the first line:
+    - 2-4 words
+    - Feels like a personality test result or character class
+    - NOT fantasy novel language
+    - Good: "The Completionist", "Midnight Cartographer", "Terminally Online", "The World Builder"
+    - Bad: "Alchemist of Realms", "Keeper of Worlds", "Weaver of Tales"
 
-    Good output: "You are drawn to worlds that feel complete enough to disappear into. October's Very Own gives your loneliness a city, while Velvet Room Visitor and SoundCloud corners give it secret rooms that most people never find. You do not just replay songs because you like them; you replay places where a version of you still makes sense. The pattern is not that you escape reality — it is that you keep building better ones."
-
-    Return only the finished identity profile."""
+    Return ONLY this exact format — nothing else:
+    TITLE: [title here]
+    SUMMARY: [4 sentences here]"""
 
     response = httpx.post(
         "https://api.openai.com/v1/chat/completions",
@@ -232,5 +231,15 @@ async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):
         timeout=30.0
     )
 
-    text = response.json()["choices"][0]["message"]["content"].strip()
-    return {"summary": text}
+    text_content = response.json()["choices"][0]["message"]["content"].strip()
+
+    title = top_archetype
+    summary = text_content
+
+    for line in text_content.split("\n"):
+        if line.startswith("TITLE:"):
+            title = line.replace("TITLE:", "").strip()
+        elif line.startswith("SUMMARY:"):
+            summary = line.replace("SUMMARY:", "").strip()
+
+    return {"title": title, "summary": summary}
