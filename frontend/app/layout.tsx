@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Spotify Atlas",
-  description: "Your musical identity, mapped.",
+  description: "The map of your musical identity",
 };
 
 export default function RootLayout({

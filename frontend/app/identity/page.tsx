@@ -3,46 +3,24 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { getTasteProfile, getTasteSummary, API_BASE_URL } from "@/lib/api";
-import type {
-  TasteProfile,
-  TasteSummary,
-  TasteTimeRange,
-  Community,
-} from "@/lib/types";
-import { AtlasCard } from "@/components/atlas/AtlasCard";
-import { AtlasPill } from "@/components/atlas/AtlasPill";
-import { StatBlock } from "@/components/atlas/StatBlock";
-import { SectionHeader } from "@/components/atlas/SectionHeader";
-import { LoadingSkeleton } from "@/components/atlas/LoadingSkeleton";
-import { PageShell } from "@/components/atlas/PageShell";
-import { cn } from "@/lib/utils";
+import type { TasteProfile, TasteSummary, Community } from "@/lib/types";
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const SUMMARY_CACHE_KEY = "atlas_summary";
 
 const ARCHETYPE_DESCRIPTIONS: Record<string, string> = {
-  "The Trap":
-    "Southern rap ecosystems, ambition music, and the mythology of coming up.",
-  "Terminally Online":
-    "Internet rabbit holes, SoundCloud discoveries, and digital underground scenes.",
-  "Festival Regular":
-    "Dance floors, euphoric drops, and music that feels like collective release.",
-  "Anime Passport":
-    "Anime soundtracks, J-Pop, and the worlds that shaped your imagination.",
-  "Toronto Winter Arc":
-    "Late-night Toronto R&B, OVO melancholy, and songs for empty streets.",
-  "Lo-Fi Otaku":
-    "Lofi beats, game soundtracks, and the ambient worlds you study and sleep to.",
-  "Desi Household":
-    "Bollywood, bhangra, and the soundtrack of two cultures living in one person.",
-  "Drip Report":
-    "Streetwear-adjacent rap, flexing anthems, and music that sounds expensive.",
-  "Nostalgic Club Kid":
-    "2000s dancefloors, pop anthems, and the music that made you who you are.",
+  "The Trap": "Southern rap ecosystems, ambition music, and the mythology of coming up.",
+  "Terminally Online": "Internet rabbit holes, SoundCloud discoveries, and digital underground scenes.",
+  "Festival Regular": "Dance floors, euphoric drops, and music that feels like collective release.",
+  "Anime Passport": "Anime soundtracks, J-Pop, and the worlds that shaped your imagination.",
+  "Toronto Winter Arc": "Late-night Toronto R&B, OVO melancholy, and songs for empty streets.",
+  "Lo-Fi Otaku": "Lofi beats, game soundtracks, and the ambient worlds you study and sleep to.",
+  "Desi Household": "Bollywood, bhangra, and the soundtrack of two cultures living in one person.",
+  "Drip Report": "Streetwear-adjacent rap, flexing anthems, and music that sounds expensive.",
+  "Nostalgic Club Kid": "2000s dancefloors, pop anthems, and the music that made you who you are.",
 };
 
-// Soft tinted palettes for archetype cards — green is reserved for Spotify accent
 const ARCHETYPE_PALETTE = [
   { bg: "#fef9ec", border: "#fde68a", accent: "#b45309" },
   { bg: "#eef3fb", border: "#bfdbfe", accent: "#1d4ed8" },
@@ -63,13 +41,7 @@ const CLUSTER_COLORS = [
   "#93c5fd", "#6ee7b7", "#fca5a5", "#fde68a", "#ddd6fe",
 ];
 
-const TIME_RANGE_OPTIONS: { key: TasteTimeRange; label: string }[] = [
-  { key: "all", label: "All time" },
-  { key: "6months", label: "Last 6 months" },
-  { key: "30days", label: "Last 30 days" },
-];
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function getClusterColor(clusterId: number): string {
   if (clusterId === -1) return "#dde6dd";
@@ -105,18 +77,55 @@ function computeArchetypes(communities: Community[]): ComputedArchetype[] {
     .sort((a, b) => b.percentage - a.percentage);
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+function computeObscurityTier(communities: Community[]): string {
+  const rareCount = communities.filter(
+    (c) => c.rarity === "Rare" || c.rarity === "Extremely Rare",
+  ).length;
+  if (rareCount > 10) return "Top 2%";
+  if (rareCount > 5) return "Top 10%";
+  if (rareCount > 2) return "Top 25%";
+  return "Top 50%";
+}
+
+function computeBridgeCount(communities: Community[]): number {
+  const archetypeMap = new Map<string, number>();
+  for (const c of communities) {
+    if (!c.archetype) continue;
+    archetypeMap.set(c.archetype, (archetypeMap.get(c.archetype) ?? 0) + c.percentage);
+  }
+  const topArch = [...archetypeMap.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  return communities.slice(0, 20).filter((c) => c.archetype && c.archetype !== topArch).length;
+}
+
+// ── Skeleton helpers ──────────────────────────────────────────────────────────
+
+function Pulse({ width = "100%", height = 12, radius = 6 }: { width?: string | number; height?: number; radius?: number }) {
+  return (
+    <div
+      style={{
+        width,
+        height,
+        background: "#e5e7eb",
+        borderRadius: radius,
+        animation: "pulse 1.5s ease-in-out infinite",
+      }}
+    />
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function IdentityPage() {
-  const [timeRange, setTimeRange] = useState<TasteTimeRange>("all");
   const [tasteData, setTasteData] = useState<TasteProfile | null>(null);
   const [summary, setSummary] = useState<TasteSummary | null>(null);
   const [tasteLoading, setTasteLoading] = useState(true);
   const [summaryLoading, setSummaryLoading] = useState(true);
-  const [showAllCommunities, setShowAllCommunities] = useState(false);
   const [mapTotal, setMapTotal] = useState<number>(9892);
 
-  // ── Fetch map total for stats strip ────────────────────────────────────
+  useEffect(() => {
+    document.title = "Musical Identity · Spotify Atlas";
+  }, []);
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/map`, { headers: { Accept: "application/json" } })
       .then((r) => r.json())
@@ -124,30 +133,18 @@ export default function IdentityPage() {
       .catch(() => {});
   }, []);
 
-  // ── Summary: load from localStorage cache or fetch ─────────────────────
   const doFetchSummary = useCallback(async (force = false) => {
     if (force) {
-      try {
-        localStorage.removeItem(SUMMARY_CACHE_KEY);
-      } catch {
-        /* private browsing */
-      }
+      try { localStorage.removeItem(SUMMARY_CACHE_KEY); } catch { /* private browsing */ }
       setSummary(null);
     }
     setSummaryLoading(true);
     try {
       const data = await getTasteSummary(1);
       setSummary(data);
-      try {
-        localStorage.setItem(SUMMARY_CACHE_KEY, JSON.stringify(data));
-      } catch {
-        /* storage quota */
-      }
-    } catch {
-      // leave skeleton visible; backend may still be cold-starting
-    } finally {
-      setSummaryLoading(false);
-    }
+      try { localStorage.setItem(SUMMARY_CACHE_KEY, JSON.stringify(data)); } catch { /* quota */ }
+    } catch { /* cold start — leave skeleton */ }
+    finally { setSummaryLoading(false); }
   }, []);
 
   useEffect(() => {
@@ -161,448 +158,408 @@ export default function IdentityPage() {
           return;
         }
       }
-    } catch {
-      /* corrupt cache — fall through to fetch */
-    }
+    } catch { /* corrupt cache — fall through */ }
     doFetchSummary();
   }, [doFetchSummary]);
 
-  // ── Taste profile: re-fetches on time range change ─────────────────────
   useEffect(() => {
     setTasteLoading(true);
-    getTasteProfile(1, timeRange)
+    getTasteProfile(1, "all")
       .then((data) => setTasteData(data))
       .catch(() => {})
       .finally(() => setTasteLoading(false));
-  }, [timeRange]);
+  }, []);
 
-  // ── Derived data ────────────────────────────────────────────────────────
+  // ── Derived ──────────────────────────────────────────────────────────────
   const archetypes = useMemo(
     () => (tasteData ? computeArchetypes(tasteData.communities) : []),
     [tasteData],
   );
-  const topArchetypes = archetypes.slice(0, 3);
-  const restArchetypes = archetypes.slice(3);
-
   const communities = tasteData?.communities ?? [];
-  const visibleCommunities = showAllCommunities
-    ? communities
-    : communities.slice(0, 10);
-
-  const worldsFound = communities.filter((c) => c.percentage > 0).length;
-  const dominantIdentity = archetypes[0]?.name ?? "—";
-
-  // Hero: top 3 community names for the floating chips
-  const heroChips = communities.slice(0, 3).map((c) => c.name);
-
-  // Scale community progress bars relative to the top community
-  const maxCommunityPct = Math.max(...communities.map((c) => c.percentage), 1);
-
-  // Scale archetype compact bars relative to the top archetype (restArchetypes only)
+  const top8 = communities.slice(0, 8);
+  const top3Archetypes = archetypes.slice(0, 3);
+  const restArchetypes = archetypes.slice(3);
   const maxRestPct = Math.max(...restArchetypes.map((a) => a.percentage), 1);
+  const worldsFound = communities.filter((c) => c.percentage > 0).length;
 
-  // ── Render ──────────────────────────────────────────────────────────────
+  const rareCount = useMemo(
+    () => communities.filter((c) => c.rarity === "Rare" || c.rarity === "Extremely Rare").length,
+    [communities],
+  );
+  const obscurityTier = useMemo(() => computeObscurityTier(communities), [communities]);
+  const bridgeCount = useMemo(() => computeBridgeCount(communities), [communities]);
+  const topCommunity = communities[0] ?? null;
+
+  // ── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gridTemplateRows: "60vh 40vh",
+        height: "100vh",
+        overflow: "hidden",
+        width: "100%",
+      }}
+    >
 
-      {/* ── 1. HERO ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        {/* Background glow */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 70% at 70% 0%, rgba(29,185,84,0.10) 0%, transparent 65%)",
-          }}
-        />
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-16 sm:py-24 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 relative z-10">
-          {/* Left: text */}
-          <div className="flex-1 min-w-0">
-            <p className="text-eyebrow mb-4" style={{ color: "var(--green)" }}>
-              YOUR MUSICAL IDENTITY
-            </p>
-            <h1
-              className="font-hero text-ink"
-              style={{
-                fontSize: "clamp(2.25rem, 4.5vw, 3.5rem)",
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {summaryLoading ? (
-                <span className="block w-72 h-12 bg-border rounded-xl animate-pulse" />
-              ) : (
-                (summary?.title ?? "Your Atlas")
-              )}
-            </h1>
-            <div className="mt-5 space-y-0.5">
-              <p className="font-ui text-[1.0625rem] leading-snug" style={{ color: "#374151" }}>
-                You don&apos;t just listen to songs.
-              </p>
-              <p className="font-ui text-[1.0625rem] leading-snug" style={{ color: "#374151" }}>
-                You collect places to disappear into.
-              </p>
-            </div>
-          </div>
+      {/* ══ CELL 1: Identity Panel — Top Left ════════════════════════════════ */}
+      <div
+        style={{
+          background: "#ffffff",
+          borderRight: "1px solid #dde6dd",
+          borderBottom: "1px solid #dde6dd",
+          padding: "28px 32px",
+          overflowY: "auto",
+        }}
+      >
+        {/* Eyebrow */}
+        <p style={{
+          fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
+          textTransform: "uppercase", color: "#1db954", margin: "0 0 8px",
+        }}>
+          Your Musical Identity
+        </p>
 
-          {/* Right: orb + community name chips */}
-          <div className="relative shrink-0 w-[300px] h-[300px] flex items-center justify-center">
-            <div
-              className="w-56 h-56 rounded-full"
-              style={{
-                background:
-                  "radial-gradient(circle at 38% 38%, rgba(29,185,84,0.32) 0%, rgba(29,185,84,0.10) 48%, transparent 68%)",
-                boxShadow: "0 0 72px 24px rgba(29,185,84,0.11)",
-              }}
-            />
-            {/* Chip — top right */}
-            {heroChips[0] && (
-              <span className="absolute top-6 right-0 font-ui text-[11.5px] font-medium bg-surface border border-border text-ink rounded-full px-3 py-1.5 shadow-card whitespace-nowrap leading-none">
-                {heroChips[0]}
-              </span>
-            )}
-            {/* Chip — bottom left */}
-            {heroChips[1] && (
-              <span className="absolute bottom-10 left-0 font-ui text-[11.5px] font-medium bg-surface border border-border text-ink rounded-full px-3 py-1.5 shadow-card whitespace-nowrap leading-none">
-                {heroChips[1]}
-              </span>
-            )}
-            {/* Chip — mid right (green tint = active/dominant) */}
-            {heroChips[2] && (
-              <span
-                className="absolute top-1/2 -translate-y-1/2 -right-6 font-ui text-[11.5px] font-semibold rounded-full px-3 py-1.5 shadow-card whitespace-nowrap leading-none border"
-                style={{
-                  background: "var(--green-soft)",
-                  borderColor: "rgba(29,185,84,0.20)",
-                  color: "var(--green-dark)",
-                }}
-              >
-                {heroChips[2]}
-              </span>
-            )}
-          </div>
+        {/* Playfair title */}
+        <h1 style={{
+          fontFamily: "var(--font-playfair), Georgia, serif",
+          fontSize: "clamp(1.6rem, 2.2vw, 2.25rem)",
+          lineHeight: 1.1, letterSpacing: "-0.02em",
+          color: "#101828", margin: "0 0 8px",
+        }}>
+          {summaryLoading
+            ? <Pulse width={220} height={34} radius={8} />
+            : (summary?.title ?? "Your Atlas")}
+        </h1>
+
+        {/* Subtitle lines */}
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: "0.875rem", color: "#374151", lineHeight: 1.5, margin: 0 }}>
+            You don&apos;t just listen to songs.
+          </p>
+          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: "0.875rem", color: "#374151", lineHeight: 1.5, margin: 0 }}>
+            You collect places to disappear into.
+          </p>
         </div>
-      </section>
 
-      <PageShell maxWidth="xl" className="pt-0 pb-24">
-        <div className="space-y-10">
-
-          {/* ── 2. AI SUMMARY CARD ───────────────────────────────────────── */}
-          <AtlasCard
-            variant="default"
-            padding="lg"
-            style={{ borderLeft: "3px solid var(--green)" }}
-          >
-            <div className="flex flex-col gap-4">
-              <p className="text-eyebrow">ATLAS READ</p>
-              {summaryLoading ? (
-                <LoadingSkeleton lines={3} className="h-[18px]" />
-              ) : (
-                <p
-                  className="font-ui text-ink leading-[1.75]"
-                  style={{ fontSize: "1rem" }}
-                >
-                  {summary?.summary ?? "Your atlas read could not be loaded."}
-                </p>
-              )}
-              {!summaryLoading && (
-                <button
-                  onClick={() => doFetchSummary(true)}
-                  className="self-start flex items-center gap-1 font-ui text-[12px] transition-colors duration-150"
-                  style={{ color: "#98a2b3" }}
-                >
-                  <span aria-hidden>↺</span> Regenerate
-                </button>
-              )}
-            </div>
-          </AtlasCard>
-
-          {/* ── 3. TOP 3 ARCHETYPE CARDS ─────────────────────────────────── */}
-          {tasteLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="rounded-atlas-hero p-8 border border-border bg-surface animate-pulse"
-                >
-                  <div className="h-12 w-28 bg-border rounded-full mb-5" />
-                  <div className="h-5 w-36 bg-border rounded-full mb-3" />
-                  <div className="h-4 w-full bg-border rounded-full mb-1.5" />
-                  <div className="h-4 w-4/5 bg-border rounded-full" />
-                </div>
-              ))}
+        {/* Atlas Read card */}
+        <div style={{
+          background: "#f9fafb", border: "1px solid #e5e7eb",
+          borderLeft: "3px solid #1db954", borderRadius: 10,
+          padding: "12px 14px", marginBottom: 18,
+        }}>
+          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#9ca3af", margin: "0 0 7px" }}>
+            Atlas Read
+          </p>
+          {summaryLoading ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <Pulse width="100%" height={11} />
+              <Pulse width="92%" height={11} />
+              <Pulse width="76%" height={11} />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {topArchetypes.map((arch, i) => {
-                const palette = ARCHETYPE_PALETTE[i % ARCHETYPE_PALETTE.length];
-                return (
-                  <div
-                    key={arch.name}
-                    className="rounded-atlas-hero p-8 flex flex-col gap-4 border"
-                    style={{ background: palette.bg, borderColor: palette.border }}
-                  >
-                    {/* Large percentage */}
-                    <span
-                      className="font-stat font-semibold leading-none"
-                      style={{ fontSize: "3rem", color: palette.accent }}
-                    >
-                      {arch.percentage.toFixed(1)}%
-                    </span>
-                    {/* Name + description */}
-                    <div className="flex-1">
-                      <h3 className="font-ui font-bold text-ink text-lg leading-tight mb-2">
-                        {arch.name}
-                      </h3>
-                      {arch.description && (
-                        <p className="font-ui text-sm leading-relaxed" style={{ color: "#667085" }}>
-                          {arch.description}
-                        </p>
-                      )}
-                    </div>
-                    {/* Community count pill */}
-                    <span
-                      className="self-start font-ui text-xs font-medium px-2.5 py-1 rounded-full border"
-                      style={{
-                        color: palette.accent,
-                        borderColor: palette.border,
-                        background: "rgba(255,255,255,0.55)",
-                      }}
-                    >
-                      {arch.communityCount}{" "}
-                      {arch.communityCount === 1 ? "world" : "worlds"}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: "0.8125rem", color: "#374151", lineHeight: 1.7, margin: 0 }}>
+              {summary?.summary ?? "Your atlas read could not be loaded."}
+            </p>
           )}
-
-          {/* ── 4. REMAINING ARCHETYPES (compact bars) ───────────────────── */}
-          {!tasteLoading && restArchetypes.length > 0 && (
-            <div className="space-y-2 px-1">
-              {restArchetypes.map((arch) => (
-                <div key={arch.name} className="flex items-center gap-3 py-0.5">
-                  <span className="font-ui text-sm w-40 shrink-0 truncate" style={{ color: "#667085" }}>
-                    {arch.name}
-                  </span>
-                  <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${(arch.percentage / maxRestPct) * 100}%`,
-                        background: "var(--green)",
-                        opacity: 0.35,
-                      }}
-                    />
-                  </div>
-                  <span className="font-stat text-xs w-12 text-right shrink-0 tabular-nums" style={{ color: "#667085" }}>
-                    {arch.percentage.toFixed(1)}%
-                  </span>
-                </div>
-              ))}
-            </div>
+          {!summaryLoading && (
+            <button
+              onClick={() => doFetchSummary(true)}
+              style={{ marginTop: 7, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, color: "#9ca3af" }}
+            >
+              ↺ Regenerate
+            </button>
           )}
+        </div>
 
-          {/* ── 5. STATS STRIP ───────────────────────────────────────────── */}
-          <AtlasCard variant="soft" padding="lg">
-            <div className="flex flex-wrap gap-8 sm:gap-16">
-              <StatBlock
-                value={mapTotal.toLocaleString()}
-                label="tracks mapped"
-                size="md"
-              />
-              <StatBlock
-                value={tasteLoading ? "—" : worldsFound.toString()}
-                label="worlds found"
-                size="md"
-              />
-              <div className="flex flex-col gap-0.5">
-                <span className="font-stat font-semibold text-ink text-3xl tabular-nums leading-tight">
-                  {tasteLoading ? "—" : dominantIdentity}
-                </span>
-                <span
-                  className="font-ui uppercase tracking-wide"
-                  style={{ fontSize: "0.6875rem", letterSpacing: "0.06em", color: "#667085" }}
+        {/* Top 3 archetype cards */}
+        {tasteLoading ? (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
+            <Pulse height={80} radius={10} />
+            <Pulse height={80} radius={10} />
+            <Pulse height={80} radius={10} />
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
+            {top3Archetypes.map((arch, i) => {
+              const palette = ARCHETYPE_PALETTE[i % ARCHETYPE_PALETTE.length];
+              return (
+                <div
+                  key={arch.name}
+                  style={{ background: palette.bg, border: `1px solid ${palette.border}`, borderRadius: 10, padding: "11px 13px" }}
                 >
-                  dominant identity
+                  <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.1rem", color: palette.accent, lineHeight: 1, marginBottom: 4 }}>
+                    {arch.percentage.toFixed(1)}%
+                  </div>
+                  <div style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontWeight: 600, fontSize: 11, color: "#101828", lineHeight: 1.3 }}>
+                    {arch.name}
+                  </div>
+                  <div style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 10, color: "#9ca3af", marginTop: 3 }}>
+                    {arch.communityCount} {arch.communityCount === 1 ? "world" : "worlds"}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Compact archetype bars (4–9) */}
+        {!tasteLoading && restArchetypes.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 18 }}>
+            {restArchetypes.map((arch) => (
+              <div key={arch.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, color: "#9ca3af", width: 120, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {arch.name}
+                </span>
+                <div style={{ flex: 1, height: 4, borderRadius: 2, background: "#f3f4f6", overflow: "hidden" }}>
+                  <div style={{ width: `${(arch.percentage / maxRestPct) * 100}%`, height: "100%", background: "#1db954", opacity: 0.38, borderRadius: 2, transition: "width 0.5s" }} />
+                </div>
+                <span style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontSize: 10, color: "#9ca3af", width: 36, textAlign: "right", flexShrink: 0 }}>
+                  {arch.percentage.toFixed(1)}%
                 </span>
               </div>
-            </div>
-          </AtlasCard>
-
-          {/* ── 6. TIME RANGE TABS ───────────────────────────────────────── */}
-          <div className="flex items-center gap-1.5 pt-2">
-            {TIME_RANGE_OPTIONS.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => {
-                  setShowAllCommunities(false);
-                  setTimeRange(key);
-                }}
-                style={timeRange === key ? {} : { color: "#667085" }}
-                className={cn(
-                  "px-4 py-2 rounded-full text-[13.5px] font-ui font-medium transition-colors duration-150",
-                  timeRange === key
-                    ? "bg-green-soft text-green-dark"
-                    : "hover:text-ink hover:bg-surface-soft",
-                )}
-              >
-                {label}
-              </button>
             ))}
           </div>
+        )}
 
-          {/* ── 7. TOP COMMUNITIES ───────────────────────────────────────── */}
-          <div className="space-y-5">
-            <SectionHeader
-              eyebrow="YOUR WORLDS"
-              title="Top Communities"
-              subtitle="The music worlds you inhabit most."
-            />
-
-            {tasteLoading ? (
-              <div className="space-y-2.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-surface border border-border rounded-atlas-md p-5 animate-pulse"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-5 h-4 bg-border rounded-full shrink-0" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-border shrink-0" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 w-48 bg-border rounded-full" />
-                        <div className="h-3 w-32 bg-border rounded-full" />
-                      </div>
-                      <div className="h-4 w-12 bg-border rounded-full" />
-                    </div>
-                    <div className="mt-3 ml-[52px] h-[3px] bg-border rounded-full" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  {visibleCommunities.map((community, i) => {
-                    const dotColor = getClusterColor(community.cluster_id);
-                    return (
-                      <Link
-                        key={community.cluster_id}
-                        href={`/community/${community.cluster_id}`}
-                        className="block group"
-                      >
-                        <div className="bg-surface border border-border rounded-atlas-md px-5 py-4 hover-lift">
-                          <div className="flex items-center gap-4">
-                            {/* Rank */}
-                            <span className="font-stat text-sm w-5 text-right shrink-0 tabular-nums" style={{ color: "#98a2b3" }}>
-                              {i + 1}
-                            </span>
-                            {/* Cluster color dot */}
-                            <span
-                              className="w-2.5 h-2.5 rounded-full shrink-0"
-                              style={{ background: dotColor }}
-                            />
-                            {/* Name + meta */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-ui font-semibold text-ink text-[14.5px] leading-tight truncate">
-                                  {community.name}
-                                </span>
-                                {community.archetype && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium leading-none whitespace-nowrap" style={{ background: "#f1f5f0", color: "#667085", border: "1px solid #dde6dd" }}>
-                                    {community.archetype}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="font-ui text-xs mt-0.5 truncate" style={{ color: "#98a2b3" }}>
-                                {community.canonical_name}
-                                {community.top_artists[0] && (
-                                  <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                                    · {community.top_artists[0]}
-                                  </span>
-                                )}
-                              </p>
-                            </div>
-                            {/* Percentage */}
-                            <span className="font-stat text-sm text-ink font-semibold shrink-0 tabular-nums">
-                              {community.percentage.toFixed(1)}%
-                            </span>
-                          </div>
-                          {/* Progress bar */}
-                          <div className="mt-3 ml-[52px] h-[3px] rounded-full bg-border overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-700"
-                              style={{
-                                width: `${(community.percentage / maxCommunityPct) * 100}%`,
-                                background: dotColor,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                {/* Expand/collapse toggle */}
-                {communities.length > 10 && (
-                  <button
-                    onClick={() => setShowAllCommunities((v) => !v)}
-                    className="w-full py-3.5 font-ui text-sm hover:text-ink transition-colors duration-150 flex items-center justify-center gap-1.5 border border-border rounded-atlas-md hover:bg-surface-soft"
-                    style={{ color: "#667085" }}
-                  >
-                    {showAllCommunities
-                      ? "Show top 10 only ↑"
-                      : `Show all ${communities.length} worlds ↓`}
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-
-          {/* ── 8. OPEN ATLAS CTA ────────────────────────────────────────── */}
-          <div
-            className="rounded-atlas-lg border p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
-            style={{
-              background: "var(--green-soft)",
-              borderColor: "rgba(29,185,84,0.20)",
-            }}
-          >
-            <div>
-              <h3 className="font-ui font-bold text-ink text-xl mb-1.5">
-                Explore the Galaxy
-              </h3>
-              <p className="font-ui text-[0.9375rem] leading-relaxed" style={{ color: "#667085" }}>
-                See how your worlds connect in the full atlas map.
-              </p>
+        {/* Stats strip */}
+        <div style={{ display: "flex", gap: 24, paddingTop: 14, borderTop: "1px solid #f3f4f6", flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.15rem", color: "#101828", lineHeight: 1 }}>
+              {mapTotal.toLocaleString()}
             </div>
+            <div style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 10, color: "#9ca3af", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              tracks mapped
+            </div>
+          </div>
+          <div>
+            <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.15rem", color: "#101828", lineHeight: 1 }}>
+              {tasteLoading ? "—" : worldsFound}
+            </div>
+            <div style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 10, color: "#9ca3af", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              worlds found
+            </div>
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "0.9rem", color: "#101828", lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {tasteLoading ? "—" : (archetypes[0]?.name ?? "—")}
+            </div>
+            <div style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 10, color: "#9ca3af", marginTop: 2, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              dominant identity
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ══ CELL 2: Galaxy Map — Top Right ═══════════════════════════════════ */}
+      <div
+        style={{
+          background: "#f7f8f5",
+          overflow: "hidden",
+          position: "relative",
+          borderBottom: "1px solid #dde6dd",
+        }}
+      >
+        <iframe
+          src="/map?embed=sidebar"
+          title="Galaxy preview"
+          style={{ width: "100%", height: "100%", border: "none", display: "block", pointerEvents: "none" }}
+          tabIndex={-1}
+          aria-hidden
+        />
+        <Link
+          href="/map"
+          style={{
+            position: "absolute", bottom: 16, right: 16,
+            display: "inline-flex", alignItems: "center", gap: 5,
+            height: 32, padding: "0 14px", borderRadius: 20,
+            background: "#ffffff", color: "#1db954",
+            fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+            fontSize: 12, fontWeight: 600, textDecoration: "none",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.10)",
+            border: "1px solid #dde6dd",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Open Full Atlas
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden>
+            <path d="M2 6h8M6 2.5l3.5 3.5L6 9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Link>
+      </div>
+
+      {/* ══ CELL 3: Worlds Panel — Bottom Left ═══════════════════════════════ */}
+      <div
+        style={{
+          background: "#ffffff",
+          borderRight: "1px solid #dde6dd",
+          padding: "20px 24px",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#1db954", margin: "0 0 10px" }}>
+          Your Worlds
+        </p>
+
+        {tasteLoading ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {Array.from({ length: 6 }).map((_, i) => <Pulse key={i} height={34} radius={8} />)}
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>
+            {top8.map((community, i) => {
+              const dotColor = getClusterColor(community.cluster_id);
+              return (
+                <Link
+                  key={community.cluster_id}
+                  href={`/community/${community.cluster_id}`}
+                  style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 9, padding: "7px 8px", borderRadius: 8 }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f9fafb"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                >
+                  <span style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontSize: 10, color: "#d1d5db", width: 14, textAlign: "right", flexShrink: 0 }}>
+                    {i + 1}
+                  </span>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+                  <span style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 12.5, fontWeight: 500, color: "#101828", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {community.name}
+                  </span>
+                  {community.archetype && (
+                    <span style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#9ca3af", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 20, padding: "2px 6px", whiteSpace: "nowrap", flexShrink: 0 }}>
+                      {community.archetype}
+                    </span>
+                  )}
+                  <span style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontSize: 11, fontWeight: 600, color: "#374151", flexShrink: 0, minWidth: 36, textAlign: "right" }}>
+                    {community.percentage.toFixed(1)}%
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        <Link
+          href="/communities"
+          style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 10, fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11.5, fontWeight: 600, color: "#1db954", textDecoration: "none" }}
+        >
+          Browse all 204 worlds
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden>
+            <path d="M2 6h8M6 2.5l3.5 3.5L6 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Link>
+      </div>
+
+      {/* ══ CELL 4: Signals + Era — Bottom Right ═════════════════════════════ */}
+      <div
+        style={{
+          background: "#f7f8f5",
+          padding: "20px 24px",
+          overflowY: "auto",
+        }}
+      >
+        {/* Signals section */}
+        <div style={{ marginBottom: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#1db954", margin: 0 }}>
+              Signals
+            </p>
             <Link
-              href="/map"
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-atlas-md bg-green text-white text-sm font-ui font-semibold shadow-sm hover:bg-green-dark active:scale-[0.98] transition-all duration-150 shrink-0"
+              href="/insights"
+              style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, color: "#1db954", textDecoration: "none" }}
             >
-              Open the Atlas
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M2.5 7h9M7.5 3l4 4-4 4"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              View all →
             </Link>
           </div>
 
+          {tasteLoading ? (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
+              <Pulse height={66} radius={9} />
+              <Pulse height={66} radius={9} />
+              <Pulse height={66} radius={9} />
+              <Pulse height={66} radius={9} />
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
+              {/* Rabbit Hole Velocity */}
+              <div style={{ background: "#ffffff", border: "1px solid #dde6dd", borderRadius: 9, padding: "11px 13px" }}>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#9ca3af", margin: "0 0 3px", fontWeight: 500, lineHeight: 1.2 }}>Rabbit Hole Velocity</p>
+                <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.35rem", color: "#111827", lineHeight: 1 }}>
+                  {rareCount}
+                </div>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#d1d5db", margin: "3px 0 0" }}>rare worlds</p>
+              </div>
+
+              {/* Obscurity Signal */}
+              <div style={{ background: "#ffffff", border: "1px solid #dde6dd", borderRadius: 9, padding: "11px 13px" }}>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#9ca3af", margin: "0 0 3px", fontWeight: 500, lineHeight: 1.2 }}>Obscurity Signal</p>
+                <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.35rem", color: "#111827", lineHeight: 1 }}>
+                  {obscurityTier}
+                </div>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#d1d5db", margin: "3px 0 0" }}>of all listeners</p>
+              </div>
+
+              {/* World Immersion */}
+              <div style={{ background: "#ffffff", border: "1px solid #dde6dd", borderRadius: 9, padding: "11px 13px" }}>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#9ca3af", margin: "0 0 3px", fontWeight: 500, lineHeight: 1.2 }}>World Immersion</p>
+                <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.35rem", color: "#111827", lineHeight: 1 }}>
+                  {topCommunity ? `${topCommunity.percentage.toFixed(1)}%` : "—"}
+                </div>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#d1d5db", margin: "3px 0 0" }}>dominant world</p>
+              </div>
+
+              {/* Bridge Communities */}
+              <div style={{ background: "#ffffff", border: "1px solid #dde6dd", borderRadius: 9, padding: "11px 13px" }}>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#9ca3af", margin: "0 0 3px", fontWeight: 500, lineHeight: 1.2 }}>Bridge Communities</p>
+                <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.35rem", color: "#111827", lineHeight: 1 }}>
+                  {bridgeCount}
+                </div>
+                <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 9.5, color: "#d1d5db", margin: "3px 0 0" }}>cross-archetype worlds</p>
+              </div>
+            </div>
+          )}
         </div>
-      </PageShell>
+
+        {/* Divider */}
+        <div style={{ borderTop: "1px solid #e5e7eb", margin: "14px 0" }} />
+
+        {/* Listening Eras placeholder */}
+        <div>
+          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#1db954", margin: "0 0 10px" }}>
+            Listening Eras
+          </p>
+          <div
+            style={{
+              border: "1.5px dashed #dde6dd",
+              borderRadius: 10,
+              padding: "14px 16px",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 11,
+              background: "rgba(255,255,255,0.55)",
+            }}
+          >
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#f3f4f6", border: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <circle cx="8" cy="8" r="6" stroke="#9ca3af" strokeWidth="1.4"/>
+                <path d="M8 5v3.2l2.2 2.2" stroke="#9ca3af" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontWeight: 600, fontSize: 12.5, color: "#374151", margin: "0 0 4px" }}>
+                Coming in Phase 12
+              </p>
+              <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11.5, color: "#9ca3af", lineHeight: 1.5, margin: 0 }}>
+                Your musical biography — life chapters defined by how your taste evolved.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

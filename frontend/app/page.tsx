@@ -4,6 +4,98 @@ import { AtlasCard } from "@/components/atlas/AtlasCard";
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
+
+      {/* ── Marketing header ─────────────────────────────────────────────── */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          background: "rgba(249,250,248,0.88)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderBottom: "1px solid #dde6dd",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1024,
+            margin: "0 auto",
+            padding: "0 24px",
+            height: 60,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Wordmark */}
+          <Link
+            href="/"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              textDecoration: "none",
+            }}
+          >
+            <span
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: "50%",
+                background: "#1db954",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <span
+                style={{ width: 9, height: 9, borderRadius: "50%", background: "#ffffff" }}
+              />
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                fontWeight: 600,
+                fontSize: "14.5px",
+                color: "#101828",
+                letterSpacing: "-0.01em",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Spotify Atlas
+            </span>
+          </Link>
+
+          {/* CTA */}
+          <Link
+            href="/identity"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              height: 36,
+              padding: "0 18px",
+              borderRadius: 10,
+              background: "#1db954",
+              color: "#ffffff",
+              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+              fontSize: 13.5,
+              fontWeight: 600,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              transition: "background 0.15s",
+            }}
+          >
+            View Your Identity
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
+              <path d="M2 6h8M6 2.5l3.5 3.5L6 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Link>
+        </div>
+      </header>
+
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 overflow-hidden">
         {/* Decorative radial glow */}

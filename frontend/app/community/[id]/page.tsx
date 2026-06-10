@@ -165,6 +165,14 @@ export default function CommunityDetailPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    if (detail?.name) {
+      document.title = `${detail.name} · Spotify Atlas`;
+    } else {
+      document.title = "Community · Spotify Atlas";
+    }
+  }, [detail?.name]);
+
+  useEffect(() => {
     if (isNaN(clusterId)) {
       setNotFound(true);
       setLoading(false);

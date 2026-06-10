@@ -65,21 +65,21 @@ export default function NavBar() {
         {/* Right: track pill + avatar */}
         <div className="flex items-center gap-3 shrink-0">
           <span
-            className={cn(
-              "font-stat text-[12.5px] border border-border rounded-full px-3 py-[5px] leading-none transition-colors duration-300",
-              trackTotal !== null ? "text-muted" : "text-faint",
-            )}
+            className="font-stat text-[12.5px] rounded-full px-3 py-[5px] leading-none flex items-center gap-1"
+            style={{ background: "#f0fdf4", color: "#166534", border: "1px solid #bbf7d0" }}
           >
+            <span style={{ fontWeight: 700, marginRight: 1 }}>+</span>
             {trackTotal !== null
               ? `${trackTotal.toLocaleString()} tracks`
               : "— tracks"}
           </span>
           <div
-            className="w-8 h-8 rounded-full bg-green-soft border border-border flex items-center justify-center shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: "#111827", border: "1px solid #374151" }}
             aria-label="User account"
           >
-            <span className="text-green-dark text-[11px] font-semibold font-ui select-none">
-              U
+            <span className="text-[11px] font-semibold font-ui select-none" style={{ color: "#ffffff" }}>
+              A
             </span>
           </div>
         </div>

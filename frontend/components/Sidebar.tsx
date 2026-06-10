@@ -79,8 +79,13 @@ export default function Sidebar({ compact = false }: SidebarProps) {
       .catch(() => {});
   }, []);
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) => {
+    if (pathname === href) return true;
+    if (pathname.startsWith(href + "/")) return true;
+    // /community/[id] should highlight the Communities nav item
+    if (href === "/communities" && pathname.startsWith("/community/")) return true;
+    return false;
+  };
 
   const width = compact ? 64 : 220;
 

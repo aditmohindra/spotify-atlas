@@ -11,7 +11,24 @@ import {
 import TrackSidebar from "./TrackSidebar";
 import ClusterSidebar from "./ClusterSidebar";
 
-export default function GalaxyMap() {
+interface GalaxyMapProps {
+  /**
+   * "true"    → canvas-only embed: hides sidebar + all controls, fixed inset overlay
+   * "sidebar" → dashboard embed: hides search/zoom controls but keeps Atlas Regions sidebar
+   * undefined → full /map page (default)
+   */
+  embedMode?: string;
+  /** @deprecated use embedMode="true" */
+  hideUI?: boolean;
+  /** @deprecated use embedMode="true" */
+  hideControls?: boolean;
+}
+
+export default function GalaxyMap({ embedMode, hideUI = false, hideControls = false }: GalaxyMapProps) {
+  /** Canvas-only mode: sidebar hidden, all controls hidden, fixed overlay */
+  const isEmbed = hideUI || hideControls || embedMode === "true";
+  /** Sidebar-only embed: Atlas Regions visible but search/zoom controls hidden, fixed overlay */
+  const isSidebar = embedMode === "sidebar";
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { data, clusters, loading, error } = useMapData();
 
@@ -22,6 +39,8 @@ export default function GalaxyMap() {
   const [searchResult, setSearchResult] = useState<TrackPoint | null>(null);
   const [selectedCluster, setSelectedCluster] = useState<number | null>(null);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
+  const [displayScale, setDisplayScale] = useState(1);
+  const [showSearch, setShowSearch] = useState(false);
 
   const transform = useRef({ scale: 1, offsetX: 0, offsetY: 0 });
   const isDragging = useRef(false);
@@ -29,7 +48,8 @@ export default function GalaxyMap() {
   const dragMoved = useRef(false);
   const raf = useRef<number>(0);
 
-  const ATLAS_SIDEBAR = 240;
+  // canvas-only embed → no sidebar offset; sidebar embed → full 240px offset; full map → 240px
+  const ATLAS_SIDEBAR = isEmbed ? 0 : 240;
   const PAD = 60;
 
   // Build lookup: cluster_id → archetype color
@@ -99,7 +119,7 @@ export default function GalaxyMap() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const s = transform.current.scale;
-    const baseSize = Math.max(1.5, Math.min(4, 2 * s));
+    const baseSize = Math.max(1.5, Math.min(4, 2 * s)) + (isEmbed && !isSidebar ? 0.5 : 0);
 
     const hasClusterFilter = selectedCluster !== null;
     const hasArchFilter = selectedArchetype !== null;
@@ -153,8 +173,8 @@ export default function GalaxyMap() {
 
     ctx.globalAlpha = 1;
 
-    // Archetype region labels — pill style, only at zoom < 2.0
-    if (s < 2.0) {
+    // Archetype region labels — always visible in embed modes; otherwise only at zoom < 2.0
+    if (isEmbed || isSidebar || s < 2.0) {
       const PILL_PX = 6;
       const PILL_PY = 4;
       const PILL_R = 20;
@@ -346,6 +366,8 @@ export default function GalaxyMap() {
     toScreen,
     ATLAS_SIDEBAR,
     PAD,
+    isEmbed,
+    isSidebar,
   ]);
 
   useEffect(() => {
@@ -455,6 +477,7 @@ export default function GalaxyMap() {
       t.offsetX = mx - ratio * (mx - t.offsetX);
       t.offsetY = my - ratio * (my - t.offsetY);
       t.scale = newScale;
+      setDisplayScale(newScale);
       cancelAnimationFrame(raf.current);
       raf.current = requestAnimationFrame(draw);
     },
@@ -511,6 +534,45 @@ export default function GalaxyMap() {
     if (found) flyTo(found.x, found.y, 6);
   }, [data, search, flyTo]);
 
+  const handleZoomIn = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const t = transform.current;
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const newScale = Math.min(25, t.scale * 1.3);
+    const ratio = newScale / t.scale;
+    t.offsetX = cx - ratio * (cx - t.offsetX);
+    t.offsetY = cy - ratio * (cy - t.offsetY);
+    t.scale = newScale;
+    setDisplayScale(newScale);
+    cancelAnimationFrame(raf.current);
+    raf.current = requestAnimationFrame(draw);
+  }, [draw]);
+
+  const handleZoomOut = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const t = transform.current;
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const newScale = Math.max(0.3, t.scale / 1.3);
+    const ratio = newScale / t.scale;
+    t.offsetX = cx - ratio * (cx - t.offsetX);
+    t.offsetY = cy - ratio * (cy - t.offsetY);
+    t.scale = newScale;
+    setDisplayScale(newScale);
+    cancelAnimationFrame(raf.current);
+    raf.current = requestAnimationFrame(draw);
+  }, [draw]);
+
+  const handleResetView = useCallback(() => {
+    transform.current = { scale: 1, offsetX: 0, offsetY: 0 };
+    setDisplayScale(1);
+    cancelAnimationFrame(raf.current);
+    raf.current = requestAnimationFrame(draw);
+  }, [draw]);
+
   // Tooltip community info
   const hoveredCluster = hoveredTrack
     ? clusterInfoMap.get(hoveredTrack.cluster_id)
@@ -520,11 +582,19 @@ export default function GalaxyMap() {
     : null;
   const hoveredColor = getArchetypeColor(hoveredArchetype);
 
+  const mapHeight = isEmbed || isSidebar ? "100vh" : "calc(100vh - 64px)";
+  const mapTop = isEmbed || isSidebar ? 0 : 64;
+  // Both embed modes use fixed positioning to cover the NavBar inside the iframe
+  const embedFixed: React.CSSProperties =
+    isEmbed || isSidebar
+      ? { position: "fixed", inset: 0, zIndex: 9999, marginTop: 0, height: "100vh" }
+      : {};
+
   if (loading)
     return (
       <div
-        className="w-full h-screen flex items-center justify-center"
-        style={{ background: "#f7f8f5" }}
+        className="w-full flex items-center justify-center"
+        style={{ background: "#f7f8f5", height: mapHeight, marginTop: mapTop, ...embedFixed }}
       >
         <div className="text-center space-y-2">
           <div
@@ -554,79 +624,156 @@ export default function GalaxyMap() {
 
   return (
     <div
-      className="relative w-full h-screen overflow-hidden font-sans"
-      style={{ background: "#f7f8f5" }}
+      className="relative w-full overflow-hidden font-sans"
+      style={{ background: "#f7f8f5", height: mapHeight, marginTop: mapTop, ...embedFixed }}
     >
-      {/* Atlas sidebar — inside GalaxyMap, to the left of canvas */}
-      <ClusterSidebar
-        clusters={clusters}
-        selectedCluster={selectedCluster}
-        selectedArchetype={selectedArchetype}
-        onSelectCluster={handleSelectCluster}
-        onSelectArchetype={handleSelectArchetype}
-      />
+      {/* Atlas Regions sidebar — shown in full map and sidebar-embed modes */}
+      {(!isEmbed || isSidebar) && (
+        <ClusterSidebar
+          clusters={clusters}
+          selectedCluster={selectedCluster}
+          selectedArchetype={selectedArchetype}
+          onSelectCluster={handleSelectCluster}
+          onSelectArchetype={handleSelectArchetype}
+        />
+      )}
 
-      {/* Search bar */}
-      <div
-        className="absolute top-4 z-10 flex items-center gap-2"
-        style={{ left: ATLAS_SIDEBAR + 16 }}
-      >
-        <div
-          className="flex items-center gap-0 rounded-xl overflow-hidden"
-          style={{
-            background: "#ffffff",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-          }}
-        >
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="Search tracks or artists..."
-            className="bg-transparent text-sm px-4 py-2.5 w-60 focus:outline-none"
-            style={{ color: "#374151" }}
-          />
-          <button
-            onClick={handleSearch}
-            className="text-sm px-4 py-2.5 transition-colors"
+      {/* Bottom controls — only shown on the full /map page (not in any embed mode) */}
+      {!isEmbed && !isSidebar && (
+        <>
+          {/* Zoom controls — bottom center of canvas area */}
+          <div
+            className="absolute z-10 flex items-center gap-0"
             style={{
-              color: "#9ca3af",
-              borderLeft: "1px solid #e5e7eb",
+              bottom: 20,
+              left: ATLAS_SIDEBAR + 20,
+              background: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 20,
+              boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+              overflow: "hidden",
             }}
           >
-            ↵
-          </button>
-        </div>
-        {searchResult && (
-          <>
-            <div className="text-xs" style={{ color: "#6b7280" }}>
-              {searchResult.name} · {searchResult.artist}
-            </div>
             <button
-              onClick={() => { setSearch(""); setSearchResult(null); }}
-              className="text-xs transition-colors"
-              style={{ color: "#9ca3af" }}
+              onClick={handleZoomOut}
+              style={{
+                padding: "6px 14px", background: "none", border: "none",
+                cursor: "pointer", color: "#374151", fontSize: 16, lineHeight: 1,
+                borderRight: "1px solid #e5e7eb",
+              }}
+              aria-label="Zoom out"
             >
-              ✕
+              −
             </button>
-          </>
-        )}
-      </div>
+            <span
+              style={{
+                padding: "6px 12px",
+                fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
+                fontSize: 12, color: "#374151", userSelect: "none",
+                minWidth: 44, textAlign: "center",
+              }}
+            >
+              {displayScale.toFixed(1)}x
+            </span>
+            <button
+              onClick={handleZoomIn}
+              style={{
+                padding: "6px 14px", background: "none", border: "none",
+                cursor: "pointer", color: "#374151", fontSize: 16, lineHeight: 1,
+                borderLeft: "1px solid #e5e7eb",
+              }}
+              aria-label="Zoom in"
+            >
+              +
+            </button>
+          </div>
 
-      {/* Top-right label */}
-      <div className="absolute top-4 right-5 z-10 text-right">
-        <div
-          className="text-xs font-semibold tracking-wider"
-          style={{ color: "#374151" }}
-        >
-          SPOTIFY ATLAS
-        </div>
-        <div className="text-xs mt-0.5" style={{ color: "#9ca3af" }}>
-          {data?.total.toLocaleString()} tracks · {clusters.length} communities
-        </div>
-      </div>
+          {/* Search input (expands above the icon when showSearch=true) */}
+          {showSearch && (
+            <div
+              className="absolute z-10 flex items-center gap-0 overflow-hidden"
+              style={{
+                bottom: 64, right: 20,
+                background: "#ffffff",
+                border: "1px solid #e5e7eb",
+                borderRadius: 12,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              }}
+            >
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); if (e.key === "Escape") { setShowSearch(false); setSearch(""); setSearchResult(null); } }}
+                placeholder="Search tracks or artists…"
+                autoFocus
+                className="bg-transparent text-sm px-4 py-2.5 w-56 focus:outline-none"
+                style={{ color: "#374151" }}
+              />
+              <button
+                onClick={handleSearch}
+                style={{ padding: "0 12px", height: "100%", background: "none", border: "none", borderLeft: "1px solid #e5e7eb", cursor: "pointer", color: "#9ca3af", fontSize: 14 }}
+              >
+                ↵
+              </button>
+            </div>
+          )}
+          {showSearch && searchResult && (
+            <div
+              className="absolute z-10 text-xs"
+              style={{ bottom: 116, right: 20, background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 8, padding: "6px 10px", color: "#6b7280", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+            >
+              {searchResult.name} · {searchResult.artist}
+              <button onClick={() => { setSearch(""); setSearchResult(null); }} style={{ marginLeft: 8, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}>✕</button>
+            </div>
+          )}
+
+          {/* Bottom-right icons: search + crosshair */}
+          <div
+            className="absolute z-10 flex flex-col gap-2"
+            style={{ bottom: 20, right: 20 }}
+          >
+            <button
+              onClick={() => { setShowSearch((v) => !v); if (showSearch) { setSearch(""); setSearchResult(null); } }}
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: showSearch ? "#f0fdf4" : "#ffffff",
+                border: `1px solid ${showSearch ? "#bbf7d0" : "#e5e7eb"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                color: showSearch ? "#166534" : "#6b7280",
+              }}
+              aria-label="Toggle search"
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <button
+              onClick={handleResetView}
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: "#ffffff",
+                border: "1px solid #e5e7eb",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                color: "#6b7280",
+              }}
+              aria-label="Reset view"
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/>
+                <line x1="8" y1="2" x2="8" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="8" y1="12" x2="8" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="2" y1="8" x2="4" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="12" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Canvas */}
       <canvas

@@ -208,6 +208,10 @@ export default function InsightsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Signals · Spotify Atlas";
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     Promise.all([
       getTasteProfile(1, "all"),
