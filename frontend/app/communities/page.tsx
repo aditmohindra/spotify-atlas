@@ -293,7 +293,7 @@ export default function CommunitiesPage() {
   const isFiltering = selectedArchetype !== null || searchQuery.trim().length > 0;
 
   return (
-    <div className="pt-16 min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       {/* Subtle green glow at top */}
       <div
         aria-hidden

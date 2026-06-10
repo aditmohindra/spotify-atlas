@@ -75,8 +75,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function DetailPageSkeleton() {
   return (
-    <div className="pt-16 min-h-screen" style={{ background: "#f7f8f5" }}>
-      <PageShell maxWidth="xl" className="py-10">
+    <div className="min-h-screen" style={{ background: "#f7f8f5" }}>
+      <PageShell maxWidth="xl" className="py-8">
         <div className="space-y-8 animate-pulse">
           <div className="h-4 w-28 rounded-full" style={{ background: "#dde6dd" }} />
 
@@ -124,7 +124,7 @@ function DetailPageSkeleton() {
 
 function NotFoundState() {
   return (
-    <div className="pt-16 min-h-screen" style={{ background: "#f7f8f5" }}>
+    <div className="min-h-screen" style={{ background: "#f7f8f5" }}>
       <PageShell maxWidth="xl" className="py-10">
         <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
           <span className="text-5xl" aria-hidden>🌌</span>
@@ -214,7 +214,7 @@ export default function CommunityDetailPage() {
   const rarityStyle = RARITY_STYLES[resolvedRarity] ?? RARITY_STYLES["Core"];
 
   return (
-    <div className="pt-16 min-h-screen" style={{ background: "#f7f8f5" }}>
+    <div className="min-h-screen" style={{ background: "#f7f8f5" }}>
       {/* Subtle green radial glow */}
       <div
         aria-hidden

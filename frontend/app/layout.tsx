@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono, Playfair_Display } from "next/font/google";
-import NavBar from "@/components/NavBar";
+import AppShell from "@/components/AppShell";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -36,9 +36,8 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-ink">
-        <NavBar />
-        {children}
+      <body className="h-full bg-background text-ink">
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

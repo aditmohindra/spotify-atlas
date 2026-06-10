@@ -203,7 +203,7 @@ export default function IdentityPage() {
 
   // ── Render ──────────────────────────────────────────────────────────────
   return (
-    <div className="pt-16 min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
 
       {/* ── 1. HERO ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">

@@ -3,7 +3,7 @@ import { AtlasCard } from "@/components/atlas/AtlasCard";
 
 export default function LandingPage() {
   return (
-    <div className="pt-16 min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 overflow-hidden">
         {/* Decorative radial glow */}
