@@ -31,13 +31,15 @@ export function StatBlock({
       <span className={cn("font-stat font-semibold text-ink leading-none tabular-nums", valueSize)}>
         {value}
         {unit && (
-          <span className="text-muted font-normal ml-0.5" style={{ fontSize: "0.55em" }}>
+          <span className="font-normal ml-0.5" style={{ fontSize: "0.55em", color: "#667085" }}>
             {unit}
           </span>
         )}
       </span>
-      <span className={cn("font-ui text-muted tracking-wide uppercase", labelSize)}
-        style={{ fontSize: "0.6875rem", letterSpacing: "0.06em" }}>
+      <span
+        className={cn("font-ui tracking-wide uppercase", labelSize)}
+        style={{ fontSize: "0.6875rem", letterSpacing: "0.06em", color: "#667085" }}
+      >
         {label}
       </span>
     </div>

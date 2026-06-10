@@ -33,8 +33,8 @@ export default function LandingPage() {
 
         {/* Sub-headline */}
         <p
-          className="font-ui text-muted relative z-10 max-w-xl mt-6"
-          style={{ fontSize: "1.0625rem", lineHeight: 1.65 }}
+          className="font-ui text-ink relative z-10 max-w-xl mt-6"
+          style={{ fontSize: "1.0625rem", lineHeight: 1.65, opacity: 0.72 }}
         >
           Spotify Atlas turns your listening history into a living map of your
           taste, your communities, and the hidden worlds you keep returning to.
@@ -75,7 +75,7 @@ export default function LandingPage() {
               <h3 className="font-ui font-semibold text-ink text-[15px] mb-1.5 leading-snug">
                 Your Musical Identity
               </h3>
-              <p className="font-ui text-muted text-sm leading-relaxed">
+              <p className="font-ui text-sm leading-relaxed" style={{ color: "#374151" }}>
                 Discover the communities, archetypes, and sonic threads that
                 define who you are as a listener.
               </p>
@@ -105,7 +105,7 @@ export default function LandingPage() {
               <h3 className="font-ui font-semibold text-ink text-[15px] mb-1.5 leading-snug">
                 Hidden Communities
               </h3>
-              <p className="font-ui text-muted text-sm leading-relaxed">
+              <p className="font-ui text-sm leading-relaxed" style={{ color: "#374151" }}>
                 204 worlds mapped from your listening history — each with its
                 own culture, sound, and name.
               </p>
@@ -139,7 +139,7 @@ export default function LandingPage() {
               <h3 className="font-ui font-semibold text-ink text-[15px] mb-1.5 leading-snug">
                 The Galaxy
               </h3>
-              <p className="font-ui text-muted text-sm leading-relaxed">
+              <p className="font-ui text-sm leading-relaxed" style={{ color: "#374151" }}>
                 Every track you&apos;ve ever saved, plotted in a living 2D star
                 map — grouped by sound, not by genre.
               </p>

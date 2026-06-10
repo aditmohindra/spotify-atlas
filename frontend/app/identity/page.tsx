@@ -237,10 +237,10 @@ export default function IdentityPage() {
               )}
             </h1>
             <div className="mt-5 space-y-0.5">
-              <p className="font-ui text-muted text-[1.0625rem] leading-snug">
+              <p className="font-ui text-[1.0625rem] leading-snug" style={{ color: "#374151" }}>
                 You don&apos;t just listen to songs.
               </p>
-              <p className="font-ui text-muted text-[1.0625rem] leading-snug">
+              <p className="font-ui text-[1.0625rem] leading-snug" style={{ color: "#374151" }}>
                 You collect places to disappear into.
               </p>
             </div>
@@ -309,7 +309,8 @@ export default function IdentityPage() {
               {!summaryLoading && (
                 <button
                   onClick={() => doFetchSummary(true)}
-                  className="self-start flex items-center gap-1 font-ui text-[12px] text-faint hover:text-muted transition-colors duration-150"
+                  className="self-start flex items-center gap-1 font-ui text-[12px] transition-colors duration-150"
+                  style={{ color: "#98a2b3" }}
                 >
                   <span aria-hidden>↺</span> Regenerate
                 </button>
@@ -355,7 +356,7 @@ export default function IdentityPage() {
                         {arch.name}
                       </h3>
                       {arch.description && (
-                        <p className="font-ui text-muted text-sm leading-relaxed">
+                        <p className="font-ui text-sm leading-relaxed" style={{ color: "#667085" }}>
                           {arch.description}
                         </p>
                       )}
@@ -383,7 +384,7 @@ export default function IdentityPage() {
             <div className="space-y-2 px-1">
               {restArchetypes.map((arch) => (
                 <div key={arch.name} className="flex items-center gap-3 py-0.5">
-                  <span className="font-ui text-sm text-muted w-40 shrink-0 truncate">
+                  <span className="font-ui text-sm w-40 shrink-0 truncate" style={{ color: "#667085" }}>
                     {arch.name}
                   </span>
                   <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
@@ -396,7 +397,7 @@ export default function IdentityPage() {
                       }}
                     />
                   </div>
-                  <span className="font-stat text-xs text-muted w-12 text-right shrink-0 tabular-nums">
+                  <span className="font-stat text-xs w-12 text-right shrink-0 tabular-nums" style={{ color: "#667085" }}>
                     {arch.percentage.toFixed(1)}%
                   </span>
                 </div>
@@ -418,12 +419,12 @@ export default function IdentityPage() {
                 size="md"
               />
               <div className="flex flex-col gap-0.5">
-                <span className="font-stat font-semibold text-ink leading-none text-3xl tabular-nums truncate max-w-[200px]">
+                <span className="font-stat font-semibold text-ink text-3xl tabular-nums leading-tight">
                   {tasteLoading ? "—" : dominantIdentity}
                 </span>
                 <span
-                  className="font-ui text-muted uppercase tracking-wide"
-                  style={{ fontSize: "0.6875rem", letterSpacing: "0.06em" }}
+                  className="font-ui uppercase tracking-wide"
+                  style={{ fontSize: "0.6875rem", letterSpacing: "0.06em", color: "#667085" }}
                 >
                   dominant identity
                 </span>
@@ -440,11 +441,12 @@ export default function IdentityPage() {
                   setShowAllCommunities(false);
                   setTimeRange(key);
                 }}
+                style={timeRange === key ? {} : { color: "#667085" }}
                 className={cn(
                   "px-4 py-2 rounded-full text-[13.5px] font-ui font-medium transition-colors duration-150",
                   timeRange === key
                     ? "bg-green-soft text-green-dark"
-                    : "text-muted hover:text-ink hover:bg-surface-soft",
+                    : "hover:text-ink hover:bg-surface-soft",
                 )}
               >
                 {label}
@@ -494,7 +496,7 @@ export default function IdentityPage() {
                         <div className="bg-surface border border-border rounded-atlas-md px-5 py-4 hover-lift">
                           <div className="flex items-center gap-4">
                             {/* Rank */}
-                            <span className="font-stat text-sm text-faint w-5 text-right shrink-0 tabular-nums">
+                            <span className="font-stat text-sm w-5 text-right shrink-0 tabular-nums" style={{ color: "#98a2b3" }}>
                               {i + 1}
                             </span>
                             {/* Cluster color dot */}
@@ -509,12 +511,12 @@ export default function IdentityPage() {
                                   {community.name}
                                 </span>
                                 {community.archetype && (
-                                  <AtlasPill size="xs" variant="muted">
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium leading-none whitespace-nowrap" style={{ background: "#f1f5f0", color: "#667085", border: "1px solid #dde6dd" }}>
                                     {community.archetype}
-                                  </AtlasPill>
+                                  </span>
                                 )}
                               </div>
-                              <p className="font-ui text-xs text-faint mt-0.5 truncate">
+                              <p className="font-ui text-xs mt-0.5 truncate" style={{ color: "#98a2b3" }}>
                                 {community.canonical_name}
                                 {community.top_artists[0] && (
                                   <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
@@ -548,7 +550,8 @@ export default function IdentityPage() {
                 {communities.length > 10 && (
                   <button
                     onClick={() => setShowAllCommunities((v) => !v)}
-                    className="w-full py-3.5 font-ui text-sm text-muted hover:text-ink transition-colors duration-150 flex items-center justify-center gap-1.5 border border-border rounded-atlas-md hover:bg-surface-soft"
+                    className="w-full py-3.5 font-ui text-sm hover:text-ink transition-colors duration-150 flex items-center justify-center gap-1.5 border border-border rounded-atlas-md hover:bg-surface-soft"
+                    style={{ color: "#667085" }}
                   >
                     {showAllCommunities
                       ? "Show top 10 only ↑"
@@ -571,7 +574,7 @@ export default function IdentityPage() {
               <h3 className="font-ui font-bold text-ink text-xl mb-1.5">
                 Explore the Galaxy
               </h3>
-              <p className="font-ui text-muted text-[0.9375rem] leading-relaxed">
+              <p className="font-ui text-[0.9375rem] leading-relaxed" style={{ color: "#667085" }}>
                 See how your worlds connect in the full atlas map.
               </p>
             </div>

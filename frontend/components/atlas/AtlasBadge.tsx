@@ -7,11 +7,11 @@ export interface AtlasBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const rarityStyles: Record<string, string> = {
-  "Extremely Rare": "bg-purple-100 text-purple-700",
-  "Rare":           "bg-green-soft text-green-dark",
-  "Niche":          "bg-blue-50 text-blue-600",
-  "Underground":    "bg-surface-soft text-muted",
-  "Core":           "bg-ink/8 text-ink",
+  "Extremely Rare": "bg-green-soft text-green-dark",
+  "Rare":           "bg-amber-50 text-amber-600",
+  "Niche":          "bg-purple-100 text-purple-700",
+  "Underground":    "bg-blue-50 text-blue-600",
+  "Core":           "bg-surface-soft text-muted border border-border",
 };
 
 export function AtlasBadge({

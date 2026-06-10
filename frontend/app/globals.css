@@ -88,7 +88,9 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent:           var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-muted:            var(--background-soft);
+  /* --color-muted is intentionally NOT overridden here — it is set above   */
+  /* to var(--muted) = #667085 for text use. Shadcn's muted bg is covered   */
+  /* by --color-surface-soft / --color-background-soft.                     */
   --color-muted-foreground: var(--muted-foreground);
   --color-ring:             var(--ring);
   --color-input:            var(--input);
@@ -180,6 +182,11 @@
     transform: translateY(-2px);
     box-shadow: var(--shadow-card-hover);
   }
+
+  /* Explicit text-color overrides — these defeat any @theme cascade conflicts  */
+  /* where --color-muted was incorrectly aliased to a background token.        */
+  .text-muted  { color: #667085; }
+  .text-faint  { color: #98a2b3; }
 
   /* Border radius tokens */
   .rounded-atlas-sm   { border-radius: var(--radius-sm); }
