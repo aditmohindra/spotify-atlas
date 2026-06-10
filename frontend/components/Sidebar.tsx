@@ -16,6 +16,16 @@ function IdentityIcon() {
   );
 }
 
+function ProfileIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="9" r="3" />
+      <path d="M6.168 18.849A4 4 0 0 1 10 17h4a4 4 0 0 1 3.832 1.849" />
+    </svg>
+  );
+}
+
 function GalaxyIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -56,6 +66,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Identity",    href: "/identity",    icon: <IdentityIcon /> },
+  { label: "Profile",     href: "/profile",     icon: <ProfileIcon /> },
   { label: "Galaxy",      href: "/map",         icon: <GalaxyIcon /> },
   { label: "Communities", href: "/communities", icon: <CommunitiesIcon /> },
   { label: "Insights",    href: "/insights",    icon: <InsightsIcon /> },
