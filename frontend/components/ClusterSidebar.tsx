@@ -1,103 +1,319 @@
 "use client";
 
-import { useState } from "react";
-import { ClusterInfo } from "@/hooks/useMapData";
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import { ClusterInfo, ARCHETYPE_COLORS, getArchetypeColor } from "@/hooks/useMapData";
 
-const CLUSTER_COLORS = [
-  "#60a5fa","#34d399","#f87171","#fbbf24","#a78bfa",
-  "#f472b6","#38bdf8","#4ade80","#fb923c","#e879f9",
-  "#22d3ee","#86efac","#fca5a5","#fde68a","#c4b5fd",
-  "#f9a8d4","#7dd3fc","#6ee7b7","#fcd34d","#d8b4fe",
+const ARCHETYPE_ORDER = [
+  "The Trap",
+  "Terminally Online",
+  "Festival Regular",
+  "Anime Passport",
+  "Toronto Winter Arc",
+  "Lo-Fi Otaku",
+  "Desi Household",
+  "Drip Report",
+  "Nostalgic Club Kid",
 ];
-
-function getClusterColor(id: number): string {
-  if (id === -1) return "#ffffff20";
-  return CLUSTER_COLORS[id % CLUSTER_COLORS.length];
-}
 
 interface Props {
   clusters: ClusterInfo[];
   selectedCluster: number | null;
+  selectedArchetype: string | null;
   onSelectCluster: (id: number | null) => void;
+  onSelectArchetype: (archetype: string | null) => void;
 }
 
-export default function ClusterSidebar({ clusters, selectedCluster, onSelectCluster }: Props) {
+export default function ClusterSidebar({
+  clusters,
+  selectedCluster,
+  selectedArchetype,
+  onSelectCluster,
+  onSelectArchetype,
+}: Props) {
   const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const filtered = clusters.filter(c =>
-    query === "" ||
-    c.top_artists.some(a => a.toLowerCase().includes(query.toLowerCase())) ||
-    String(c.cluster_id).includes(query)
+  const totalTracks = useMemo(
+    () => clusters.reduce((sum, c) => sum + c.track_count, 0),
+    [clusters]
   );
 
+  const archetypeGroups = useMemo(() => {
+    const map = new Map<string, ClusterInfo[]>();
+    for (const c of clusters) {
+      const key = c.cluster_archetype ?? "Unknown";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(c);
+    }
+    const ordered: Array<{ archetype: string; communities: ClusterInfo[] }> = [];
+    for (const name of ARCHETYPE_ORDER) {
+      if (map.has(name)) {
+        ordered.push({ archetype: name, communities: map.get(name)! });
+        map.delete(name);
+      }
+    }
+    for (const [name, communities] of map.entries()) {
+      ordered.push({ archetype: name, communities });
+    }
+    return ordered;
+  }, [clusters]);
+
+  const filteredGroups = useMemo(() => {
+    if (!query.trim()) return archetypeGroups;
+    const q = query.toLowerCase();
+    return archetypeGroups
+      .map((g) => ({
+        ...g,
+        communities: g.communities.filter(
+          (c) =>
+            (c.name ?? "").toLowerCase().includes(q) ||
+            (c.canonical_name ?? "").toLowerCase().includes(q) ||
+            c.top_artists.some((a) => a.toLowerCase().includes(q))
+        ),
+      }))
+      .filter((g) => g.communities.length > 0);
+  }, [archetypeGroups, query]);
+
+  const toggleExpanded = (archetype: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(archetype)) next.delete(archetype);
+      else next.add(archetype);
+      return next;
+    });
+  };
+
   return (
-    <div className="absolute top-0 left-0 h-full w-64 flex flex-col z-10"
-      style={{ background: "rgba(7,7,26,0.95)", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+    <div
+      className="absolute top-0 left-0 h-full w-60 flex flex-col z-10"
+      style={{
+        background: "#ffffff",
+        borderRight: "1px solid #e5e7eb",
+      }}
+    >
+      {/* Header */}
+      <div className="px-4 pt-5 pb-3">
+        <div
+          className="text-sm font-bold tracking-wide"
+          style={{ color: "#111827", fontFamily: "DM Sans, sans-serif" }}
+        >
+          Atlas Regions
+        </div>
+        <div className="text-xs mt-0.5" style={{ color: "#9ca3af" }}>
+          Click a region to explore
+        </div>
 
-      <div className="px-5 pt-5 pb-4">
-        <div className="text-white/80 text-sm font-medium tracking-wide">Communities</div>
-        <div className="text-white/25 text-xs mt-0.5">{clusters.length} clusters discovered</div>
-
-        <div className="mt-3 flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/8">
-          <span className="text-white/20 text-xs">⌕</span>
+        {/* Search */}
+        <div
+          className="mt-3 flex items-center gap-2 rounded-lg px-3 py-2"
+          style={{ background: "#f3f4f6", border: "1px solid #e5e7eb" }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#9ca3af"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
           <input
             type="text"
             value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Filter by artist..."
-            className="bg-transparent text-white/60 placeholder-white/20 text-xs flex-1 focus:outline-none"
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search communities..."
+            className="bg-transparent text-xs flex-1 focus:outline-none"
+            style={{ color: "#374151" }}
           />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="text-xs"
+              style={{ color: "#9ca3af" }}
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-2 pb-4"
-        style={{ scrollbarWidth: "none" }}>
-
-        {selectedCluster !== null && (
+      {/* Reset filter */}
+      {(selectedCluster !== null || selectedArchetype !== null) && (
+        <div className="px-3 pb-2">
           <button
-            onClick={() => onSelectCluster(null)}
-            className="w-full text-left px-3 py-2 mb-1 rounded-lg text-white/30 hover:text-white/60 text-xs transition-colors hover:bg-white/5"
+            onClick={() => {
+              onSelectCluster(null);
+              onSelectArchetype(null);
+            }}
+            className="w-full text-left text-xs px-3 py-1.5 rounded-lg transition-colors"
+            style={{ color: "#6b7280", background: "#f9fafb" }}
           >
-            ← Show all
+            ← Show all regions
           </button>
-        )}
+        </div>
+      )}
 
-        {filtered.map(cluster => {
-          const color = getClusterColor(cluster.cluster_id);
-          const isSelected = selectedCluster === cluster.cluster_id;
+      {/* Groups */}
+      <div
+        className="flex-1 overflow-y-auto pb-4"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {filteredGroups.map(({ archetype, communities }) => {
+          const color = getArchetypeColor(archetype);
+          const isArchSelected = selectedArchetype === archetype;
+          const archetypeTracks = communities.reduce(
+            (s, c) => s + c.track_count,
+            0
+          );
+          const pct =
+            totalTracks > 0
+              ? Math.round((archetypeTracks / totalTracks) * 100)
+              : 0;
+          const isOpen = expanded.has(archetype) || !!query.trim();
 
           return (
-            <button
-              key={cluster.cluster_id}
-              onClick={() => onSelectCluster(isSelected ? null : cluster.cluster_id)}
-              className="w-full text-left px-3 py-2.5 rounded-lg mb-0.5 transition-all group"
-              style={{
-                background: isSelected ? `${color}15` : "transparent",
-                border: isSelected ? `1px solid ${color}30` : "1px solid transparent",
-              }}
-            >
-                <div className="flex items-center gap-2.5 mb-1">
+            <div key={archetype} className="mb-0.5">
+              {/* Archetype header */}
+              <button
+                onClick={() => {
+                  if (isArchSelected) {
+                    onSelectArchetype(null);
+                  } else {
+                    onSelectArchetype(archetype);
+                    onSelectCluster(null);
+                  }
+                  if (!query.trim()) toggleExpanded(archetype);
+                }}
+                className="w-full flex items-center gap-2 px-4 py-2.5 transition-all text-left"
+                style={{
+                  background: isArchSelected ? `${color}12` : "transparent",
+                }}
+              >
                 <div
-                  className="w-2 h-2 rounded-full flex-shrink-0 transition-all"
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                   style={{
                     background: color,
-                    opacity: isSelected ? 1 : 0.6,
-                    boxShadow: isSelected ? `0 0 6px ${color}80` : "none"
+                    boxShadow: isArchSelected ? `0 0 6px ${color}80` : "none",
                   }}
                 />
-                <span className="text-white/80 text-xs font-medium truncate">
-                  {cluster.name ?? `Cluster ${cluster.cluster_id}`}
-                </span>
-                <span className="text-white/20 text-xs ml-auto flex-shrink-0 font-mono">
-                  {cluster.track_count}
-                </span>
-              </div>
-              <div className="text-white/30 text-xs pl-4.5 truncate">
-                {cluster.canonical_name ?? cluster.top_artists.slice(0, 2).join(" · ")}
-              </div>
-            </button>
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-xs font-semibold truncate"
+                    style={{
+                      color: isArchSelected ? color : "#111827",
+                      fontFamily: "DM Sans, sans-serif",
+                    }}
+                  >
+                    {archetype}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-xs" style={{ color: "#9ca3af" }}>
+                      {communities.length} communities
+                    </span>
+                    <span
+                      className="text-xs font-mono"
+                      style={{ color: color, opacity: 0.7 }}
+                    >
+                      {pct}%
+                    </span>
+                  </div>
+                </div>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#9ca3af"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{
+                    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 150ms",
+                    flexShrink: 0,
+                  }}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              {/* Communities within archetype */}
+              {isOpen && (
+                <div className="pb-1">
+                  {communities.map((c) => {
+                    const isClusterSel = selectedCluster === c.cluster_id;
+                    return (
+                      <button
+                        key={c.cluster_id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectCluster(isClusterSel ? null : c.cluster_id);
+                          if (!isClusterSel) onSelectArchetype(null);
+                        }}
+                        className="w-full text-left flex items-center gap-2 px-4 py-1.5 transition-all"
+                        style={{
+                          paddingLeft: "2rem",
+                          background: isClusterSel
+                            ? `${color}10`
+                            : "transparent",
+                          borderLeft: isClusterSel
+                            ? `2px solid ${color}`
+                            : "2px solid transparent",
+                        }}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div
+                            className="text-xs truncate"
+                            style={{
+                              color: isClusterSel ? color : "#374151",
+                              fontWeight: isClusterSel ? 600 : 400,
+                            }}
+                          >
+                            {c.name ?? `Community ${c.cluster_id}`}
+                          </div>
+                          {c.canonical_name && (
+                            <div
+                              className="text-xs truncate mt-0.5"
+                              style={{ color: "#9ca3af" }}
+                            >
+                              {c.canonical_name}
+                            </div>
+                          )}
+                        </div>
+                        <span
+                          className="text-xs flex-shrink-0"
+                          style={{
+                            color: "#9ca3af",
+                            fontFamily: "JetBrains Mono, monospace",
+                          }}
+                        >
+                          {c.track_count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 py-3" style={{ borderTop: "1px solid #f3f4f6" }}>
+        <Link
+          href="/communities"
+          className="flex items-center justify-between text-xs transition-colors"
+          style={{ color: "#1db954" }}
+        >
+          <span>All Communities</span>
+          <span>→</span>
+        </Link>
       </div>
     </div>
   );
