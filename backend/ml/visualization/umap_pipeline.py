@@ -30,31 +30,24 @@ def load_embeddings(db):
     return track_ids, np.array(vectors)
 
 
-def run_umap(vectors: np.ndarray, n_neighbors: int = 15, min_dist: float = 0.1):
+def run_umap(vectors: np.ndarray, n_components: int = 2, n_neighbors: int = 50, min_dist: float = 0.05):
     import umap
-    
-    print(f"Running UMAP on {len(vectors)} vectors...")
-    print(f"Parameters: n_neighbors={n_neighbors}, min_dist={min_dist}")
-    
-    # reducer = umap.UMAP(
-    #     n_components=2,
-    #     n_neighbors=n_neighbors,
-    #     min_dist=min_dist,
-    #     metric="cosine",
-    #     random_state=42,
-    #     verbose=True
-    # )
 
-    reducer = umap.UMAP(
-        n_components=2,
-        n_neighbors=50,
-        min_dist=0.05,
-        spread=1.5,
+    print(f"Running UMAP on {len(vectors)} vectors...")
+    print(f"Parameters: n_components={n_components}, n_neighbors={n_neighbors}, min_dist={min_dist}")
+
+    kwargs = dict(
+        n_components=n_components,
+        n_neighbors=n_neighbors,
+        min_dist=min_dist,
         metric="cosine",
         random_state=42,
-        verbose=True
+        verbose=True,
     )
-    
+    if n_components == 2:
+        kwargs["spread"] = 1.5
+
+    reducer = umap.UMAP(**kwargs)
     coordinates = reducer.fit_transform(vectors)
     print("UMAP complete")
     return coordinates
@@ -134,7 +127,7 @@ def main():
             print("No embeddings found. Run the embedding pipeline first.")
             return
         
-        coords = run_umap(vectors)
+        coords = run_umap(vectors, n_components=2)
         coords_normalized = normalize_coordinates(coords)
         
         visualize_local(db, coords_normalized, track_ids)

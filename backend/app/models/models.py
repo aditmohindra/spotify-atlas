@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, ARRAY, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -149,3 +150,52 @@ class UserEra(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="eras")
+
+
+class ClusteringRun(Base):
+    __tablename__ = "clustering_runs"
+
+    id = Column(Integer, primary_key=True)
+    document_type = Column(String, nullable=False)
+    umap_n_components = Column(Integer, nullable=False)
+    umap_n_neighbors = Column(Integer, nullable=False)
+    umap_min_dist = Column(Float, nullable=False)
+    hdbscan_min_cluster_size = Column(Integer, nullable=False)
+    hdbscan_min_samples = Column(Integer, nullable=True)
+    num_clusters = Column(Integer, nullable=True)
+    noise_ratio = Column(Float, nullable=True)
+    median_cluster_size = Column(Float, nullable=True)
+    largest_cluster_size = Column(Integer, nullable=True)
+    silhouette_score = Column(Float, nullable=True)
+    llm_coherence_score = Column(Float, nullable=True)
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    assignments = relationship("ClusteringAssignment", back_populates="run")
+    coordinates = relationship("TrackClusterCoordinate", back_populates="run")
+
+
+class ClusteringAssignment(Base):
+    __tablename__ = "clustering_assignments"
+
+    id = Column(Integer, primary_key=True)
+    run_id = Column(Integer, ForeignKey("clustering_runs.id"), nullable=False)
+    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
+    cluster_id = Column(Integer, nullable=False)
+    probability = Column(Float, nullable=True)
+
+    run = relationship("ClusteringRun", back_populates="assignments")
+    track = relationship("Track")
+
+
+class TrackClusterCoordinate(Base):
+    __tablename__ = "track_cluster_coordinates"
+
+    id = Column(Integer, primary_key=True)
+    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
+    run_id = Column(Integer, ForeignKey("clustering_runs.id"), nullable=False)
+    components = Column(ARRAY(Float), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    track = relationship("Track")
+    run = relationship("ClusteringRun", back_populates="coordinates")

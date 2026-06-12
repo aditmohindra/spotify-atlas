@@ -1,6 +1,14 @@
+"""
+HDBSCAN clustering pipeline for experiment runs.
+
+Reads 15D coordinates from track_cluster_coordinates (keyed by run_id),
+clusters them, computes quality metrics, and writes results to
+clustering_assignments. Never touches the production track_clusters table.
+"""
 import os
 import sys
 import numpy as np
+from collections import Counter
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -8,72 +16,171 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../../.env'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
-from app.models.models import Track, TrackEmbedding, TrackCluster, TrackCoordinate, Artist
+from app.models.models import (
+    Track, Artist,
+    TrackClusterCoordinate,
+    ClusteringAssignment,
+)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
 
-def load_umap_coordinates(db):
-    print("Loading UMAP coordinates...")
-    coords = db.query(TrackCoordinate).all()
-    track_ids = [c.track_id for c in coords]
-    vectors = np.array([[c.x, c.y] for c in coords])
-    print(f"Loaded {len(vectors)} 2D coordinates")
+def load_cluster_coordinates(db, run_id: int, coords_run_id: int = None):
+    """Load ND coordinates for clustering.
+
+    coords_run_id: if provided, coordinates are read from this run instead of
+    run_id. Useful when reusing an existing UMAP projection for a new
+    HDBSCAN-only experiment.
+    """
+    source = coords_run_id if coords_run_id is not None else run_id
+    if coords_run_id is not None:
+        print(f"Loading 15D coordinates from run_id={source} (reused for run_id={run_id})...")
+    else:
+        print(f"Loading 15D coordinates for run_id={source}...")
+    rows = (
+        db.query(TrackClusterCoordinate)
+        .filter(TrackClusterCoordinate.run_id == source)
+        .all()
+    )
+    if not rows:
+        raise ValueError(
+            f"No coordinates found for run_id={source}. "
+            "Run umap_cluster_pipeline.py first."
+        )
+    track_ids = [r.track_id for r in rows]
+    vectors = np.array([r.components for r in rows])
+    print(f"Loaded {len(vectors)} coordinate vectors (shape {vectors.shape})")
     return track_ids, vectors
 
 
-def run_hdbscan(vectors: np.ndarray, min_cluster_size: int = 15, min_samples: int = 5):
+def run_hdbscan(
+    vectors: np.ndarray,
+    min_cluster_size: int = 25,
+    min_samples: int = 10,
+):
     import hdbscan
 
     print(f"Running HDBSCAN: min_cluster_size={min_cluster_size}, min_samples={min_samples}")
-
     clusterer = hdbscan.HDBSCAN(
         min_cluster_size=min_cluster_size,
         min_samples=min_samples,
         metric="euclidean",
         cluster_selection_method="eom",
-        prediction_data=True
+        prediction_data=True,
     )
-
     labels = clusterer.fit_predict(vectors)
+    probabilities = clusterer.probabilities_
 
     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
-    n_noise = list(labels).count(-1)
-
+    n_noise = int((labels == -1).sum())
     print(f"Found {n_clusters} clusters")
-    print(f"Noise points: {n_noise} ({n_noise/len(labels)*100:.1f}%)")
+    print(f"Noise points: {n_noise} ({n_noise / len(labels) * 100:.1f}%)")
 
-    return labels, clusterer
-
-
-def save_clusters(db, track_ids: list, labels: list):
-    print("Saving cluster assignments...")
-
-    existing = {c.track_id: c for c in db.query(TrackCluster).all()}
-
-    saved = 0
-    for track_id, label in zip(track_ids, labels):
-        cluster_id = int(label)
-
-        if track_id in existing:
-            existing[track_id].cluster_id = cluster_id
-        else:
-            db.add(TrackCluster(
-                track_id=track_id,
-                cluster_id=cluster_id
-            ))
-        saved += 1
-
-    db.commit()
-    print(f"Saved {saved} cluster assignments")
-    return saved
+    return labels, probabilities, clusterer
 
 
-def print_cluster_stats(db, labels: list):
+def compute_metrics(vectors: np.ndarray, labels: np.ndarray):
     from collections import Counter
 
+    label_counts = Counter(labels[labels != -1])
+    n_clusters = len(label_counts)
+    n_noise = int((labels == -1).sum())
+    noise_ratio = n_noise / len(labels)
+
+    cluster_sizes = list(label_counts.values())
+    median_size = float(np.median(cluster_sizes)) if cluster_sizes else 0.0
+    largest_size = int(max(cluster_sizes)) if cluster_sizes else 0
+
+    silhouette = None
+    if n_clusters >= 2:
+        from sklearn.metrics import silhouette_score
+
+        mask = labels != -1
+        X_valid = vectors[mask]
+        y_valid = labels[mask]
+
+        if len(X_valid) > 2000:
+            rng = np.random.default_rng(42)
+            idx = rng.choice(len(X_valid), size=2000, replace=False)
+            X_valid = X_valid[idx]
+            y_valid = y_valid[idx]
+
+        try:
+            silhouette = float(silhouette_score(X_valid, y_valid, metric="euclidean"))
+        except Exception as e:
+            print(f"Warning: silhouette_score failed: {e}")
+
+    return {
+        "num_clusters": n_clusters,
+        "noise_ratio": noise_ratio,
+        "median_cluster_size": median_size,
+        "largest_cluster_size": largest_size,
+        "silhouette_score": silhouette,
+    }
+
+
+def save_assignments(db, run_id: int, track_ids: list, labels: np.ndarray, probabilities: np.ndarray):
+    print("Saving cluster assignments...")
+    rows = [
+        ClusteringAssignment(
+            run_id=run_id,
+            track_id=track_id,
+            cluster_id=int(label),
+            probability=float(prob),
+        )
+        for track_id, label, prob in zip(track_ids, labels, probabilities)
+    ]
+    db.bulk_save_objects(rows)
+    db.commit()
+    print(f"Saved {len(rows)} assignments to clustering_assignments (run_id={run_id})")
+    return len(rows)
+
+
+def run_clustering_experiment(
+    run_id: int,
+    min_cluster_size: int = 25,
+    min_samples: int = 10,
+    document_type: str = "original",
+    coords_run_id: int = None,
+):
+    """Run HDBSCAN for a clustering experiment.
+
+    coords_run_id: when supplied, coordinates are loaded from this run_id
+    instead of the new run_id. Assignments are always saved under run_id.
+    """
+    db = SessionLocal()
+    try:
+        track_ids, vectors = load_cluster_coordinates(db, run_id, coords_run_id=coords_run_id)
+        labels, probabilities, clusterer = run_hdbscan(
+            vectors,
+            min_cluster_size=min_cluster_size,
+            min_samples=min_samples,
+        )
+        metrics = compute_metrics(vectors, labels)
+        save_assignments(db, run_id, track_ids, labels, probabilities)
+
+        print(f"\n=== CLUSTERING SUMMARY (run_id={run_id}) ===")
+        print(f"  Clusters:        {metrics['num_clusters']}")
+        print(f"  Noise count:     {int(metrics['noise_ratio'] * len(labels))}")
+        print(f"  Noise ratio:     {metrics['noise_ratio'] * 100:.1f}%")
+        print(f"  Silhouette:      {metrics['silhouette_score']:.4f}" if metrics['silhouette_score'] is not None else "  Silhouette:      N/A")
+        print(f"  Median cluster:  {metrics['median_cluster_size']:.1f} tracks")
+        print(f"  Largest cluster: {metrics['largest_cluster_size']} tracks")
+
+        return metrics
+
+    finally:
+        db.close()
+
+
+# ---------------------------------------------------------------------------
+# Legacy helpers kept for backward compatibility (inspect / export / stats)
+# These still work standalone but no longer touch track_clusters.
+# ---------------------------------------------------------------------------
+
+def print_cluster_stats(labels):
     label_counts = Counter(labels)
     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 
@@ -85,124 +192,25 @@ def print_cluster_stats(db, labels: list):
     sorted_clusters = sorted(
         [(k, v) for k, v in label_counts.items() if k != -1],
         key=lambda x: x[1],
-        reverse=True
+        reverse=True,
     )
-
     for cluster_id, count in sorted_clusters[:20]:
         print(f"  Cluster {cluster_id}: {count} tracks")
 
-    print(f"\nSmallest clusters:")
-    for cluster_id, count in sorted_clusters[-10:]:
-        print(f"  Cluster {cluster_id}: {count} tracks")
-
-
-def inspect_clusters(db, track_ids: list, labels: list, n_clusters_to_show: int = 10):
-    from collections import defaultdict
-
-    cluster_tracks = defaultdict(list)
-    for track_id, label in zip(track_ids, labels):
-        if label != -1:
-            cluster_tracks[label].append(track_id)
-
-    sorted_clusters = sorted(
-        cluster_tracks.items(),
-        key=lambda x: len(x[1]),
-        reverse=True
-    )
-
-    print(f"\n=== CLUSTER INSPECTION (top {n_clusters_to_show}) ===")
-
-    for cluster_id, tids in sorted_clusters[:n_clusters_to_show]:
-        sample_ids = tids[:8]
-        tracks = db.query(Track, Artist).join(
-            Artist, Track.artist_id == Artist.id
-        ).filter(Track.id.in_(sample_ids)).all()
-
-        print(f"\nCluster {cluster_id} ({len(tids)} tracks):")
-        for track, artist in tracks:
-            print(f"  - {track.name} by {artist.name}")
-
-def export_clusters_to_file(db, track_ids: list, labels: list):
-    from collections import defaultdict
-    
-    cluster_tracks = defaultdict(list)
-    for track_id, label in zip(track_ids, labels):
-        cluster_tracks[label].append(track_id)
-    
-    sorted_clusters = sorted(
-        cluster_tracks.items(),
-        key=lambda x: len(x[1]),
-        reverse=True
-    )
-    
-    output_path = os.path.join(os.path.dirname(__file__), 'clusters_export.txt')
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(f"SPOTIFY ATLAS — CLUSTER EXPORT\n")
-        f.write(f"{'='*60}\n\n")
-        
-        total_clusters = len([c for c in cluster_tracks if c != -1])
-        noise_count = len(cluster_tracks.get(-1, []))
-        f.write(f"Total clusters: {total_clusters}\n")
-        f.write(f"Noise points: {noise_count}\n\n")
-        
-        for cluster_id, tids in sorted_clusters:
-            if cluster_id == -1:
-                continue
-                
-            tracks = db.query(Track, Artist).join(
-                Artist, Track.artist_id == Artist.id
-            ).filter(Track.id.in_(tids)).all()
-            
-            f.write(f"{'='*60}\n")
-            f.write(f"CLUSTER {cluster_id} — {len(tids)} tracks\n")
-            f.write(f"{'='*60}\n")
-            
-            for track, artist in tracks:
-                f.write(f"  {track.name} — {artist.name}\n")
-            
-            f.write("\n")
-        
-        noise_ids = cluster_tracks.get(-1, [])
-        if noise_ids:
-            f.write(f"{'='*60}\n")
-            f.write(f"NOISE (-1) — {len(noise_ids)} tracks\n")
-            f.write(f"{'='*60}\n")
-            noise_tracks = db.query(Track, Artist).join(
-                Artist, Track.artist_id == Artist.id
-            ).filter(Track.id.in_(noise_ids[:100])).all()
-            for track, artist in noise_tracks:
-                f.write(f"  {track.name} — {artist.name}\n")
-    
-    print(f"Exported cluster data to {output_path}")
-
-
-def main():
-    db = SessionLocal()
-
-    try:
-        track_ids, vectors = load_umap_coordinates(db)
-
-        if len(vectors) == 0:
-            print("No coordinates found. Run UMAP pipeline first.")
-            return
-
-        labels, clusterer = run_hdbscan(
-            vectors,
-            min_cluster_size=15,
-            min_samples=5
-        )
-
-        print_cluster_stats(db, labels)
-        inspect_clusters(db, track_ids, labels)
-        save_clusters(db, track_ids, labels)
-        export_clusters_to_file(db, track_ids, labels)
-
-        print("\nHDBSCAN complete!")
-
-    finally:
-        db.close()
-
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run HDBSCAN clustering experiment.")
+    parser.add_argument("run_id", type=int)
+    parser.add_argument("--min-cluster-size", type=int, default=25)
+    parser.add_argument("--min-samples", type=int, default=10)
+    parser.add_argument("--document-type", type=str, default="original")
+    args = parser.parse_args()
+
+    run_clustering_experiment(
+        run_id=args.run_id,
+        min_cluster_size=args.min_cluster_size,
+        min_samples=args.min_samples,
+        document_type=args.document_type,
+    )
