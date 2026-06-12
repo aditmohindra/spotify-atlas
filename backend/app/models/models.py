@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, ARRAY, Text, JSON
+from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, ARRAY, Text, JSON, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
@@ -62,12 +62,15 @@ class Track(Base):
     acousticness = Column(Float, nullable=True)
     instrumentalness = Column(Float, nullable=True)
     feature_document = Column(Text, nullable=True)
+    scene_document = Column(Text, nullable=True)
+    sound_document = Column(Text, nullable=True)
+    behavior_document = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     artist = relationship("Artist", back_populates="tracks")
     album = relationship("Album", back_populates="tracks")
     listening_events = relationship("ListeningEvent", back_populates="track")
-    embedding = relationship("TrackEmbedding", back_populates="track", uselist=False)
+    embeddings = relationship("TrackEmbedding", back_populates="track")
     coordinates = relationship("TrackCoordinate", back_populates="track", uselist=False)
     cluster = relationship("TrackCluster", back_populates="track", uselist=False)
 
@@ -88,14 +91,16 @@ class ListeningEvent(Base):
 
 class TrackEmbedding(Base):
     __tablename__ = "track_embeddings"
+    __table_args__ = (UniqueConstraint('track_id', 'document_type', name='uq_track_embeddings_track_doc_type'),)
 
     id = Column(Integer, primary_key=True, index=True)
-    track_id = Column(Integer, ForeignKey("tracks.id"), unique=True, nullable=False)
+    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
     model = Column(String, nullable=False)
     vector = Column(ARRAY(Float), nullable=False)
+    document_type = Column(String, nullable=False, default='original')
     created_at = Column(DateTime, server_default=func.now())
 
-    track = relationship("Track", back_populates="embedding")
+    track = relationship("Track", back_populates="embeddings")
 
 
 class TrackCoordinate(Base):
