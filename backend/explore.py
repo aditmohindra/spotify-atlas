@@ -1,125 +1,91 @@
 ﻿import asyncio
 import os
 import sys
+import numpy as np
 sys.path.insert(0, '.')
 from dotenv import load_dotenv
 load_dotenv()
-from app.services.vibe_generation import generate_vibe_description, parse_tags_from_feature_document
+from openai import OpenAI
 import psycopg2
+
+client = OpenAI()
+
+def embed(text: str) -> np.ndarray:
+    response = client.embeddings.create(model="text-embedding-3-small", input=text)
+    return np.array(response.data[0].embedding)
+
+def cosine_sim(a, b):
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
 async def test():
     conn = psycopg2.connect('postgresql://spotify_atlas:spotify_atlas_password@127.0.0.1:5433/spotify_atlas')
     cur = conn.cursor()
 
-    # --- TEST 1: Spot check tracks not in test50 ---
-    spot_checks = [
-        ('Deference for Darkness', 'Halo'),
-        ('Beneath the Mask', 'Lyn'),
-        ('Cool For Cats', 'Squeeze'),
-        ('Where We Used to Live', 'Laurence Manning'),
-        ('Bijlee Bijlee', 'Harrdy Sandhu'),
-        ('Burn Water', 'Christopher Larkin'),
-        ('Drive, Don\'t Talk', 'Makeout Reef'),
-        ('Float On', 'Modest Mouse'),
-        ('Pursuit of Happiness', 'Kid Cudi'),
+    # Use tracks we KNOW have vibe docs from test50 runs
+    tracks_to_test = [
+        # Musashi cluster
+        ('Violent Crimes', 'Kanye West'),
+        ('Bound 2', 'Kanye West'),
+        ('Not You Too', 'Drake'),
+        ('One Dance', 'Drake'),
+        ('Quintana Pt. 2', 'Travis Scott'),
+        ('Diamonds & Gold', 'Mac Miller'),
+        # Should be far
+        ('Beneath the Mask -rain-', 'Lyn'),
+        ('Crossroads', 'Christopher Larkin'),
+        ('Ishq Wala Love', 'Vishal-Shekhar'),
+        ('Snotty Wax!', 'Homixide Gang'),
     ]
 
-    print("=" * 60)
-    print("SPOT CHECKS")
-    print("=" * 60)
-    for track_name, artist_name in spot_checks:
+    print("Embedding vibe descriptions...")
+    embeddings = {}
+    for track_name, artist_name in tracks_to_test:
         cur.execute("""
-            SELECT t.feature_document FROM tracks t
+            SELECT t.vibe_document FROM tracks t
             JOIN artists ar ON ar.id = t.artist_id
             WHERE t.name ILIKE %s AND ar.name ILIKE %s
+            AND t.vibe_document IS NOT NULL
             LIMIT 1
         """, (f'%{track_name}%', f'%{artist_name}%'))
         row = cur.fetchone()
-        tags = parse_tags_from_feature_document(row[0]) if row and row[0] else ''
-        desc = await generate_vibe_description(track_name, artist_name, tags)
-        print(f"\n[{artist_name}] {track_name}")
-        print(f"  → {desc}")
-        await asyncio.sleep(0.5)
+        if row and row[0]:
+            vec = embed(row[0])
+            embeddings[(track_name, artist_name)] = vec
+            print(f"  ✓ {track_name} — {artist_name}")
+        else:
+            print(f"  ✗ {track_name} — {artist_name} (no vibe doc)")
 
-    # --- TEST 2: Proper noun check on all 42 existing descriptions ---
-    print("\n" + "=" * 60)
-    print("PROPER NOUN SCAN (42 existing descriptions)")
-    print("=" * 60)
-    
-    # Artist names and common proper nouns to check for
-    banned_terms = [
-        'drake', 'kanye', 'frank ocean', 'weeknd', 'mac miller',
-        'travis scott', 'rocky', 'playboi carti', 'lancey foux',
-        'homixide', 'ken carson', 'arijit', 'pritam', 'rahman',
-        'vishal', 'christopher larkin', 'toby fox', 'yoko shimomura',
-        'hip-hop', 'hip hop', 'r&b', 'rnb', 'electronic', 'pop',
-        'rap', 'jazz', 'bollywood', 'anime',
+    print("\n" + "=" * 65)
+    print("KEY COMPARISONS")
+    print("=" * 65)
+
+    comparisons = [
+        # Within musashi — should be HIGH
+        (('Violent Crimes', 'Kanye West'), ('Not You Too', 'Drake'), 'Musashi: Kanye vs Drake — should be HIGH'),
+        (('Quintana Pt. 2', 'Travis Scott'), ('Diamonds & Gold', 'Mac Miller'), 'Musashi: Travis vs Mac — should be HIGH'),
+        (('Bound 2', 'Kanye West'), ('One Dance', 'Drake'), 'Musashi: Kanye vs Drake 2 — should be HIGH'),
+        # Musashi vs game OST — should be LOW
+        (('Violent Crimes', 'Kanye West'), ('Crossroads', 'Christopher Larkin'), 'Kanye vs Hollow Knight — should be LOW'),
+        (('One Dance', 'Drake'), ('Ishq Wala Love', 'Vishal-Shekhar'), 'Drake vs Bollywood — should be LOW'),
+        # Musashi vs underground — interesting
+        (('Not You Too', 'Drake'), ('Snotty Wax!', 'Homixide Gang'), 'Drake vs Homixide — nocturnal but different energy'),
+        # Game OST vs Bollywood — both non-Western, different vibe
+        (('Crossroads', 'Christopher Larkin'), ('Ishq Wala Love', 'Vishal-Shekhar'), 'Hollow Knight vs Bollywood — should be LOW'),
+        # Game OST vs rain mask — both atmospheric
+        (('Crossroads', 'Christopher Larkin'), ('Beneath the Mask -rain-', 'Lyn'), 'Hollow Knight vs Persona — should be MEDIUM/HIGH'),
     ]
 
-    cur.execute("""
-        SELECT t.name, ar.name, t.vibe_document
-        FROM tracks t
-        JOIN artists ar ON ar.id = t.artist_id
-        WHERE t.vibe_source = 'llm'
-    """)
-    rows = cur.fetchall()
-    violations = []
-    for track_name, artist_name, vibe_doc in rows:
-        if not vibe_doc:
-            continue
-        doc_lower = vibe_doc.lower()
-        found = [term for term in banned_terms if term in doc_lower]
-        if found:
-            violations.append((track_name, artist_name, found, vibe_doc))
-
-    if violations:
-        print(f"VIOLATIONS FOUND: {len(violations)}")
-        for track_name, artist_name, found, doc in violations:
-            print(f"\n  [{artist_name}] {track_name}")
-            print(f"  Banned terms found: {found}")
-            print(f"  Description: {doc[:150]}...")
-    else:
-        print("CLEAN — no proper nouns or genre labels found in any description")
-
-    # --- TEST 3: Musashi comparison — 30 for 30 vs Say You Will ---
-    print("\n" + "=" * 60)
-    print("COMPARISON TEST: 30 for 30 (Drake) vs Say You Will (Kanye)")
-    print("=" * 60)
-
-    comparison_tracks = [
-        ('30 for 30 Freestyle', 'Drake'),
-        ('Say You Will', 'Kanye West'),
-    ]
-    descs = []
-    for track_name, artist_name in comparison_tracks:
-        cur.execute("""
-            SELECT t.feature_document FROM tracks t
-            JOIN artists ar ON ar.id = t.artist_id
-            WHERE t.name ILIKE %s AND ar.name ILIKE %s
-            LIMIT 1
-        """, (f'%{track_name}%', f'%{artist_name}%'))
-        row = cur.fetchone()
-        tags = parse_tags_from_feature_document(row[0]) if row and row[0] else ''
-        desc = await generate_vibe_description(track_name, artist_name, tags)
-        descs.append((track_name, artist_name, desc))
-        print(f"\n[{artist_name}] {track_name}")
-        print(f"  → {desc}")
-        await asyncio.sleep(0.5)
-
-    # Shared vocabulary analysis
-    print("\n--- Shared vocabulary ---")
-    if len(descs) == 2:
-        words1 = set(descs[0][2].lower().split()) if descs[0][2] else set()
-        words2 = set(descs[1][2].lower().split()) if descs[1][2] else set()
-        stopwords = {'a','an','the','and','or','but','in','on','at','to','for',
-                     'of','with','as','is','it','its','you','your','like','that',
-                     'this','are','was','be','by','from','has','have','had','not',
-                     'if','so','do','up','out','all','can','into','while','through',
-                     'both','where','what','there','their','they','feel','feels',
-                     'feeling','sense','sense','creates','create','evokes','evoke'}
-        shared = words1 & words2 - stopwords
-        meaningful = [w for w in shared if len(w) > 4]
-        print(f"  Shared meaningful words: {sorted(meaningful)}")
+    for (t1, a1), (t2, a2), label in comparisons:
+        if (t1, a1) in embeddings and (t2, a2) in embeddings:
+            sim = cosine_sim(embeddings[(t1, a1)], embeddings[(t2, a2)])
+            bar = '█' * int(sim * 20) + '░' * (20 - int(sim * 20))
+            verdict = "✓" if (
+                ('should be HIGH' in label and sim > 0.70) or
+                ('should be LOW' in label and sim < 0.55) or
+                ('MEDIUM' in label and 0.55 < sim < 0.80)
+            ) else "?"
+            print(f"\n{verdict} {label}")
+            print(f"  [{bar}] {sim:.3f}")
 
     conn.close()
 
