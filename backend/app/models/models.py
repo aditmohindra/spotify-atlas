@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, ARRAY, Text, JSON, UniqueConstraint
+from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, ARRAY, Text, JSON, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
@@ -65,6 +65,24 @@ class Track(Base):
     scene_document = Column(Text, nullable=True)
     sound_document = Column(Text, nullable=True)
     behavior_document = Column(Text, nullable=True)
+
+    # GetSongBPM audio features
+    bpm = Column(Integer, nullable=True)
+    audio_energy = Column(Integer, nullable=True)
+    audio_danceability = Column(Integer, nullable=True)
+    audio_acousticness = Column(Integer, nullable=True)
+    audio_liveness = Column(Integer, nullable=True)
+    audio_key = Column(String, nullable=True)
+    getsongbpm_id = Column(String, nullable=True)
+    audio_features_source = Column(String, nullable=True)
+
+    # Vibe document columns
+    vibe_document = Column(Text, nullable=True)
+    vibe_combined_document = Column(Text, nullable=True)
+    vibe_source = Column(String, nullable=True)
+    vibe_generated_at = Column(DateTime, nullable=True)
+    vibe_edited_at = Column(DateTime, nullable=True)
+
     created_at = Column(DateTime, server_default=func.now())
 
     artist = relationship("Artist", back_populates="tracks")
