@@ -38,3 +38,8 @@ npm run dev
 
 ## Phases
 See CONTEXT.md for current build phase and decisions.
+
+## Data Sources
+- [GetSongBPM](https://getsongbpm.com) — audio features (BPM, energy, danceability, acousticness, liveness)
+- [Last.fm](https://last.fm) — genre and mood tags
+- [OpenAI](https://openai.com) — embeddings and cluster naming
