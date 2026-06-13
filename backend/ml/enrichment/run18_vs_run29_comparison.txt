@@ -1,0 +1,135 @@
+RUN 18 (scene) vs RUN 29 (vibe) - HEAD TO HEAD COMPARISON
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  CATEGORY: Late Night
+────────────────────────────────────────────────────────────────────────────────
+
+  Self Care - Mac Miller
+    Run 18 (scene): cluster=  -1  size=2279  diversity= 50%
+                   [NOISE]
+    Run 29 (vibe):  cluster=  47  size= 178  diversity= 29%
+                   A$AP Rocky (33), Mac Miller (14), Tyler, The Creator (13), MF DOOM (11)
+
+  Saint Pablo - Kanye West
+    Run 18 (scene): cluster=  29  size=  51  diversity=  2%
+                   Kanye West (51)
+    Run 29 (vibe):  cluster=  -1  size=1739  diversity= 54% NOISE
+                   [NOISE]
+
+  Do Not Disturb - Drake
+    Run 18 (scene): cluster=   9  size= 280  diversity=  4%
+                   Drake (264), DJ Khaled (5), PARTYNEXTDOOR (3), Drake Bell (1)
+    Run 29 (vibe):  cluster=   4  size= 334  diversity=  5%
+                   Drake (264), The Weeknd (26), Tory Lanez (18), jev. (5)
+
+  Nights - Frank Ocean
+    Run 18 (scene): cluster=  22  size=  30  diversity=  7%
+                   Frank Ocean (26), Chase Atlantic (4)
+    Run 29 (vibe):  cluster=  35  size=  64  diversity= 36%
+                   Frank Ocean (15), hako (12), Kanye West (6), Brent Faiyaz (5)
+
+  Ghost Town - Kanye West
+    Run 18 (scene): cluster=  30  size=  56  diversity=  2%
+                   Kanye West (56)
+    Run 29 (vibe):  cluster=  35  size=  64  diversity= 36%
+                   Frank Ocean (15), hako (12), Kanye West (6), Brent Faiyaz (5)
+
+────────────────────────────────────────────────────────────────────────────────
+  CATEGORY: Game/Ambient
+────────────────────────────────────────────────────────────────────────────────
+
+  Hollow Knight - Christopher Larkin
+    Run 18 (scene): cluster=  62  size=  17  diversity= 18%
+                   Christopher Larkin (15), Daniel Lopatin (1), Invadable Harmony (1)
+    Run 29 (vibe):  cluster=  89  size= 347  diversity= 72%
+                   1000night (9), Moors (7), J. Cole (7), belac (6)
+
+  Stardew Valley Overture - ConcernedApe
+    Run 18 (scene): cluster= 116  size=  28  diversity= 18%
+                   ConcernedApe (20), Chris Remo (5), Braxton Burks (1), Toby Fox (1)
+    Run 29 (vibe):  cluster=  71  size= 156  diversity= 35%
+                   Jeremy Soule (31), Yoko Shimomura (19), ConcernedApe (19), Franco Albertini (6)
+
+  Beneath the Mask - Lyn
+    Run 18 (scene): cluster=   4  size=  15  diversity= 13%
+                   Lyn (14), Lydia Ganada (1)
+    Run 29 (vibe):  cluster=   3  size= 281  diversity= 17%
+                   TWICE (56), BLACKPINK (25), NewJeans (23), aespa (22)
+
+  Dearly Beloved - Yoko Shimomura
+    Run 18 (scene): cluster= 117  size=  32  diversity= 38%
+                   Yoko Shimomura (19), Masashi Hamauzu (3), Koji Kondo (2), Motoi Sakuraba (1)
+    Run 29 (vibe):  cluster=  71  size= 156  diversity= 35%
+                   Jeremy Soule (31), Yoko Shimomura (19), ConcernedApe (19), Franco Albertini (6)
+
+  Deference for Darkness - Martin O'Donnell
+    Run 18 (scene): cluster= 111  size=  98  diversity= 39%
+                   Jeremy Soule (33), Ramin Djawadi (9), Hans Zimmer (5), Trevor Morris (5)
+    Run 29 (vibe):  cluster=  71  size= 156  diversity= 35%
+                   Jeremy Soule (31), Yoko Shimomura (19), ConcernedApe (19), Franco Albertini (6)
+
+────────────────────────────────────────────────────────────────────────────────
+  CATEGORY: Hype
+────────────────────────────────────────────────────────────────────────────────
+
+  HOUSTONFORNICATION - Travis Scott
+    Run 18 (scene): cluster=  48  size= 116  diversity=  6%
+                   Travis Scott (110), Juicy J (1), Miguel (1), Big Sean (1)
+    Run 29 (vibe):  cluster=   0  size= 150  diversity=  3%
+                   Travis Scott (110), Offset (23), Huncho Jack (14), Playuncle Farti (2)
+
+  High Heels Te Nachche - Meet Bros.
+    Run 18 (scene): cluster=   0  size= 256  diversity= 36%
+                   Pritam (29), Yo Yo Honey Singh (27), Vishal-Shekhar (16), AP Dhillon (12)
+    Run 29 (vibe):  cluster=  21  size=  97  diversity= 27%
+                   Yo Yo Honey Singh (22), Pritam (21), Shubh (10), Vishal-Shekhar (7)
+
+  Bijlee Bijlee - Harrdy Sandhu
+    Run 18 (scene): cluster=   0  size= 256  diversity= 36%
+                   Pritam (29), Yo Yo Honey Singh (27), Vishal-Shekhar (16), AP Dhillon (12)
+    Run 29 (vibe):  cluster=  21  size=  97  diversity= 27%
+                   Yo Yo Honey Singh (22), Pritam (21), Shubh (10), Vishal-Shekhar (7)
+
+  SICKO MODE - Travis Scott
+    Run 18 (scene): NOT FOUND
+    Run 29 (vibe):  NOT FOUND
+
+  goosebumps - Travis Scott
+    Run 18 (scene): cluster=  48  size= 116  diversity=  6%
+                   Travis Scott (110), Juicy J (1), Miguel (1), Big Sean (1)
+    Run 29 (vibe):  cluster=   0  size= 150  diversity=  3%
+                   Travis Scott (110), Offset (23), Huncho Jack (14), Playuncle Farti (2)
+
+────────────────────────────────────────────────────────────────────────────────
+  CATEGORY: Trap
+────────────────────────────────────────────────────────────────────────────────
+
+  Drip Too Hard - Gunna
+    Run 18 (scene): NOT FOUND
+    Run 29 (vibe):  NOT FOUND
+
+  Pick Up the Phone - Young Thug
+    Run 18 (scene): cluster=  95  size=  68  diversity= 10%
+                   Young Thug (62), EARTHGANG (1), JACKBOYS (1), Blac Youngsta (1)
+    Run 29 (vibe):  cluster=   2  size= 299  diversity=  4%
+                   Gunna (73), Young Thug (67), Future (58), Lil Baby (57)
+
+  Relationship - Future
+    Run 18 (scene): NOT FOUND
+    Run 29 (vibe):  NOT FOUND
+
+  Yes Indeed - Lil Baby
+    Run 18 (scene): cluster=  93  size= 132  diversity= 10%
+                   Lil Baby (99), Roddy Ricch (11), DaBaby (9), Jack Harlow (2)
+    Run 29 (vibe):  cluster=   2  size= 299  diversity=  4%
+                   Gunna (73), Young Thug (67), Future (58), Lil Baby (57)
+
+  Sold Out Dates - Gunna
+    Run 18 (scene): cluster= 105  size=  73  diversity=  1%
+                   Gunna (73)
+    Run 29 (vibe):  cluster=   2  size= 299  diversity=  4%
+                   Gunna (73), Young Thug (67), Future (58), Lil Baby (57)
+
+================================================================================
+END OF COMPARISON
