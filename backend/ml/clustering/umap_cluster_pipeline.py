@@ -20,16 +20,21 @@ def run_umap_for_clustering(
     n_components: int = 15,
     n_neighbors: int = 50,
     min_dist: float = 0.05,
+    document_type: str = 'original',
 ) -> np.ndarray:
     import umap
 
     db = SessionLocal()
     try:
-        print("Loading embeddings from database...")
-        embeddings = db.query(TrackEmbedding).all()
+        print(f"Loading embeddings from database (document_type='{document_type}')...")
+        embeddings = (
+            db.query(TrackEmbedding)
+            .filter(TrackEmbedding.document_type == document_type)
+            .all()
+        )
         track_ids = [emb.track_id for emb in embeddings]
         vectors = np.array([emb.vector for emb in embeddings])
-        print(f"Loaded {len(vectors)} embeddings")
+        print(f"Loaded {len(vectors)} embeddings (document_type='{document_type}')")
 
         if len(vectors) == 0:
             raise ValueError("No embeddings found. Run the embedding pipeline first.")
@@ -75,6 +80,7 @@ if __name__ == "__main__":
     parser.add_argument("--n-components", type=int, default=15)
     parser.add_argument("--n-neighbors", type=int, default=50)
     parser.add_argument("--min-dist", type=float, default=0.05)
+    parser.add_argument("--document-type", type=str, default="original")
     args = parser.parse_args()
 
     run_umap_for_clustering(
@@ -82,4 +88,5 @@ if __name__ == "__main__":
         n_components=args.n_components,
         n_neighbors=args.n_neighbors,
         min_dist=args.min_dist,
+        document_type=args.document_type,
     )

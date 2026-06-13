@@ -112,6 +112,7 @@ def run_full_experiment(config: dict = None, reuse_coordinates_from: int = None)
             n_components=config["umap_n_components"],
             n_neighbors=config["umap_n_neighbors"],
             min_dist=config["umap_min_dist"],
+            document_type=config["document_type"],
         )
 
     print("\n--- Stage 2: HDBSCAN clustering ---")

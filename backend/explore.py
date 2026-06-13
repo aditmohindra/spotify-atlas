@@ -1,45 +1,43 @@
-﻿import sys
-sys.path.insert(0, '.')
-from qdrant_client import QdrantClient
-import psycopg2
-
+﻿import psycopg2
 conn = psycopg2.connect('postgresql://spotify_atlas:spotify_atlas_password@127.0.0.1:5433/spotify_atlas')
 cur = conn.cursor()
 
-tracks_to_test = [
-    ('Deference for Darkness', 'sound'),
-    ('Deference for Darkness', 'scene'),
-    ('High Heels', 'scene'),
-    ('High Heels', 'sound'),
-    ('Nights', 'scene'),
-    ('Blinding Lights', 'scene'),
-    ('Beneath the Mask', 'scene'),
-]
+# How many run 18 cluster IDs have no matching cluster_label?
+cur.execute("""
+    SELECT COUNT(DISTINCT tc.cluster_id) as total_clusters,
+           COUNT(DISTINCT cl.cluster_id) as named_clusters,
+           COUNT(DISTINCT tc.cluster_id) - COUNT(DISTINCT cl.cluster_id) as unnamed_clusters
+    FROM track_clusters tc
+    LEFT JOIN cluster_labels cl ON cl.cluster_id = tc.cluster_id
+    WHERE tc.cluster_id != -1
+""")
+row = cur.fetchone()
+print(f"Total clusters in production: {row[0]}")
+print(f"Clusters with names:          {row[1]}")
+print(f"Clusters WITHOUT names:       {row[2]}")
 
-client = QdrantClient(host='127.0.0.1', port=6333)
+# Show a sample of mismatched ones - clusters that have a name but wrong content
+cur.execute("""
+    SELECT cl.cluster_id, cl.name, ar.name as top_artist, COUNT(*) as cnt
+    FROM cluster_labels cl
+    JOIN track_clusters tc ON tc.cluster_id = cl.cluster_id
+    JOIN tracks t ON t.id = tc.track_id
+    JOIN artists ar ON ar.id = t.artist_id
+    GROUP BY cl.cluster_id, cl.name, ar.name
+    ORDER BY cl.cluster_id, cnt DESC
+""")
+rows = cur.fetchall()
 
-for track_name, doc_type in tracks_to_test:
-    cur.execute(
-        "SELECT te.vector, t.id, t.name, ar.name FROM track_embeddings te JOIN tracks t ON t.id = te.track_id JOIN artists ar ON ar.id = t.artist_id WHERE t.name ILIKE %s AND te.document_type = %s LIMIT 1",
-        (f'%{track_name}%', doc_type)
-    )
-    row = cur.fetchone()
-    if not row:
-        print(f'\n[NOT FOUND] {track_name} ({doc_type})')
-        continue
-
-    vector, track_id, found_name, found_artist = list(row[0]), row[1], row[2], row[3]
-    collection = f'tracks_{doc_type}'
-    results = client.query_points(collection_name=collection, query=vector, limit=8).points
-
-    print(f'\n=== {found_name} — {found_artist} [{doc_type.upper()}] ===')
-    for r in results[1:]:
-        cur.execute(
-            "SELECT t.name, ar.name FROM tracks t JOIN artists ar ON ar.id = t.artist_id WHERE t.id = %s",
-            (r.payload['track_id'],)
-        )
-        track = cur.fetchone()
-        if track:
-            print(f'  {track[0][:35]:<35} {track[1][:24]:<25} score={r.score:.4f}')
+current_cluster = None
+print("\nSample — cluster name vs actual top artist:")
+print("-" * 70)
+shown = 0
+for row in rows:
+    if row[0] != current_cluster:
+        current_cluster = row[0]
+        print(f"  [{row[0]}] '{row[1]}' → top artist: {row[2]} ({row[3]} tracks)")
+        shown += 1
+    if shown >= 20:
+        break
 
 conn.close()
