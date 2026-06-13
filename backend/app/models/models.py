@@ -191,6 +191,7 @@ class ClusteringRun(Base):
     largest_cluster_size = Column(Integer, nullable=True)
     silhouette_score = Column(Float, nullable=True)
     llm_coherence_score = Column(Float, nullable=True)
+    cluster_layer = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

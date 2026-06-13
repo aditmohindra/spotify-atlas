@@ -42,6 +42,20 @@ def compute_cross_artist_tag_filter(db: Session) -> set[str]:
     return valid_tags
 
 
+JAPANESE_TAGS = {'japanese', 'j-pop', 'j-rock', 'anime', 'japanese music', 'japan'}
+KOREAN_TAGS   = {'korean', 'k-pop', 'kpop', 'korean music'}
+
+
+def _detect_culture(raw_tags: list[str]) -> str | None:
+    """Return 'japanese' or 'korean' if the raw tag list signals cultural origin."""
+    lowered = {t.lower().strip() for t in raw_tags}
+    if lowered & JAPANESE_TAGS:
+        return 'japanese'
+    if lowered & KOREAN_TAGS:
+        return 'korean'
+    return None
+
+
 def build_vibe_combined_document(
     track,
     vibe_prose: str,
@@ -67,6 +81,11 @@ def build_vibe_combined_document(
     lines = [f"Vibe: {vibe_prose}"]
     if chosen:
         lines.append(f"Mood: {', '.join(chosen)}")
+
+    # Cultural anchor — checked against raw tags before cross-artist filtering
+    culture = _detect_culture(tags)
+    if culture:
+        lines.append(f"Culture: {culture}")
 
     return "\n".join(lines)
 
