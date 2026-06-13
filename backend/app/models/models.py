@@ -79,6 +79,7 @@ class Track(Base):
     # Vibe document columns
     vibe_document = Column(Text, nullable=True)
     vibe_combined_document = Column(Text, nullable=True)
+    pure_prose_document = Column(Text, nullable=True)
     vibe_source = Column(String, nullable=True)
     vibe_generated_at = Column(DateTime, nullable=True)
     vibe_edited_at = Column(DateTime, nullable=True)
