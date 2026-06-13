@@ -1,0 +1,1182 @@
+SPOTIFY ATLAS — PURE VIBE CLUSTER DEEP DIVE
+Run 29 | Checking if clusters formed on pure vibe or tag signal
+======================================================================
+
+======================================================================
+  CLUSTER 71 — Game OST
+  156 tracks | 55 unique artists | 35% diversity
+======================================================================
+
+  TAG ANALYSIS (did this cluster form on tags or pure vibe?):
+  Tracks with mood tags: 156/156
+  Tracks with NO tags (pure prose): 0/156
+  Top tags across cluster:
+    [█████████████████░░░]  87%  soundtrack (135 tracks)
+    [███████████████░░░░░]  75%  video game music (117 tracks)
+    [██████░░░░░░░░░░░░░░]  32%  instrumental (50 tracks)
+    [█████░░░░░░░░░░░░░░░]  28%  orchestral (43 tracks)
+    [███░░░░░░░░░░░░░░░░░]  17%  composer (27 tracks)
+    [███░░░░░░░░░░░░░░░░░]  17%  japanese (26 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   7%  piano (11 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   7%  cover (11 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  video games (5 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  score (4 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   2%  lo-fi (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  swedish (1 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  united states (1 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  usa (1 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  guitar (1 tracks)
+
+  FULL TRACK LIST:
+    Wars of Faith                          Audiomachine
+    Nascence                               Austin Wintory
+    Michelle                               Bear McCreary
+    I Work the Whole City                  Bernard Herrmann
+    Whirl Islands (Surf Theme)             Braxton Burks
+    Into Eternity - From "Thor: The Dark W Brian Tyler
+    Canyon Sunset                          Chris Remo
+    Thorofare Hike                         Chris Remo
+    Cloud Country                          ConcernedApe
+    Dance of the Moonlight Jellies         ConcernedApe
+    Fall (Ghost Synth)                     ConcernedApe
+    Fall (Raven's Descent)                 ConcernedApe
+    Fall (The Smell of Mushroom)           ConcernedApe
+    Grandpa's Theme                        ConcernedApe
+    Load Game                              ConcernedApe
+    Mines (A Flicker in the Deep)          ConcernedApe
+    Mines (Icicles)                        ConcernedApe
+    Mines (Star Lumpy)                     ConcernedApe
+    Night Market                           ConcernedApe
+    Pelican Town                           ConcernedApe
+    Spring (It's a Big World Outside)      ConcernedApe
+    Stardew Valley Overture                ConcernedApe
+    Submarine Theme                        ConcernedApe
+    Summer (The Sun Can Bend an Orange Sky ConcernedApe
+    Winter (Ancient)                       ConcernedApe
+    Winter (Nocturne of Ice)               ConcernedApe
+    Winter (The Wind Can Be Still)         ConcernedApe
+    Stranger Things Will Happen            Danny Elfman
+    Breaking Bad Main Title Theme (Extende Dave Porter
+    Lelianna's Song                        EA Games Soundtrack
+    Always on My Mind                      Federico Dubbini
+    Dearly Beloved                         Federico Dubbini
+    Heavenly Flight                        Federico Dubbini
+    Kairi I                                Federico Dubbini
+    Field (Day) [From "The Legend of Zelda Franco Albertini
+    Hateno Village (From "The Legend of Ze Franco Albertini
+    Life in the Ruins for Piano (From "The Franco Albertini
+    Life in the Ruins (From "The Legend of Franco Albertini
+    Main Theme (From "The Legend of Zelda: Franco Albertini
+    Rito Village (From "The Legend of Zeld Franco Albertini
+    The Exorcist - Main Theme              Geek Music
+    Cornfield Chase                        Hans Zimmer
+    Harkonnen Arena                        Hans Zimmer
+    Harvester Attack                       Hans Zimmer
+    A Princess                             Javier Navarrete
+    All's Well                             Jeremy Soule
+    All's Well                             Jeremy Soule
+    Ancient Stones                         Jeremy Soule
+    Ancient Stones                         Jeremy Soule
+    Auriel's Ascension                     Jeremy Soule
+    Awake                                  Jeremy Soule
+    Awake                                  Jeremy Soule
+    Distant Horizons                       Jeremy Soule
+    Distant Horizons                       Jeremy Soule
+    Dusk at the Market                     Jeremy Soule
+    Far Horizons                           Jeremy Soule
+    Far Horizons                           Jeremy Soule
+    From Past to Present                   Jeremy Soule
+    From Past to Present                   Jeremy Soule
+    Frostfall                              Jeremy Soule
+    Harvest Dawn                           Jeremy Soule
+    Harvest Dawn                           Jeremy Soule
+    Kyne's Peace                           Jeremy Soule
+    Secunda                                Jeremy Soule
+    Secunda                                Jeremy Soule
+    Sky Above, Voice Within                Jeremy Soule
+    Skyrim Atmospheres                     Jeremy Soule
+    Skyrim Atmospheres                     Jeremy Soule
+    Solitude                               Jeremy Soule
+    The City Gates                         Jeremy Soule
+    The City Gates                         Jeremy Soule
+    The Streets of Whiterun                Jeremy Soule
+    The Streets of Whiterun                Jeremy Soule
+    Tundra                                 Jeremy Soule
+    Unbroken Road                          Jeremy Soule
+    Wings of Kynareth                      Jeremy Soule
+    Aang (The Avatar State)                Jeremy Zuckerman
+    Iroh's Tsungi Horn                     Jeremy Zuckerman
+    Venice Rooftops                        Jesper Kyd
+    The Fog                                John Carpenter
+    Kakariko Village is Saved (From "The L John Oeth
+    Dyrford                                Justin Bell
+    Song of Healing (From Majora's Mask)   Koji Kondo
+    The World That Ends in Three Days      Koji Kondo
+    Zelda's Lullaby (From Ocarina of Time) Koji Kondo
+    Final Fantasy X (To Zanarkand)         Laurence Manning
+    The Legend of Zelda (Great Fairy's Fou Laurence Manning
+    The Legend of Zelda (Song of Healing)  Laurence Manning
+    Xenoblade Chronicles 2 (Where We Used  Laurence Manning
+    Great Fairy Fountain (From "The Legend lofi otaku
+    Rains of Castamere                     L'Orchestra Cinematique
+    The Rains of Castamere (from Game of T L'Orchestra Cinematique
+    Cave (From "Breath of the Wild")       Lucas Cooper
+    The Ghost's House (From "Link's Awaken Lucas Cooper
+    Title Theme (From "Ocarina of Time")   Lucas Cooper
+    Quantum Mechanics                      Ludwig Göransson
+    The Omen Main Titles                   Marco Beltrami
+    Deference for Darkness                 Martin O'Donnell
+    In Amber Clad                          Martin O'Donnell
+    FINAL FANTASY XIII - The Promise       Masashi Hamauzu
+    The Promise (Final Fantasy XIII)       Masashi Hamauzu
+    Tristram                               Matt Uelman
+    Crossing the Feline                    Michael Giacchino
+    The Legend Of Zelda: Twilight Princess Michael Tai
+    Hyrule Field (Twilight Princess) [Inst Monsalve
+    Midna's Theme (Twilight Princess) [Ins Monsalve
+    Sorrow                                 Motoi Sakuraba
+    Agape                                  Nicholas Britell
+    Tifa’s Theme (Final Fantasy VII)       Nobuo Uematsu
+    Promise the Girl                       Paul Lipson
+    A Knight of the Seven Kingdoms         Ramin Djawadi
+    Arrival at Winterfell                  Ramin Djawadi
+    Flight of Dragons                      Ramin Djawadi
+    Main Title                             Ramin Djawadi
+    The Rains of Castamere                 Ramin Djawadi
+    Avatar: The Last Airbender Theme       Samuel Kim
+    Empress of Light                       Scott Lloyd Shelly
+    surf theme ~ pokémon ruby & sapphire l Tanoshi
+    waltz of chihiro ~ spirited away lofi  Tanoshi
+    The Sacred Duet                        The Generous Margins
+    Song Of Healing                        The Marcus Hedges Trend Orchestra
+    The Great Sea - From "The Legend of Ze The Marcus Hedges Trend Orchestra
+    Zelda's Lullaby                        The Marcus Hedges Trend Orchestra
+    The Haunting of Hill House (Main Title The Newton Brothers
+    Lake Theme                             The Zame
+    Calling The Inquisition                Trevor Morris
+    Do Not Forsake Mankind                 Trevor Morris
+    Trespasser - Dark Solas Theme          Trevor Morris
+    Trespasser - Lost Elf Theme            Trevor Morris
+    Trespasser - Qunari Atmosphere         Trevor Morris
+    Elden Ring                             Tsukasa Saitoh
+    Chrono Cross - Radical Dreamers        Video Games Live
+    Midna's Lament - Piano                 Wesley Sprayue
+    Crystalline Chill                      Yoko Shimomura
+    Dearly Beloved                         Yoko Shimomura
+    Dearly Beloved - KINGDOM HEARTS III Ve Yoko Shimomura
+    Dearly Beloved - KINGDOM HEARTS II Ver Yoko Shimomura
+    Dearly Beloved -Reprise-               Yoko Shimomura
+    Kairi                                  Yoko Shimomura
+    Kairi I                                Yoko Shimomura
+    Kairi II                               Yoko Shimomura
+    Kairi III                              Yoko Shimomura
+    Lazy Afternoons                        Yoko Shimomura
+    Missing You                            Yoko Shimomura
+    Roxas                                  Yoko Shimomura
+    Safe Haven                             Yoko Shimomura
+    Somnus - Instrumental Version          Yoko Shimomura
+    Sunset Waltz                           Yoko Shimomura
+    The Afternoon Streets                  Yoko Shimomura
+    Traverse Town                          Yoko Shimomura
+    Valse di Fantastica                    Yoko Shimomura
+    Vector to the Heavens                  Yoko Shimomura
+    Tender Strength                        Yu-Peng Chen
+    Begin System Celestial...              来兎
+    Blood Drain -Again- (Eltnum Theme)     来兎
+    Blood Drain -Again- (Eltnum Theme) - U 来兎
+
+  SAMPLE DOCUMENTS (what the algorithm actually saw):
+
+  [Yoko Shimomura] Kairi III
+    Vibe: As the sun begins to set, casting a warm glow over a tranquil landscape, the gentle flow of melodies evokes a sense of nostalgia and wonder. Each note feels like a soft breeze, stirring memories of adventure and connection, while the serene atmosphere wraps around you like a comforting blanket. The energy ebbs and flows with a graceful elegance, inviting introspection and a deep appreciation for the beauty of fleeting moments.
+    Mood: video game music, soundtrack, japanese, instrumental
+
+  [Jeremy Soule] Ancient Stones
+    Vibe: Listening to this piece evokes a sense of ancient wisdom and serene contemplation, as if wandering through mist-laden ruins at dawn. The gentle rise and fall of the melodies envelops you in a warm embrace, inviting introspection while the world awakens around you. Each note feels like a soft caress, creating a tranquil atmosphere that encourages deep reflection and a connection to something larger than oneself.
+    Mood: soundtrack, video game music, orchestral
+
+  [ConcernedApe] Winter (The Wind Can Be Still)
+    Vibe: Listening to this piece feels like a gentle embrace on a crisp winter morning, where the world outside is blanketed in soft snow. The atmosphere is serene and contemplative, inviting you to reflect as you gaze out at a quiet, frost-kissed landscape. Each note evokes a sense of stillness, allowing you to sink into a tranquil reverie, as if time itself has slowed to match the peaceful rhythm of falling snowflakes.
+    Mood: video game music, soundtrack
+
+  [来兎] Blood Drain -Again- (Eltnum Theme)
+    Vibe: Listening to this track evokes a twilight ambiance, where the air is thick with anticipation and the world feels suspended in a moment of reflection. The layers of sound create a swirling atmosphere, inviting you to explore hidden depths while the pulsing rhythm carries a sense of urgency, almost like a heartbeat echoing through a quiet room. It stirs a bittersweet nostalgia, making you feel both energized and introspective, as if you’re wandering through a dreamscape where memories and emotions intertwine.
+    Mood: soundtrack, composer, video game music
+
+  [Federico Dubbini] Always on My Mind
+    Vibe: As the sun begins to set, casting a warm glow over the room, the music envelops you in a gentle embrace, evoking a sense of nostalgia and longing. Each note swells like a soft breeze, lifting your spirit while inviting introspection, creating a serene atmosphere that feels both expansive and intimate. You find yourself lost in thought, the rich layers of sound painting vivid imagery of distant landscapes and cherished memories, leaving you with a bittersweet yet uplifting sensation.
+    Mood: soundtrack, orchestral
+
+======================================================================
+  CLUSTER 67 — Indie Rock
+  75 tracks | 28 unique artists | 37% diversity
+======================================================================
+
+  TAG ANALYSIS (did this cluster form on tags or pure vibe?):
+  Tracks with mood tags: 75/75
+  Tracks with NO tags (pure prose): 0/75
+  Top tags across cluster:
+    [█████████████████░░░]  85%  indie rock (64 tracks)
+    [███████████████░░░░░]  76%  alternative (57 tracks)
+    [███████████░░░░░░░░░]  57%  alternative rock (43 tracks)
+    [█████░░░░░░░░░░░░░░░]  28%  garage rock (21 tracks)
+    [███░░░░░░░░░░░░░░░░░]  19%  indie pop (14 tracks)
+    [███░░░░░░░░░░░░░░░░░]  17%  british (13 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   9%  00s (7 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   5%  american (4 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   4%  post-punk (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  pop rock (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  pop punk (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  new wave (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  2020 (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  norwegian (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  90s (1 tracks)
+
+  FULL TRACK LIST:
+    Both Sides - Sped Up                   aidenf7
+    Monsters (feat. blackbear)             All Time Low
+    Baby I'm Yours                         Arctic Monkeys
+    Do Me a Favour                         Arctic Monkeys
+    Fluorescent Adolescent                 Arctic Monkeys
+    Sunny day                              beabadoobee
+    Angry Lizard Noise                     benches
+    I Don't Make Me                        benches
+    Kill The Lights                        benches
+    Monodrama                              benches
+    No, Thanks, Please                     benches
+    Queen of Hearts                        benches
+    Television                             benches
+    Banquet                                Bloc Party
+    Helicopter                             Bloc Party
+    Helicopter                             Bloc Party
+    Skeleton                               Bloc Party
+    I Found A Way                          Drake Bell
+    Lotus Eater                            Foster The People
+    Bones                                  Imagine Dragons
+    Demons                                 Imagine Dragons
+    Lonely                                 Imagine Dragons
+    Love Of Mine - Night Visions Demo      Imagine Dragons
+    On Top Of The World                    Imagine Dragons
+    Saturday Nights                        INOHA
+    Kevin’s Heart                          J. Cole
+    Restless                               Kakkmaddafakka
+    Sex on Fire                            Kings of Leon
+    Lennox Ln                              LANE
+    Drive, Don't Talk                      Makeout Reef
+    It Just Is                             Makeout Reef
+    Maps                                   Maroon 5
+    Float On                               Modest Mouse
+    Around the World                       Red Hot Chili Peppers
+    Sick Love                              Red Hot Chili Peppers
+    Wo Bandi                               Rob C
+    Still Be Mine                          Rory
+    10 Lovers                              The Black Keys
+    Denial You Win Again                   The Buttertones
+    We Share the Same Skies                The Cribs
+    Rock n Roll Will Break Your Heart      The Fratellis
+    She's Not Gone Yet but She's Leaving   The Fratellis
+    Heaven Knows I'm Miserable Now - 2011  The Smiths
+    Bad Decisions                          The Strokes
+    Barely Legal                           The Strokes
+    Between Love & Hate                    The Strokes
+    Brooklyn Bridge To Chorus              The Strokes
+    Chances                                The Strokes
+    Happy Ending                           The Strokes
+    I'll Try Anything Once ("You Only Live The Strokes
+    Is This It                             The Strokes
+    Ize of the World                       The Strokes
+    Juicebox                               The Strokes
+    Last Nite                              The Strokes
+    Life Is Simple in the Moonlight        The Strokes
+    Machu Picchu                           The Strokes
+    One Way Trigger                        The Strokes
+    Razorblade                             The Strokes
+    Reptilia                               The Strokes
+    Soma                                   The Strokes
+    Soma                                   The Strokes
+    Someday                                The Strokes
+    Taken for a Fool                       The Strokes
+    Tap Out                                The Strokes
+    The Adults Are Talking                 The Strokes
+    The Modern Age                         The Strokes
+    Threat of Joy                          The Strokes
+    Under Control                          The Strokes
+    Under Cover of Darkness                The Strokes
+    What Ever Happened?                    The Strokes
+    You're So Right                        The Strokes
+    Figures                                The Whitest Boy Alive
+    Something Good Can Work                Two Door Cinema Club
+    Sun                                    Two Door Cinema Club
+    What You Know                          Two Door Cinema Club
+
+  SAMPLE DOCUMENTS (what the algorithm actually saw):
+
+  [The Strokes] Someday
+    Vibe: Listening feels like wandering through a sun-drenched afternoon, where the warmth invites a sense of nostalgia mixed with youthful restlessness. The rhythm pulses with an understated energy, encouraging an easy sway, while the melodies evoke a bittersweet longing that lingers in the air. It’s the perfect soundtrack for a lazy drive with the windows down, as thoughts drift and possibilities unfold in the golden glow of twilight.
+    Mood: indie rock, alternative, alternative rock, garage rock
+
+  [J. Cole] Kevin’s Heart
+    Vibe: The experience feels like a reflective evening stroll through a dimly lit city, where the twilight casts a warm glow on the pavement. There’s a sense of introspection that wraps around you, mingling with the gentle pulse of the sounds, creating a laid-back yet thoughtful atmosphere. As you navigate through thoughts and emotions, a mellow energy keeps you grounded, inviting you to ponder deeper while still feeling a connection to the world around you.
+    Mood: indie rock, 2018
+
+  [Two Door Cinema Club] What You Know
+    Vibe: The sound unfolds like a bright afternoon, filled with vibrant hues that spark joy and curiosity. It carries an upbeat energy, ideal for a sunlit stroll through a bustling city, where every note seems to dance in the air around you. The atmosphere is playful yet introspective, inviting you to reflect while still feeling an urge to move, as if the music is gently urging you to embrace the moment.
+    Mood: british, alternative, indie rock, indie pop
+
+  [benches] No, Thanks, Please
+    Vibe: The music unfolds with a raw intensity that feels like a brisk afternoon breeze, carrying a mix of defiance and introspection. There’s an electric vibrancy that pulses through the sound, making it perfect for a sun-drenched drive down an open road, where the scenery shifts as quickly as the mood. It evokes a sense of youthful rebellion, inviting you to lose yourself in the moment while simultaneously reflecting on the complexities of life.
+    Mood: indie rock, garage rock
+
+  [The Smiths] Heaven Knows I'm Miserable Now - 2011 Remaster
+    Vibe: The sound envelops you in a bittersweet haze, evoking the feeling of wandering through a dimly lit street on a rainy afternoon, where the weight of introspection hangs in the air. There’s a sense of restless energy, almost like a gentle tide pulling you back and forth between nostalgia and discontent. Each note resonates with a poignant sense of longing, leaving you in a contemplative state, as if you’re searching for meaning in the mundane moments of life.
+    Mood: post-punk, new wave, 80s, alternative, indie pop
+
+======================================================================
+  CLUSTER 48 — Jazz Hip-Hop
+  80 tracks | 19 unique artists | 24% diversity
+======================================================================
+
+  TAG ANALYSIS (did this cluster form on tags or pure vibe?):
+  Tracks with mood tags: 80/80
+  Tracks with NO tags (pure prose): 0/80
+  Top tags across cluster:
+    [████████████████░░░░]  84%  jazz hop (67 tracks)
+    [████████████████░░░░]  81%  chillout (65 tracks)
+    [██████████████░░░░░░]  72%  japanese (58 tracks)
+    [█████████████░░░░░░░]  66%  trip-hop (53 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   6%  french (5 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   4%  nu jazz (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   4%  instrumental hip-hop (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   4%  instrumental (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   4%  downtempo (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   2%  chill (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   2%  lounge (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   2%  australian (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  trip hop (1 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  saxophone (1 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   1%  jazz rap (1 tracks)
+
+  FULL TRACK LIST:
+    FANTASTIC                              Aras Tuna
+    Sum                                    Blu-Swing
+    クラゲ                                    Blu-Swing
+    Can You Let Me Know (feat. Lupe Fiasco DJ DECKSTREAM
+    Funny Love feat. Milka                 DJ DECKSTREAM
+    A Little Piano                         DJ Mitsu The Beats
+    Summer Rain                            Etro Anime
+    Highest Building (feat. Oklou) [Prospa Flume
+    Highest Building - Prospa Remix        Flume
+    Can't Kill Me (Walker & Royce Remix)   GARZA
+    oh, you don't say?!!                   graphite
+    Blue Avenue                            Jazz Liberatorz
+    Loop Prisoner                          Jazz Liberatorz
+    Music In My Mind Part 2                Jazz Liberatorz
+    Slow Down                              Jazz Liberatorz
+    That's Reality                         Jazz Liberatorz
+    Errday 99                              J. Rawls
+    Falling                                J. Rawls
+    Fresh Rain                             J. Rawls
+    Watch Time Reveal                      J. Rawls
+    Windmills Intro                        Kero One
+    Cruising Blue                          Ljones
+    SPACE! - Super Slowed                  NAOMI
+    Oceanside                              Nitsua
+    1st samurai                            Nujabes
+    A day by atmosphere supreme            Nujabes
+    Another Reflection                     Nujabes
+    aruarian dance                         Nujabes
+    battlecry                              Nujabes
+    Beat laments the world                 Nujabes
+    Blessing It -remix                     Nujabes
+    Blessing It -remix (feat. Substantial  Nujabes
+    City Lights (feat. Pase Rock & Substan Nujabes
+    Color of Autumn                        Nujabes
+    Counting Stars                         Nujabes
+    Counting Stars                         Nujabes
+    Dawn on the Side                       Nujabes
+    dead season                            Nujabes
+    Feather                                Nujabes
+    Feather (feat. Cise Starr & Akin from  Nujabes
+    Fellows                                Nujabes
+    flowers                                Nujabes
+    Kumomi                                 Nujabes
+    Lady Brown                             Nujabes
+    Lady Brown (feat. Cise Starr from CYNE Nujabes
+    Letter from Yokosuka                   Nujabes
+    Letter from Yokosuka                   Nujabes
+    Light on the land                      Nujabes
+    Luv (sic)                              Nujabes
+    Luv (sic) Grand Finale (feat. Shing02) Nujabes
+    Luv (sic) pt2                          Nujabes
+    Luv(sic.) pt3 (feat. Shing02)          Nujabes
+    Luv (sic) pt4 (feat. Shing02)          Nujabes
+    Luv (sic) pt5 (feat. Shing02)          Nujabes
+    Music is mine                          Nujabes
+    mystline                               Nujabes
+    Other Side of Phase                    Nujabes
+    Perfect Circle                         Nujabes
+    Perfect Circle Instrumentals           Nujabes
+    Prayer                                 Nujabes
+    Rainyway Back Home                     Nujabes
+    reflection eternal                     Nujabes
+    sanctuary ship                         Nujabes
+    sea of cloud                           Nujabes
+    silver morning                         Nujabes
+    Sky Is Falling                         Nujabes
+    Spiral                                 Nujabes
+    Still Talking to You                   Nujabes
+    Summer Gypsy                           Nujabes
+    The Final View                         Nujabes
+    the space between two world            Nujabes
+    tsurugi no mai                         Nujabes
+    Voice of Autumn                        Nujabes
+    World's end Rhapsody                   Nujabes
+    World's end Rhapsody                   Nujabes
+    food court                             potsu
+    Headline                               re:plus
+    Headline feat. Cise Star               re:plus
+    Mii Channel - Edit                     Trickpony
+    As Time Flies                          Ty's Music
+
+  SAMPLE DOCUMENTS (what the algorithm actually saw):
+
+  [Nujabes] Voice of Autumn
+    Vibe: As golden leaves drift lazily to the ground, a gentle warmth envelops you, drawing you into a cozy, intimate space. The air feels crisp, and the soft, flowing melodies wrap around you like a favorite blanket, evoking a sense of reflective calm. It's an ideal soundtrack for a quiet afternoon, where time slows and your thoughts meander freely, inviting a serene introspection that lingers long after the last notes fade away.
+    Mood: jazz hop, japanese, chillout, trip-hop
+
+  [Blu-Swing] クラゲ
+    Vibe: Listening evokes a warm, late afternoon glow, as sunlight filters through leaves, casting playful shadows. The gentle sway of the rhythm feels like a soft breeze, creating an inviting atmosphere perfect for lounging in a cozy café or drifting on a serene waterfront. There’s an underlying sense of introspection, mingling with fleeting moments of joy, encouraging a reflective state while still inviting a subtle sway of the body.
+    Mood: japanese, jazz hop
+
+  [Jazz Liberatorz] Slow Down
+    Vibe: Imagine a late afternoon in a sun-drenched café, where the warm light filters through the windows, casting soft shadows on intimate conversations. The rhythm flows with a laid-back ease, inviting you to sink into your seat, as layers of smooth melodies intertwine, creating a sense of cozy familiarity. There’s a gentle pulse that feels like a comforting embrace, evoking a reflective mood, perfect for savoring the moment and letting the world drift by.
+    Mood: jazz hop, french
+
+  [Ljones] Cruising Blue
+    Vibe: Listening to this track feels like drifting through a serene twilight, where the sky is painted in soft shades of indigo and violet. The gentle flow of sound wraps around you like a warm blanket, inviting you to relax and unwind in a cozy corner of a dimly lit café. Each note evokes a sense of introspective calm, making you feel both contemplative and uplifted, as if you’re savoring a moment of stillness in a bustling world.
+    Mood: instrumental hip-hop, jazz hop, instrumental
+
+  [DJ DECKSTREAM] Funny Love feat. Milka
+    Vibe: Listening to this track feels like a gentle afternoon breeze flowing through a sunlit café, where laughter mingles with the aroma of freshly brewed coffee. The smooth rhythms create a relaxed yet invigorating atmosphere, perfect for leisurely conversations or daydreaming by the window. As the melodies unfold, they evoke a sense of warmth and playfulness, inviting you to sway gently in your seat, lost in a moment of blissful contentment.
+    Mood: japanese, jazz hop
+
+======================================================================
+  CLUSTER 47 — Underground/Alternative Hip-Hop
+  178 tracks | 51 unique artists | 29% diversity
+======================================================================
+
+  TAG ANALYSIS (did this cluster form on tags or pure vibe?):
+  Tracks with mood tags: 178/178
+  Tracks with NO tags (pure prose): 0/178
+  Top tags across cluster:
+    [█████████████░░░░░░░]  66%  underground hip-hop (117 tracks)
+    [██████░░░░░░░░░░░░░░]  30%  swag (53 tracks)
+    [████░░░░░░░░░░░░░░░░]  20%  jazz rap (36 tracks)
+    [██░░░░░░░░░░░░░░░░░░]  10%  abstract hip hop (17 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   8%  pop rap (15 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   7%  neo-soul (12 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   7%  conscious hip hop (12 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   6%  underground hip hop (10 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   4%  experimental hip hop (8 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  psychedelic soul (6 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  instrumental hip-hop (6 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  underground rap (6 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  east coast hip hop (5 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   2%  southern hip hop (4 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   2%  boom bap (4 tracks)
+
+  FULL TRACK LIST:
+    Vanessa from Venezuela                 3582
+    A$AP Forever (feat. Moby)              A$AP Rocky
+    A$AP Forever REMIX (feat. Moby, T.I. & A$AP Rocky
+    Angels                                 A$AP Rocky
+    Bad Company (feat. BlocBoy JB)         A$AP Rocky
+    Black Tux, White Collar                A$AP Rocky
+    Brotha Man (feat. French Montana)      A$AP Rocky
+    Buck Shots                             A$AP Rocky
+    CALLDROPS (feat. Kodak Black)          A$AP Rocky
+    Canal St. (feat. Bones)                A$AP Rocky
+    Changes                                A$AP Rocky
+    Distorted Records                      A$AP Rocky
+    Excuse Me                              A$AP Rocky
+    Fine Whine (feat. Joe Fox, Future & M. A$AP Rocky
+    Fukk Sleep (feat. FKA twigs)           A$AP Rocky
+    Goldie                                 A$AP Rocky
+    Gunz N Butter (feat. Juicy J)          A$AP Rocky
+    HELICOPTER                             A$AP Rocky
+    Holy Ghost (feat. Joe Fox)             A$AP Rocky
+    Hun43rd                                A$AP Rocky
+    Jukebox Joints (feat. Joe Fox & Kanye  A$AP Rocky
+    Kids Turned Out Fine                   A$AP Rocky
+    Lord Pretty Flacko Jodye 2 (LPFJ2)     A$AP Rocky
+    LVL                                    A$AP Rocky
+    NO TRESPASSING                         A$AP Rocky
+    OG Beeper                              A$AP Rocky
+    Pharsyde (feat. Joe Fox)               A$AP Rocky
+    PLAYA                                  A$AP Rocky
+    Praise The Lord (Da Shine) (feat. Skep A$AP Rocky
+    Purity (feat. Frank Ocean)             A$AP Rocky
+    Ruby Rosary (feat. J. Cole)            A$AP Rocky
+    STAY HERE 4 LIFE (feat. Brent Faiyaz)  A$AP Rocky
+    Tony Tone                              A$AP Rocky
+    WHISKEY (RELEASE ME) (feat. Gorillaz & A$AP Rocky
+    Cream                                  Aaron May
+    Ride                                   Aaron May
+    WILD WILD WEST                         Aaron May
+    Young World                            A.D.O.R.
+    Hot & Mysterious                       Austin Millz
+    Zoros Theme (King Of Hell Epic Version Carameii
+    Benevolence                            Chuck Strangers
+    Prospect Park West                     Chuck Strangers
+    Alaska                                 Cordae
+    Kung Fu                                Cordae
+    Make Me Feel                           Cordae
+    Target                                 Cordae
+    It's a Blue World                      CoryaYo
+    Walkin                                 Denzel Curry
+    Costa Rica (feat. Bas, JID, Guapdad 40 Dreamville
+    Costa Rica (with Bas & JID feat. Guapd Dreamville
+    Down Bad (feat. JID, Bas, J. Cole, EAR Dreamville
+    Down Bad (feat. JID, Bas, J. Cole, EAR Dreamville
+    Heaven’s EP (with J. Cole)             Dreamville
+    Check the Vibe                         Dred Scott
+    20 Wave Caps (feat. Domo Genesis)      Earl Sweatshirt
+    Centurion (feat. Vince Staples)        Earl Sweatshirt
+    Chum                                   Earl Sweatshirt
+    Hive (feat. Vince Staples & Casey Vegg Earl Sweatshirt
+    Pre (feat. SK La' Flare)               Earl Sweatshirt
+    Sasquatch (feat. Tyler, The Creator)   Earl Sweatshirt
+    Whoa (feat. Tyler, The Creator)        Earl Sweatshirt
+    Proud Of U (feat. Young Thug)          EARTHGANG
+    LA ESPADA                              Eternal Raijin
+    My Body                                Flashmob
+    Feel Like God                          gazzzy
+    Kody Blu 31                            JID
+    Kody Blu 31                            JID
+    DEVASTATED                             Joey Bada$$
+    Head High                              Joey Bada$$
+    Love Is Only a Feeling                 Joey Bada$$
+    Love Is Only a Feeling                 Joey Bada$$
+    Paper Trail$                           Joey Bada$$
+    Paper Trail$                           Joey Bada$$
+    Waves                                  Joey Bada$$
+    ALL THE LOVE (feat. Andre Troutman)    Kanye West
+    FML                                    Kanye West
+    Life Of The Party (with André 3000)    Kanye West
+    Life Of The Party (with André 3000)    Kanye West
+    Violent Crimes                         Kanye West
+    4th Dimension                          KIDS SEE GHOSTS
+    Fazers                                 King Geedorah
+    Next Levels                            King Geedorah
+    Intense Vibration                      Kyo Itachi
+    Love Mugen (RIP Nujabes)               Kyo Itachi
+    If U Knew                              lade
+    Redstripe Rhapsody                     LAUSSE THE CAT
+    Angel                                  Lexa Gates
+    Rotten To The Core                     Lexa Gates
+    Rotten To The Core                     Lexa Gates
+    Samurai                                Lupe Fiasco
+    No Blood No Sweat                      Mach-Hommy
+    Rami (feat. Westside Gunn)             Mach-Hommy
+    5 Dollar Pony Rides                    Mac Miller
+    Blue World                             Mac Miller
+    Dang! (feat. Anderson .Paak)           Mac Miller
+    Diamonds & Gold                        Mac Miller
+    Diamonds & Gold                        Mac Miller
+    DJ's Chord Organ (feat. SZA)           Mac Miller
+    Do You Have A Destination?             Mac Miller
+    People Under The Stairs                Mac Miller
+    Self Care                              Mac Miller
+    Skin                                   Mac Miller
+    Someone Like You                       Mac Miller
+    Someone Like You                       Mac Miller
+    The Spins                              Mac Miller
+    Weekend (feat. Miguel)                 Mac Miller
+    Accordion                              Madvillain
+    All Caps                               Madvillain
+    Meat Grinder                           Madvillain
+    Money Folder                           Madvillain
+    Raid (feat. MED)                       Madvillain
+    Potluck                                MAVI
+    Run, Run, Run                          McKinley Dixon
+    Broken Rubberbands                     Meyhem Lauren
+    Trigger Point Therapy                  Meyhem Lauren
+    Valedictorians                         Meyhem Lauren
+    Arrow Root                             MF DOOM
+    Bergamot                               MF DOOM
+    Caskets - Edit                         MF DOOM
+    Doomsday                               MF DOOM
+    Doomsday                               MF DOOM
+    GAZZILLION EAR                         MF DOOM
+    Go with the Flow                       MF DOOM
+    Licorice                               MF DOOM
+    Mean the Most - Edit                   MF DOOM
+    Rapp Snitch Knishes                    MF DOOM
+    Rhymes Like Dimes                      MF DOOM
+    Dead Calm                              Peebs The Prophet
+    I Am Worm Food                         Perry Maysun
+    Creme's Interlude                      Pink Siifu
+    7th Heaven                             ProdWithFlavor
+    Out of Reach (Geeked n Blessed)        ProdWithFlavor
+    Yesterday (Runnin with)                ProdWithFlavor
+    Sleeper Agent                          PROP
+    new info                               redveil
+    pg baby                                redveil
+    Cookie Chips                           Rejjie Snow
+    Cookie Chips                           Rejjie Snow
+    OXYGEN                                 Sean Leon
+    Parallel Universe                      Shing02
+    911 / Mr. Lonely (feat. Frank Ocean &  Tyler, The Creator
+    BEST INTEREST                          Tyler, The Creator
+    EARFQUAKE                              Tyler, The Creator
+    HOT WIND BLOWS (feat. Lil Wayne)       Tyler, The Creator
+    I THINK                                Tyler, The Creator
+    LEMONHEAD (feat. 42 Dugg)              Tyler, The Creator
+    MANIFESTO (feat. Domo Genesis)         Tyler, The Creator
+    MASSA                                  Tyler, The Creator
+    Potato Salad                           Tyler, The Creator
+    Rusty (feat. Domo Genesis & Earl Sweat Tyler, The Creator
+    St. Chroma (feat. Daniel Caesar)       Tyler, The Creator
+    WILSHIRE                               Tyler, The Creator
+    WUSYANAME (feat. Youngboy Never Broke  Tyler, The Creator
+    A Dead Mouse                           Viktor Vaughn
+    Can I Watch? (feat. Apani B as Nikki)  Viktor Vaughn
+    Lactose and Lecithin                   Viktor Vaughn
+    Lickupon                               Viktor Vaughn
+    Open Mic Nite, Pt. 1 (feat. Lord Sear, Viktor Vaughn
+    Overture                               Viktor Vaughn
+    Raedawn                                Viktor Vaughn
+    Saliva                                 Viktor Vaughn
+    The Drop                               Viktor Vaughn
+    Vaudeville Villain                     Viktor Vaughn
+    Black&Blue                             Vince Staples
+    Hopeless Romantic (feat. Swae Lee)     Wiz Khalifa
+    Air                                    Yakkle
+    Echoes                                 Yakkle
+    愛密集                                    Yakkle
+    Chateau d'Yquem                        YUNGMORPHEUS
+    Escovitch Fish                         YUNGMORPHEUS
+    For the Evening                        YUNGMORPHEUS
+    Limitless                              YUNGMORPHEUS
+    Ride Dirty                             YUNGMORPHEUS
+    Self Sponsored                         YUNGMORPHEUS
+    Trilaani Parish                        YUNGMORPHEUS
+    Eight Seconds                          緑
+    Part Deux                              緑
+    Stash House                            緑
+
+  SAMPLE DOCUMENTS (what the algorithm actually saw):
+
+  [Kanye West] Violent Crimes
+    Vibe: The experience envelops you in a reflective haze, weaving through moments of vulnerability and introspection. As dusk settles, the atmosphere feels thick with unspoken thoughts, inviting a sense of both contemplation and urgency. The energy ebbs and flows, creating a pulsating rhythm that resonates in a dimly lit room, where emotions swirl like smoke, leaving an imprint long after the last note fades.
+    Mood: pop rap, psychedelic
+
+  [A$AP Rocky] Ruby Rosary (feat. J. Cole)
+    Vibe: The sound envelops you like a warm, late-night breeze, creating an intimate atmosphere that feels both reflective and empowered. Each beat pulses with a relaxed confidence, inviting you to sink into the moment while the smooth, flowing vocals weave a narrative that resonates deeply. Picture yourself lounging in a dimly lit room, surrounded by friends, as the mood shifts effortlessly between introspection and celebration, leaving you with a sense of connection to both the music and those around you.
+    Mood: underground hip-hop, swag
+
+  [Joey Bada$$] Love Is Only a Feeling
+    Vibe: Listening to this track feels like a warm embrace on a late afternoon, where the sun casts a golden hue over everything. The smooth, laid-back rhythms invite you to sink into your surroundings, creating an atmosphere of quiet introspection and nostalgia. You can almost feel the gentle sway of a nearby breeze, as the melodies wrap around you like a soft blanket, evoking a sense of comfort and ease amidst the hustle of the day.
+    Mood: underground hip-hop, neo-soul, pop rap, jazz rap, hiphop
+
+  [Earl Sweatshirt] Sasquatch (feat. Tyler, The Creator)
+    Vibe: The atmosphere is thick with a laid-back intensity, perfect for late-night drives under a blanket of stars. Each beat reverberates with a confident swagger, inviting you to lean back and absorb the layers of intricate rhythms and playful wordplay. You can almost feel the cool air brushing against your skin as the sound envelops you, creating an intimate space that feels both relaxed and charged with an undercurrent of creativity.
+    Mood: underground hip-hop, swag
+
+  [Mac Miller] Self Care
+    Vibe: The sound envelops you like a warm hug, inviting introspection and a gentle exhale. It feels perfect for a late afternoon, where the sunlight filters through your window, casting soft shadows as you sink into a cozy chair. The mood is reflective yet uplifting, balancing moments of vulnerability with a sense of hope, making you feel both grounded and free.
+    Mood: underground hip-hop, pop rap, psychedelic, alternative rnb, 10s
+
+======================================================================
+  CLUSTER 35 — Late Night R&B
+  64 tracks | 23 unique artists | 36% diversity
+======================================================================
+
+  TAG ANALYSIS (did this cluster form on tags or pure vibe?):
+  Tracks with mood tags: 64/64
+  Tracks with NO tags (pure prose): 0/64
+  Top tags across cluster:
+    [████████████░░░░░░░░]  61%  alternative rnb (39 tracks)
+    [████████░░░░░░░░░░░░]  42%  neo-soul (27 tracks)
+    [███░░░░░░░░░░░░░░░░░]  19%  art pop (12 tracks)
+    [███░░░░░░░░░░░░░░░░░]  19%  new jazz (12 tracks)
+    [██░░░░░░░░░░░░░░░░░░]  12%  ambient pop (8 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   9%  pop rap (6 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   6%  contemporary rnb (4 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   5%  psychedelic soul (3 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   5%  bedroom pop (3 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   5%  trip hop (3 tracks)
+    [█░░░░░░░░░░░░░░░░░░░]   5%  rhythm and blues (3 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  00s (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  synthpop (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  2016 (2 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   3%  indie rock (2 tracks)
+
+  FULL TRACK LIST:
+    530                                    ¥$
+    act ii: date @ 8 (feat. Drake) - remix 4batz
+    Favour                                 Avenoir
+    LINK UP                                Avenoir
+    HONEST                                 Baby Keem
+    Best Time                              Brent Faiyaz
+    Clouded                                Brent Faiyaz
+    Gang Over Luv                          Brent Faiyaz
+    Poison                                 Brent Faiyaz
+    WY@                                    Brent Faiyaz
+    Don't                                  Bryson Tiller
+    The World (Is Going Up in Flames)      Charles Bradley
+    Chanel                                 Frank Ocean
+    Close To You                           Frank Ocean
+    Godspeed                               Frank Ocean
+    Lost                                   Frank Ocean
+    Nights                                 Frank Ocean
+    Nikes                                  Frank Ocean
+    Pink + White                           Frank Ocean
+    Pretty Sweet                           Frank Ocean
+    Pyramids                               Frank Ocean
+    Seigfried                              Frank Ocean
+    Self Control                           Frank Ocean
+    Skyline To                             Frank Ocean
+    Solo                                   Frank Ocean
+    Sweet Life                             Frank Ocean
+    Thinkin Bout You                       Frank Ocean
+    Beauty & Essex (feat. Daniel Caesar &  Free Nationals
+    Gidget (feat. Anderson .Paak & T.Nava) Free Nationals
+    Shibuya (feat. Syd)                    Free Nationals
+    better n back                          hako
+    cannot give up my soul (E2)            hako
+    egotistical                            hako
+    guilt                                  hako
+    listen!                                hako
+    LOSE YOU                               hako
+    patrol                                 hako
+    SPLIT                                  hako
+    STATURE                                hako
+    step out!                              hako
+    talk so much                           hako
+    would it make it right if it was bette hako
+    After The Storm (feat. Tyler, The Crea Kali Uchis
+    Moonlight                              Kali Uchis
+    telepatía                              Kali Uchis
+    BEAUTY AND THE BEAST                   Kanye West
+    DAMN                                   Kanye West
+    Ghost Town                             Kanye West
+    Ghost Town                             Kanye West
+    PREACHER MAN                           Kanye West
+    Wolves                                 Kanye West
+    Day 'N' Nite (nightmare)               Kid Cudi
+    Day 'N' Nite (Nightmare)               Kid Cudi
+    All Eyes On Me                         KIRK
+    Roommates                              Malcolm Todd
+    PERSIAN RUGS                           PARTYNEXTDOOR
+    Can't Leave Alone (feat. Avenoir & Maz Pino
+    Eyes On Me                             Ramir
+    Escapism.                              RAYE
+    Drama (feat. Drake)                    Roy Woods
+    What You Heard                         Sonder
+    Some                                   Steve Lacy
+    Kill Bill                              SZA
+    Snooze                                 SZA
+
+  SAMPLE DOCUMENTS (what the algorithm actually saw):
+
+  [Kanye West] Wolves
+    Vibe: The sound envelops you like a warm, pulsating glow, perfect for the twilight hours when the world begins to quiet down. It carries an undercurrent of urgency, as if urging you to confront your thoughts in a dimly lit room filled with flickering shadows. There’s an electric tension in the air, balancing between introspection and celebration, inviting you to lose yourself in the rhythm while reflecting on deeper emotions.
+    Mood: art pop, experimental hip-hop, alternative rnb, australia
+
+  [Brent Faiyaz] Gang Over Luv
+    Vibe: The track envelops you in a warm, dimly lit atmosphere, reminiscent of a quiet evening at home where the outside world feels distant. Its smooth, flowing rhythms create a sense of intimacy, inviting introspection while gently swaying you into a relaxed state. You'll find yourself lost in a blend of sensuality and vulnerability, as the soundscape wraps around you like a soft blanket, evoking a bittersweet nostalgia that lingers in the air.
+    Mood: alternative rnb, american
+
+  [Frank Ocean] Close To You
+    Vibe: Listening to this track feels like a warm embrace on a tranquil evening, where the fading light casts a soft glow over everything. The mood is introspective yet inviting, encouraging a sense of vulnerability amidst a backdrop of gentle rhythms. It’s as if you’re lounging in a cozy space, surrounded by familiar faces, where every note resonates with unspoken longing and heartfelt connection.
+    Mood: art pop, alternative rnb, singer-songwriter
+
+  [Kid Cudi] Day 'N' Nite (Nightmare)
+    Vibe: Listening to this track feels like wandering through a dimly lit city at night, where the glow of neon lights dances with shadows. The energy ebbs and flows, creating a reflective atmosphere that balances melancholy with moments of introspection. It's as if you're caught in a dream, where thoughts drift and collide, evoking a sense of both solitude and connection.
+    Mood: 00s, pop rap, alternative rnb, synthpop
+
+  [¥$] 530
+    Vibe: The sound envelops you like a warm, golden glow at dusk, inviting introspection as the world around you begins to quiet. Each note drifts gently, creating a serene atmosphere that feels both uplifting and contemplative, perfect for a solitary evening stroll or lounging in a cozy nook with soft lighting. You can sense a deep narrative unfolding, drawing you into a reflective space where emotions ebb and flow like a tranquil tide.
+    Mood: beautiful, melodic, ambient pop, pop rap
+
+======================================================================
+  CLUSTER 89 — Mystery Cluster
+  347 tracks | 251 unique artists | 72% diversity
+======================================================================
+
+  TAG ANALYSIS (did this cluster form on tags or pure vibe?):
+  Tracks with mood tags: 2/347
+  Tracks with NO tags (pure prose): 345/347
+  Top tags across cluster:
+    [░░░░░░░░░░░░░░░░░░░░]   0%  2019 (1 tracks)
+    [░░░░░░░░░░░░░░░░░░░░]   0%  beats (1 tracks)
+
+  FULL TRACK LIST:
+    Balmain Jeans (Outro)                  $olotique Beats
+    hldmyhand .wav                         004KT
+    1000                                   1000night
+    anestit1a0verm3?                       1000night
+    coco                                   1000night
+    hello kitty                            1000night
+    In the air                             1000night
+    new life                               1000night
+    switch                                 1000night
+    tucked                                 1000night
+    waysss                                 1000night
+    OVR                                    3ee
+    hit the spliff                         47TEC
+    insides                                4cf
+    outta luv                              637iso
+    grief                                  68+1
+    take you tonight                       808toofly
+    Dreams, Fairytales, Fantasies (feat. B A$AP Ferg
+    LIQUOR STORE                           Adi T
+    Dreaming of the Stars                  Alej
+    Chidori                                Ambassador
+    82.99 F.M                              ANDER503
+    BEHELIT                                ArcVnis
+    Prabhu Patit Pavan                     Arohi Anil Agarkar
+    A Lone Prayer                          ATLUS GAME MUSIC
+    Guts                                   Audereus
+    Live Up to My Name                     Baka Not Nice
+    Nami's Theme (From "One Piece") - Lofi Barely Cloudy
+    Big Syrup, Lil Soda                    belac
+    In da Condo                            belac
+    Pray for Dilla                         belac
+    Silk Gown                              belac
+    Soul Food                              belac
+    Teflon Don                             belac
+    Dive                                   Benwal
+    used too                               Billie Calvinn
+    Every Single Time                      Bissett
+    Diluvio                                Blank Sense
+    To the Grand Line                      Blue Spark
+    Harbour                                Bovskey
+    you and me                             Bovskey
+    Daphne                                 Bravoo Hunnidz
+    Pistachios                             Brent Faiyaz
+    everything & more                      Brocko
+    mind over matter                       Brocko
+    outside noise                          Brocko
+    stayed tru !                           Brocko
+    Then Who?                              Brocko
+    with, love!                            Brocko
+    Back Again                             BURNR
+    Joanna                                 BURNR
+    Imperius                               Caleb Bryant
+    0 2 220                                caunc
+    Intro                                  Ced Q
+    Sydney Sweeney                         Ceru
+    Lottery                                Cheerie
+    City of Tears                          Christopher Larkin
+    Crossroads                             Christopher Larkin
+    Dirtmouth                              Christopher Larkin
+    Greenpath                              Christopher Larkin
+    Hollow Knight                          Christopher Larkin
+    Resting Grounds                        Christopher Larkin
+    New Phone                              CIS
+    Astral Observatory (From Majora's Mask Claire Waluch
+    Midna's Lament (From Twilight Princess Claire Waluch
+    Piranha Plant's Lullaby (From "Super M Claire Waluch
+    TUNNEL VISION                          CLOUDER
+    Grow Up                                Corkybul
+    Fresh - House of Prayers Poolside Edit Crazibiza
+    You & I                                Criminel Kalash
+    cartier noir - instrumental            CUPIDS OPPRESSION
+    Floor 777                              CUPIDS OPPRESSION
+    NEPTUNE 2006                           CUPIDS OPPRESSION
+    OUTTER BODY EXPERIENCE                 CUPIDS OPPRESSION
+    Spin Back!                             Cvlii
+    Nine Nine                              cwthegoat
+    Wagon Wheel                            Darius Rucker
+    Fall                                   daveikk
+    KETAMINE - Intro                       deadrat
+    Obito                                  desanctus
+    Obito                                  desanctus
+    Bouldercrest                           DJ EightBit
+    Berlin                                 DJ GUESTLIST
+    I Told The Stars About You             DJ GUESTLIST
+    Lucid Visions                          DJ IP
+    Wanna Feel                             DJ IP
+    Fall                                   DJ Mamba
+    Thankful                               DJ Mamba
+    VEKI VEKI - Slowed                     DJZRX
+    DEEP IN THE WATER                      Don Toliver
+    Cult Classic                           doomedwtf
+    Me n U                                 DOREY
+    In Da Shade                            DroGotDoe
+    City of Tears (From "Hollow Knight")   DS Music
+    I'll Face Myself (From "Persona 4")    DS Music
+    You & I                                dyingoutlay
+    Nobody                                 Dylan Scott
+    Feels Good                             Eatmyflesh
+    Feels Good extend                      Eatmyflesh
+    Lost Forever Og same pitch             edrodgers08
+    Sleep                                  EFESIAN
+    doya?                                  El!jah
+    settle4tonight                         El!jah
+    NEVER SOBER                            Elon Bass
+    lOnDn                                  EMBRZ
+    Are You Sure?                          ERHA
+    ...see you to_no_more                  Eslxst
+    Funk You                               ETERA
+    MISSME                                 Ezra Wood
+    Nightcrawler - Instrumental            fam0uz
+    Hör mir zu                             FISHERMANZZ
+    Different Lifestyles                   For The Boys
+    Fertilizer                             Frank Ocean
+    Will You Wait                          GENNARO & DUTOIT
+    Left                                   Glen Bretton
+    STARS ON THE ROOF                      GOYA PIETER
+    spirulina                              green print
+    Composure                              GRiFF!
+    good morning                           grtjs
+    FUNK SIGILO - SLOWED                   h6itam
+    MONTAGEM VOZES TALENTINHO, Vol.2 - Ult heapper
+    Clock Tower                            Henriko Magnifico
+    Clock Town (Day 2)                     Henriko Magnifico
+    Clock Town (First Day)                 Henriko Magnifico
+    Opening                                Henriko Magnifico
+    Title Sequence                         Henriko Magnifico
+    Woodfall & The Swamp                   Henriko Magnifico
+    Mr.Miyagi                              HIDETYPeZ
+    iBiZA                                  IAMDDB
+    Separated                              IAMNOBODI
+    Intro                                  iAMWVS
+    Everytime                              IDEMI
+    a lantern to a montague                idkwhyy
+    end of discussion                      idkwhyy
+    oh, you don't say?!!                   idkwhyy
+    east van                               ihypaul
+    SENTA MARIA VAI X BEAT ABSURDO - Slowe IMARO
+    エターナルポーズ                               imiga,タイガ,わたこう
+    PAPI                                   IOSIO
+    Be Alright - Miguel de Bois 'X-Dream'  ISHKR
+    affection                              Jaybexo
+    Nothing Like Us                        JayJayMf
+    Temptation (Interlude)                 JayJayMf
+    I Need Her                             JBC
+    03’ Adolescence                        J. Cole
+    9 5 . s o u t h                        J. Cole
+    Crooked Smile (feat. TLC)              J. Cole
+    h u n g e r . o n . h i l l s i d e (w J. Cole
+    Rise and Shine                         J. Cole
+    Rise and Shine                         J. Cole
+    t h e . c l i m b . b a c k            J. Cole
+    Missing Me                             Jess Loco
+    Early Morning, Late Night              Jishle
+    Past Fields                            Jishle
+    Remnants of Summer                     Jishle
+    Get Personal                           JOKESONYOU
+    Coe Park                               Jonah Love
+    を                                      jpegten
+    It's Only You                          Jude Bradshaw
+    home                                   jungumul
+    Dile                                   Juos
+    Psilocybin                             Juveniall
+    MTG - RITMO ZELDA - Super Slowed       JXM
+    Tag                                    Kaan Demir
+    ON B5                                  kamen!
+    Drunk or Dreamin'                      Kane Brown
+    All Falls Down                         Kanye West
+    Follow God                             Kanye West
+    Homecoming                             Kanye West
+    MAMA’S FAVORITE (feat. Nine Vicious)   Kanye West
+    Praise God                             Kanye West
+    gentle horns                           Kenma
+    Unravel (From "Tokyo Ghoul") - Lofi Re Kenma
+    HIS GUN PINK                           KHALIL BATTLE
+    Sad People                             Kid Cudi
+    ROSEGOLD                               Kill Kanji
+    You're so Right                        klonse noce
+    the name of life (spirited away) but i Konomi
+    the rumbling (attack on titan) but it' Konomi
+    zankyou sanka (demon slayer) but it's  Konomi
+    Look At The Sky                        Kromow
+    OH                                     Kromow
+    Feel My Desire                         Kyle Starkey
+    I Need U                               Kyle Starkey
+    Tryton                                 Kyle Starkey
+    Breathe                                La Capella
+    Krishna Krish Flute                    Lakhinandan Lahon
+    Gold and Oden                          Lars Sorensen
+    6 AM                                   Lateras
+    Died Once - Edit                       ledimiknight
+    Rumor                                  Lee Brice
+    the kill 2                             Lex Amarni
+    Heartseeker                            Linds
+    Phoenix - Linds Remix                  Linds
+    One Eye Open                           Lofi Pulse FM
+    perfect day                            lofi weeb
+    starly - Slowed                        LONOWN
+    DND                                    lucasp007
+    Mona Lisa                              lucasp007
+    souvenir!                              Lucyen
+    Twilight Chaser                        Marcelo Pantani
+    To The Grand Line "One Piece"          Marthes
+    warmth                                 massobeats
+    Trust Yourself                         Meg McHugh
+    Only 1 (Interlude) (with Travis Scott) Metro Boomin
+    Only 1 (Interlude) (with Travis Scott) Metro Boomin
+    Cookie Dough                           Mg.
+    Smooth Days                            Mg.
+    2000                                   Mietze Conte
+    I built a fort                         Mietze Conte
+    Detectors                              Mike & Me
+    YES                                    minj
+    Krishna Flute                          Mohan Krishan
+    ALLNIGHT                               Moors
+    NEVER LISTEN                           Moors
+    OBSESSION                              Moors
+    SAYDAT                                 Moors
+    SAYDAT                                 Moors
+    TO YOU                                 Moors
+    UON                                    Moors
+    PASSIN' ME BYE                         Moschino Jones
+    Grow Up                                Mouth Leaking
+    DIFFERENT                              Moving in Silence
+    PRIVATE                                Moving in Silence
+    STOP N STARE                           Moving in Silence
+    Warm Bite (Rad&Co Edit)                Mykhz
+    Dandelion                              nate2timez
+    Wreckage                               Nate Smith
+    Gentle White Noise - Seamless          Natura Ferox
+    B!rds                                  Nayy
+    goorah - asoookha                      nicho santos is dead
+    Get on with it                         Nick Andree
+    Yūgen                                  NicolayZay
+    TROPICS .!                             NIKOWOODYEAR
+    Erwin Smith Last Speech (Japanese)     Nori Beats
+    Virtual Bloom                          oco.
+    Pretty Girls                           Omar+
+    this feeling                           Øneheart
+    Blow X No Pole                         onve
+    BEHELIT                                Orvynx
+    Dirtmouth                              Orvynx
+    Dirtmouth                              Orvynx
+    Emily                                  Orvynx
+    Safe Haven                             Orvynx
+    Aquemini                               Outkast
+    RESET!                                 Ovrkast.
+    Your Heart                             Paccu
+    U Ok?                                  PARISI
+    Come and See Me (feat. Drake)          PARTYNEXTDOOR
+    window                                 pastel..
+    Never Stop - Instrumental Edit         pathbreaker
+    The Rust Belt                          Patrik Andrén
+    Hateno Village                         Patti Rudisill
+    Sadness and Sorrow (From "Naruto") - L Payubeats
+    Sadness and Sorrow (From "Naruto") [Lo Payubeats
+    Ma Love                                Pedroz
+    Be Mine                                Pi’erre Bourne
+    9:45                                   Prabh Singh
+    Oscar                                  Prateek Bachan
+    The Universe                           Presidant Scrooge & Crown King T.E.
+    Callin' Plays                          Prison Mike
+    Winter Rain                            Prod by Rose
+    Perfect                                Pure557
+    Taste of Life                          Pure557
+    Analog Horror Funk - Super Slowed      qqPues
+    Transition                             R3WIRE
+    Alchemy                                Rad&Co
+    STAY JUST TO STAY                      Raeusi
+    C'est La Vie                           Real Slummy
+    Lotti Lotti                            recrafted
+    Lakshman Rekha                         Reesh
+    Real Love                              Retrowaves
+    Improvise at Noon                      Rioleval
+    I'm Malenia, Blade of Miquella         Ryutqc
+    Keep Moving Forward.                   Ryutqc
+    Dread                                  Sadder Days
+    Whispers in the Garth                  Sadder Days
+    Write Back                             Sadder Days
+    You and My Desire                      Sadder Days
+    Wait Right Here                        Sam Girling
+    All This Love - Romeo Louisa Remix     Sam Paradise
+    When You Look At Me                    Sander Divino
+    Blood                                  Sanikwave
+    Yada Yada Hi Dharmasya                 Santosh Korgaokar
+    Gold and Oden / To the Grand Line (Fro sebastien ride (srmusic)
+    Stars Align                            Shankz
+    Too Late                               Shankz
+    Paint but it's lofi                    Shimu.
+    Bring It Back                          Siimon
+    Deep Love                              Siimon
+    Hometown                               Siimon
+    We Fall                                Siimon
+    Diamond                                Simon Field
+    Aruarian Dance                         skoomy
+    Title Theme                            Sleeping Phoenix
+    Always With Me (Spirited Away)         Sleepy Tom
+    Crystal Haze                           Sleepy Tom
+    One Summer's Day (Spirited Away)       Sleepy Tom
+    Feeling                                Smith Blaxk
+    cancun playboi                         Snippetz
+    Regen Prasselt Leise                   Soft Soundscapes
+    Tausend Tropfen                        Soft Soundscapes
+    Slow Down                              Solardo
+    Silhouette                             Spratta
+    LONG LONG TIME                         StarAmir!
+    wait                                   steaminwaffles
+    I Needed You                           Ste Haley
+    Part Time                              strangecomplain
+    Lost - Flame Edit                      surelynotsibi42
+    THE PEAK                               Tame Tiger
+    Chien Jazz                             Teuteu
+    something in the air                   Tevomxntana
+    Lacunosa Town                          The Goodnote Guys
+    ITS GONE                               THEKIDTRIPPZ
+    Every Night White Noise                The Noisy Outdoors
+    Soft Downfall                          The Slumbering One
+    has to be you                          Thiago Sub
+    Today Is Tomorrow's Yesterday          TIXI.
+    Japan                                  Tosho
+    Littleroot Town                        Tosho
+    Eternal Sunshine                       Trance Mums
+    Here (For You)                         Trance Mums
+    Soul Of The Trombone                   Twin Scream
+    Yearning                               TWOFACED
+    Now I Get You                          Tyler Coey
+    Now I Get You                          Tyler Coey
+    In the Mood                            Tyrone Davis
+    overyou                                untiljapan archive
+    lucked out                             upgrades
+    All I Need                             Varsity Boys
+    Blackstone Drift                       VENTUR
+    Three Times                            vidzgiriuka$
+    It just didn't seem real               vinoine
+    Lovers Rock - Freestyle                void angel
+    Up & Down                              Windows 69
+    gallery walk                           xemnaschrist
+    Buffy the Vampire                      Xfuego
+    Medusa                                 xva
+    topic                                  xziyuh
+    hldmyhnd .wav                          yasun
+    Pray For Them                          Younginsosleaze
+    Planet Namek                           yoyopierre
+    START AND END                          Yu Mamiya
+    blocklist                              Yunosa
+    modern fantasy                         zarallanie
+    typos                                  zarallanie
+    ()vȯ)) ̷̨ʅ(۝ʅ(Ɵʅ():::()̵̳̗̊(Ɵʅ()vȯ)) ̷ ⣎⡇ꉺლ༽இ•̛)ྀ◞ ༎ຶ ༽ৣৢ؞ৢ؞ؖ ꉺლ
+
+  SAMPLE DOCUMENTS (what the algorithm actually saw):
+
+  [Omar+] Pretty Girls
+    Vibe: The sound envelops you in a warm, late afternoon glow, evoking a sense of nostalgia and longing. It pulses with a gentle energy that feels both uplifting and introspective, inviting you to sway lightly in your seat or lose yourself in thought. The atmosphere is reminiscent of a sun-drenched gathering with friends, filled with laughter and shared moments, yet it carries an undercurrent of yearning that lingers in the air.
+
+  [Christopher Larkin] Greenpath
+    Vibe: The music envelops you in a serene twilight, where soft light filters through a lush canopy, casting gentle shadows on the forest floor. It evokes a sense of wonder and introspection, inviting you to wander through tranquil landscapes while feeling the weight of the world lift. Each note flows like a soft breeze, creating a calm yet vibrant atmosphere that encourages deep reflection and a peaceful heart.
+
+  [J. Cole] 03’ Adolescence
+    Vibe: The experience unfolds like a late afternoon sun casting warm shadows, filled with introspection and nostalgia. It's a steady pulse that ebbs and flows, inviting you to reflect on the complexities of youth and growth. The atmosphere feels intimate, as if you’re sitting in a cozy room, surrounded by friends, sharing secrets and dreams, all while a gentle breeze stirs the air outside.
+
+  [Kanye West] Homecoming
+    Vibe: The music envelops you in a warm embrace, evoking a sense of nostalgia that feels like a long-awaited reunion as the sun sets on a crisp evening. Its steady pulse invites you to sway gently, while the rich, layered sounds create an atmosphere of introspection and hope. You might find yourself lost in thought, reflecting on memories and anticipating the future, all while the gentle glow of twilight casts a serene backdrop to this emotional journey.
+
+  [Metro Boomin] Only 1 (Interlude) (with Travis Scott)
+    Vibe: A warm glow envelops you as soft, ethereal sounds weave through the air, evoking a sense of intimacy in a dimly lit room. The rhythm pulses gently, creating a relaxed yet confident atmosphere that feels perfect for late-night reflection or easy conversations. There's a subtle weight in the air, mixing nostalgia with a hint of anticipation, inviting you to lose yourself in the moment.
+
+======================================================================
+END OF REPORT
