@@ -133,6 +133,18 @@ class TrackCoordinate(Base):
     track = relationship("Track", back_populates="coordinates")
 
 
+class TrackVibeCoordinate(Base):
+    __tablename__ = "track_vibe_coordinates"
+
+    id = Column(Integer, primary_key=True)
+    track_id = Column(Integer, ForeignKey("tracks.id"), unique=True, nullable=False)
+    x = Column(Float, nullable=False)
+    y = Column(Float, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    track = relationship("Track")
+
+
 class TrackCluster(Base):
     __tablename__ = "track_clusters"
 
@@ -154,6 +166,7 @@ class ClusterLabel(Base):
     description = Column(Text, nullable=True)
     keywords = Column(ARRAY(String), nullable=True)
     cluster_archetype = Column(String, nullable=True)
+    label_version = Column(Integer, default=1, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
 
@@ -223,3 +236,47 @@ class TrackClusterCoordinate(Base):
 
     track = relationship("Track")
     run = relationship("ClusteringRun", back_populates="coordinates")
+
+
+class ClusterCentroid(Base):
+    __tablename__ = "cluster_centroids"
+
+    id = Column(Integer, primary_key=True)
+    cluster_id = Column(Integer, unique=True, nullable=False)
+    raw_centroid = Column(ARRAY(Float), nullable=False)
+    umap15_centroid = Column(ARRAY(Float), nullable=True)
+    map2d_centroid = Column(ARRAY(Float), nullable=True)
+    track_count = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ClusterArchetype(Base):
+    __tablename__ = "cluster_archetypes"
+
+    id = Column(Integer, primary_key=True)
+    archetype_id = Column(Integer, unique=True, nullable=False)
+    name = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class CommunityArchetypeAssignment(Base):
+    __tablename__ = "community_archetype_assignments"
+
+    cluster_id = Column(Integer, primary_key=True)
+    archetype_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ClusterLabelArchive(Base):
+    __tablename__ = "cluster_labels_archive"
+
+    id = Column(Integer, primary_key=True)
+    cluster_id = Column(Integer, nullable=False)
+    name = Column(String, nullable=True)
+    canonical_name = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    keywords = Column(ARRAY(String), nullable=True)
+    cluster_archetype = Column(String, nullable=True)
+    label_version = Column(Integer, nullable=True)
+    archived_at = Column(DateTime, default=datetime.utcnow)

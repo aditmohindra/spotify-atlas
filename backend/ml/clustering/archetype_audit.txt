@@ -1,0 +1,349 @@
+ARCHETYPE AUDIT — KMeans k=15
+======================================================================
+Instructions: review each archetype, note mismatches, propose fixes
+
+
+======================================================================
+ARCHETYPE 0 — Melodic Trap
+22 communities
+======================================================================
+  [  6]  16 tracks | Sheck Wes (16)
+  [ 17]  41 tracks | Quality Control (40), Ced Q (1)
+  [ 20]  17 tracks | YBN Nahmir (16), YBN (Young Boss N*ggas) (1)
+  [ 24]  21 tracks | Rae Sremmurd (21)
+  [ 26]  17 tracks | A$AP Mob (13), Metro Boomin (3), A$AP Rocky (1)
+  [ 33]  15 tracks | Lil Mosey (15)
+  [ 40]  26 tracks | Lil Yachty (25), Tee Grizzley (1)
+  [ 51]  22 tracks | Offset (22)
+  [ 52]  17 tracks | Huncho Jack (14), Playuncle Farti (2), Ramirez (1)
+  [ 53] 117 tracks | Travis Scott (109), Juicy J (1), Miguel (1), Haydin Travis (1)
+  [ 59]  23 tracks | Don Toliver (22), JACKBOYS (1)
+  [ 64]  58 tracks | Metro Boomin (56), Offset (1), Wiz Khalifa (1)
+  [ 66]  17 tracks | MadeinTYO (17)
+  [ 73]  32 tracks | Quavo (30), HVME (1), Ty Dolla $ign (1)
+  [ 74]  12 tracks | Takeoff (12)
+  [ 75]  53 tracks | Migos (53)
+  [ 79]  20 tracks | Key Glock (17), Kevin Gates (2), NGeeYL (1)
+  [ 80]  28 tracks | Rich The Kid (18), Rich Brian (7), Nipsey Hussle (1), Rich Gang (1)
+  [ 83] 120 tracks | Lil Uzi Vert (111), Zaylevelten (2), DJ Rell (1), DP Beats (1)
+  [ 84]  47 tracks | 21 Savage (44), JID (2), BlocBoy JB (1)
+  [ 85]  30 tracks | Polo G (19), King Von (4), Lil Tjay (3), Fivio Foreign (1)
+  [ 86]  22 tracks | Roddy Ricch (12), Kodak Black (4), NLE Choppa (3), A Boogie Wit da Hoodie (2)
+
+======================================================================
+ARCHETYPE 1 — Indie Game OST
+5 communities
+======================================================================
+  [ 94]  14 tracks | DM DOKURO (12), Disasterpeace (1), Toby Fox (1)
+  [167]  23 tracks | C418 (12), Max LL (9), Mike Lazarev (1), Scizzie (1)
+  [193]  20 tracks | ConcernedApe (20)
+  [201]  13 tracks | Arcade Player (4), Darren Ang (2), Lofi Lia (2), David Karsten (1)
+  [202]  64 tracks | daigoro789 (12), Claire Waluch (7), Franco Albertini (6), Moisés Nieto (4)
+
+======================================================================
+ARCHETYPE 2 — Bedroom/SoundCloud
+15 communities
+======================================================================
+  [  3]  17 tracks | 5EB (16), Zack Knight (1)
+  [ 76]  10 tracks | ç…§äº•é †æ”¿ (10)
+  [124]  12 tracks | JayJayMf (9), Jayboii (1), Jaylon Ashaun (1), Jaymmrz (1)
+  [153]  23 tracks | 1000night (23)
+  [170]  13 tracks | Henriko Magnifico (13)
+  [173]  19 tracks | Soft Soundscapes (17), Lonestar Void (1), Tom Santa (1)
+  [213]  12 tracks | Lex Amarni (3), junesforever (1), Killsaka (1), hexrt (1)
+  [214]  20 tracks | Brocko (20)
+  [216]  13 tracks | Kyle Starkey (6), Luke Dean (2), Jude Bradshaw (1), IDEMI (1)
+  [221]  19 tracks | Moving in Silence (9), Jishle (2), Blank Sense (1), Ecchi.mp4 (1)
+  [224]  14 tracks | Orvynx (6), Elyndrax (1), ghön (1), ArcVnis (1)
+  [225]  13 tracks | idkwhyy (4), El!jah (3), jaccy! (1), Nayy (1)
+  [228]  28 tracks | lucasp007 (3), Tavatli (2), kamen! (2), Viuta (2)
+  [231]  23 tracks | Spratta (9), DJ Mamba (4), Trilla Kid (2), Dante Smith (1)
+  [232]  26 tracks | Shankz (5), runThis (3), Cvlii (2), Nick Andree (2)
+
+======================================================================
+ARCHETYPE 3 — Dark Electronic
+33 communities
+======================================================================
+  [ 12]  12 tracks | Moors (12)
+  [ 34]  13 tracks | Bad Boombox (13)
+  [ 45]  16 tracks | Max Styler (12), Pleasurekraft (2), Imanos (1), Maxinne (1)
+  [ 62]  17 tracks | wes mills (14), Austin Millz (1), Wes Patrick (1), wilo wilde (1)
+  [134]  48 tracks | Halo (13), SERAPHINE NOIR (4), Clouds (3), terra (3)
+  [146]  14 tracks | Sleepy Tom (14)
+  [156]  28 tracks | Otaku (28)
+  [164]  16 tracks | cortex (10), Cortex (4), Mercer (1), Michel Colombier (1)
+  [176]  33 tracks | ISOxo (25), ISOKNOCK (8)
+  [177]  56 tracks | Skrillex (39), Indigo (5), Kai Wachi (2), Adventure Club (2)
+  [198]  14 tracks | NOTION (9), dreamstation (2), ISHKR (1), Jamiroquai (1)
+  [217]  13 tracks | Odymel (11), SELCO (BE) (1), Sil (1)
+  [219]  10 tracks | LXNGVX (4), Eternxlkz (2), MVSTERIOUS (1), slxughter (1)
+  [220]  94 tracks | UdieNnx (7), h6itam (4), DJ Raulipues (4), heapper (3)
+  [229]  10 tracks | Noimage (10)
+  [230]  11 tracks | Upper90 (10), dreamy (1)
+  [235]  10 tracks | Starjunk 95 (8), Fenix Darko (1), SP3CTRUM (1)
+  [238]  22 tracks | DJ HEARTSTRING (16), DJ SCHEMA (5), Scot Project (1)
+  [239]  12 tracks | Janis Zielinski (7), Luvstruck (5)
+  [240]  20 tracks | Eli Brown (10), Ollie Lishman (10)
+  [241]  10 tracks | Butch (2), Alan Fitzpatrick (2), Sara Landry (2), Adam Beyer (1)
+  [243]  13 tracks | GENESI (9), ENRA (1), GENNARO (1), Kino Todo (1)
+  [244]  15 tracks | MEDUZA (14), Supermode (1)
+  [245]  25 tracks | void (11), Restricted (5), No Thanks (2), Exhibition (1)
+  [246]  12 tracks | SICK LEGEND (6), crypvolk (2), Anime Hardstyle Club (1), ANIZYZ (1)
+  [247]  20 tracks | Jengi (6), AREA ØNE (4), Trace (3), Reinier Zonneveld (2)
+  [249]  10 tracks | D.O.D (7), ANOTR (1), Jack Orley (1), Syzz (1)
+  [252]  10 tracks | Benwal (7), Ned Bennett (2), Binary Digit (1)
+  [255]  46 tracks | mischluft (10), 3LNA (6), Wahlstedt (5), Mietze Conte (4)
+  [257]  11 tracks | Funk Tribu (8), 6 SENSE (1), Dickster (1), DJ Caline (1)
+  [259]  16 tracks | Panteros666 (8), Pegassi (8)
+  [260]  15 tracks | Part Time Killer (5), Subsonic (2), Overmono (2), D.R.K.O (1)
+  [261]  17 tracks | KI/KI (9), Eskha (5), Kichta (3)
+
+======================================================================
+ARCHETYPE 4 — Anime/J-Music
+13 communities
+======================================================================
+  [ 97]  11 tracks | Eve (11)
+  [144]  26 tracks | THE ORAL CIGARETTES (26)
+  [163]  18 tracks | ぬいぐるみクレヨン Lush Crayon (5), 猫 シ Corp. (5), Webinar™ (2), Psychic 恋人 (1)
+  [187]  28 tracks | Barely Cloudy (7), Captain Isekai (2), Akano (2), D-51 (2)
+  [191]  59 tracks | Nujabes (43), potsu (3), DJ DECKSTREAM (2), Kyo Itachi (2)
+  [192]  11 tracks | Lotus Juice (8), Yakkle (2), 千葉雄喜 (1)
+  [194]  11 tracks | Sound Cyclone (5), Muray (3), Mami (1), sho (1)
+  [199]  17 tracks | Tatsuya Kitani (17)
+  [206]  13 tracks | 平田志穂子 (11), Yumi Kawamura (1), 藤田真由美 (1)
+  [209]  23 tracks | Susumu Hirasawa (9), 照井順政 (7), ACN Music. (2), MUSASHI PROJECT (2)
+  [210]  57 tracks | Shiro SAGISU (33), Kohei Tanaka (11), Sawano Hiroyuki (5), Toshio Masuda (3)
+  [211]  15 tracks | YOASOBI (13), BOYSTYLE (2)
+  [212] 177 tracks | Azumi Takahashi (9), Vaundy (7), SID (7), Hiroshi Kitadani (5)
+
+======================================================================
+ARCHETYPE 5 — Lo-Fi/Study
+14 communities
+======================================================================
+  [ 57]  43 tracks | Closed on Sunday (41), Burbank (1), Murr (1)
+  [148]  29 tracks | asoookha (27), a l l i e (1), Asake (1)
+  [165]  71 tracks | Ren Avel (57), narr (2), ALI (2), KOCHAM (2)
+  [171]  10 tracks | Azido 88 (4), Barradeen (4), HM Surf (1), Sarcastic Sounds (1)
+  [174]  24 tracks | The Slumbering One (24)
+  [180]  15 tracks | Silo (4), biosphere (4), Linearwave (2), Jasper Byrne (1)
+  [185]  26 tracks | Lofi Lia (16), lofi otaku (5), We Dream In Anime (2), hinata in luv (1)
+  [186]  15 tracks | a girl and a cat (8), mellow fox (6), Purrple Cat (1)
+  [189]  19 tracks | LoFi Waiter (16), ikiru. (1), lofi weeb (1), S N U G (1)
+  [196]  15 tracks | Jordy Chandra (6), A[way] (2), A L E X (2), Lukrembo (1)
+  [197]  25 tracks | Leavv (7), Ngyn (6), Saib (4), Tomppabeats (3)
+  [203]  24 tracks | kurochuu. (19), Kenma (2), Konomi (1), Musicality (1)
+  [204]  34 tracks | Kijugo (34)
+  [205]  17 tracks | Kenma (6), Konomi (4), Palademix (4), Eira Scheper (1)
+
+======================================================================
+ARCHETYPE 6 — Festival Electronic
+38 communities
+======================================================================
+  [ 44]  44 tracks | John Summit (36), Purple Disco Machine (2), The Temper Trap (2), deadmau5 (1)
+  [ 58]  50 tracks | Fred again.. (48), Fredo Wave (1), Swedish House Mafia (1)
+  [ 96]  24 tracks | Matroda (23), Tiga (1)
+  [140]  31 tracks | James Hype (27), Adapter (1), Icona Pop (1), Kim Petras (1)
+  [142]  11 tracks | SIDEPIECE (11)
+  [157]  19 tracks | belac (18), Daphni (1)
+  [158]  12 tracks | Sunday Scaries (5), Daft Punk (3), The Chainsmokers (3), Kaleena Zanders (1)
+  [159]  19 tracks | Avicii (15), avii (3), AVAO (1)
+  [168]  11 tracks | DATSKO (11)
+  [169]  10 tracks | Chris Stussy (10)
+  [172]  12 tracks | it's murph (10), JACK MARLOW (2)
+  [175]  15 tracks | Disco Lines (14), Zedd (1)
+  [178]  47 tracks | Chase & Status (6), AC Slater (5), Chapter & Verse (4), aarxn (3)
+  [179]  10 tracks | Biscits (9), Michael Bibi (1)
+  [181]  17 tracks | Sammy Virji (13), Hamdi (1), piri & tommy (1), Sammy Porter (1)
+  [183]  12 tracks | Oppidan (8), Interplanetary Criminal (2), mind of a dragon (1), Y U QT (1)
+  [184]  19 tracks | MPH (10), Late Replies (2), Milco (1), Holloway (1)
+  [200]  26 tracks | Martin Ikin (21), Basement Jaxx (1), Chez Damier (1), Justin Martin (1)
+  [215]  17 tracks | Chris Lorenzo (9), Gorgon City (6), Joy Anonymous (1), Robbie Doherty (1)
+  [218]  20 tracks | Joshwa (13), Josh Baker (3), Josh Samuel (2), Jackson Homer (1)
+  [222]  40 tracks | Riordan (9), Odd Mob (8), Entasia (7), Club Angel (2)
+  [223]  10 tracks | Knock2 (10)
+  [226]  12 tracks | KETTAMA (11), Matt Sassari (1)
+  [227]  51 tracks | Kato (40), Peggy Gou (4), Kura (3), KREAM (2)
+  [233]  40 tracks | Chris Lake (27), Harry Romero (4), Josement (3), Eva Shaw (1)
+  [234]  17 tracks | Dom Dolla (13), Duke Dumont (2), BYOR (1), Dj Steaw (1)
+  [236]  12 tracks | deadmau5 (5), Dimitri Vegas (2), JÄMO (1), MOGUAI (1)
+  [237]  17 tracks | t e s t p r e s s (7), ANDATA (2), Marco Lys (2), Pagano (2)
+  [242]  23 tracks | Noizu (20), DJ Snake (1), Fourword (1), Mark Knight (1)
+  [248]  18 tracks | Wax Motif (11), Kyle Watson (7)
+  [250]  24 tracks | Mau P (15), Thomas Newson (3), Shermanology (2), Lavern (1)
+  [251]  11 tracks | DANNY FILTH (7), Angrybaby (2), Babsy. (2)
+  [253]  41 tracks | AYYBO (9), Walker & Royce (6), DnD Music (5), J. Worra (5)
+  [254]  26 tracks | Marlon Hoffstadt (21), Conrad Taylor (1), Empire Of The Sun (1), Oliver Heldens (1)
+  [256]  32 tracks | Tchami (17), Dombresky (8), CASSIMM (2), Martin Solveig (1)
+  [258]  22 tracks | Bleu Clair (6), BLOND:ISH (5), BLCKLGHT (3), Claptone (2)
+  [262]  10 tracks | Cloonee (9), Blair Muir (1)
+  [263]  32 tracks | Sonny Fodera (7), Ferreck Dawn (6), Deeper Purpose (5), Curbi (2)
+
+======================================================================
+ARCHETYPE 7 — Desi
+8 communities
+======================================================================
+  [  4]  11 tracks | Imran Khan (10), Mustafa Zahid (1)
+  [ 16]  28 tracks | Yo Yo Honey Singh (27), Meet Bros Anjjan (1)
+  [ 63]  14 tracks | Sonika Sharma Agarwal (3), Arohi Anil Agarkar (1), Kavita Raam (1), Armonian (1)
+  [ 71]  11 tracks | AP Dhillon (11)
+  [ 72]  37 tracks | Diljit Dosanjh (10), Shubh (7), Guru Randhawa (5), Jaz Dhami (2)
+  [ 88]  26 tracks | Pritam (20), Amitabh Bachchan (2), Amit Trivedi (1), Devi Sri Prasad (1)
+  [ 91]  13 tracks | Shankar-Ehsaan-Loy (3), Sohail Sen (2), Mohan Kannan (1), Mohit Chauhan (1)
+  [ 92]  13 tracks | Vishal-Shekhar (13)
+
+======================================================================
+ARCHETYPE 8 — Prestige/Art Rap
+8 communities
+======================================================================
+  [ 11]  17 tracks | DONDA (17)
+  [ 42]  22 tracks | Westwood (21), Sainté (1)
+  [ 49]  21 tracks | ¥$ (20), Kanye West (1)
+  [ 50] 120 tracks | Kanye West (119), Consequence (1)
+  [ 77]  24 tracks | Tyler, The Creator (16), Earl Sweatshirt (7), The Alchemist (1)
+  [ 87]  17 tracks | Westside Gunn (16), Mach-Hommy (1)
+  [109]  23 tracks | Kuhsigh (17), Yung Pinch (5), kwes e (1)
+  [113] 119 tracks | Kendrick Lamar (102), Fenix Flexin (2), 2Pac (2), Paco (2)
+
+======================================================================
+ARCHETYPE 9 — Mainstream Prestige Rap
+30 communities
+======================================================================
+  [  5]  11 tracks | E the profit (11)
+  [  7]  46 tracks | J. Cole (38), Dreamville (6), ColeW (1), Jonah Love (1)
+  [ 13]  18 tracks | Tory Lanez (18)
+  [ 14] 283 tracks | Drake (264), Len (3), PARTYNEXTDOOR (3), Alessia Cara (2)
+  [ 25]  40 tracks | A$AP Rocky (34), A$AP ANT (4), Famous Dex (2)
+  [ 28]  46 tracks | oopsy (44), On The Radar (1), Ovrkast. (1)
+  [ 35]  12 tracks | Lelo (11), HUGEL (1)
+  [ 36]  16 tracks | Mac Miller (14), Macklemore (2)
+  [ 37]  11 tracks | Witness (11)
+  [ 54]  12 tracks | ADB (7), jev. (5)
+  [ 55]  14 tracks | Jaybexo (13), DANK (1)
+  [ 56]  24 tracks | JAŸ-Z (22), JBC (1), Quad City DJ's (1)
+  [ 90]  24 tracks | sam02 (17), Sideshow (3), 451 (1), Lumber (1)
+  [107]  15 tracks | Fimiguerrero (13), Knucks (1), Lyu (1)
+  [110]  19 tracks | hako (13), Baka Not Nice (2), IDY bran (2), 070 Shake (1)
+  [112]  22 tracks | Baby Keem (14), Baby Bash (2), Eminem (2), Tommy Richman (2)
+  [117]  15 tracks | Freddie Gibbs (14), Griselda (1)
+  [118]  12 tracks | Griselda (12)
+  [120]  18 tracks | ero808 (5), Cult Shφtta (4), echstacy (3), ScrewStache (2)
+  [121]  13 tracks | Jetson (11), Imprintafter (1), Levity (1)
+  [123]  12 tracks | ProdWithFlavor (11), PROP (1)
+  [125]  16 tracks | Kid Cudi (14), KIDS SEE GHOSTS (2)
+  [133]  10 tracks | Robin Gan (10)
+  [135]  23 tracks | 637iso (5), CoryaYo (4), Brayden Potts (4), Jaeden Camstra (2)
+  [136]  15 tracks | Joey Bada$$ (8), Aaron May (2), Bop Alloy (1), Count Bass D (1)
+  [137]  39 tracks | MF DOOM (11), Viktor Vaughn (10), Madvillain (5), Meyhem Lauren (3)
+  [138]  11 tracks | JID (11)
+  [139]  19 tracks | Jaden (18), Steele 11 (1)
+  [166]  26 tracks | J. Rawls (4), Ljones (4), DJ Harrison (3), Marcus D (3)
+  [195]  22 tracks | Dazegxd (18), Freenzy Music (1), pk (1), TREASURE SERIES (1)
+
+======================================================================
+ARCHETYPE 10 — Rage/Plugg/Opium
+31 communities
+======================================================================
+  [  2]  68 tracks | Pi’erre Bourne (65), DJ Purpberry (1), SahBabii (1), youngnys (1)
+  [  8]  57 tracks | NAV (57)
+  [ 15]  22 tracks | Dom Corleo (22)
+  [ 19]  21 tracks | LUCKI (19), Macon (1), upgrades (1)
+  [ 21] 116 tracks | Playboi Carti (99), CartiDropWLR (3), rareslit (3), Latto (2)
+  [ 22]  26 tracks | Juice WRLD (25), recrafted (1)
+  [ 27]  18 tracks | Post Malone (18)
+  [ 29]  15 tracks | Ski Mask The Slump God (14), Blvck Svm (1)
+  [ 39]  16 tracks | UnoTheActivist (15), Lil Unky (1)
+  [ 43]  36 tracks | sosocamo (36)
+  [ 48]  12 tracks | PlaqueBoyMax (12)
+  [ 60]  20 tracks | Lil Skies (20)
+  [ 61]  47 tracks | Lil Tecca (44), Desiigner (3)
+  [ 65]  57 tracks | $uicideboy$ (52), SUSPEKT (2), adixu's stuff (1), Carnage (1)
+  [ 68]  19 tracks | D. Savage (19)
+  [ 69]  28 tracks | Lancey Foux (26), KATSEYE (1), KayCyy (1)
+  [ 78]  59 tracks | Pop Smoke (57), BigKayBeezy (1), Jay Gwuapo (1)
+  [ 89]  32 tracks | Yeat (28), dyingoutlay (1), SeptembersRich (1), Whethan (1)
+  [ 95]  24 tracks | Denzel Curry (23), Terror Reid (1)
+  [102] 107 tracks | Destroy Lonely (86), Kankan (8), DESTROY BORING (4), Rick Owens (4)
+  [103]  30 tracks | Ken Carson (27), user00xman (3)
+  [104]  27 tracks | Homixide Gang (19), HXG (7), Memphis Cult (1)
+  [105]  40 tracks | XXXTENTACION (35), Cheem (1), PE$O PETE (1), Vanilla (1)
+  [106]  62 tracks | Trippie Redd (44), Eem Triplin (7), iann dior (6), Global Dan (3)
+  [108]  48 tracks | EsDeeKid (20), fakemink (7), Feng (3), Dave (2)
+  [111]  17 tracks | Shoreline Mafia (16), Ying Yang Twins (1)
+  [116]  21 tracks | Barretta (12), mikeeysmind (3), slayr (3), Gunnr (1)
+  [122]  11 tracks | Autumn! (11)
+  [128]  60 tracks | Thouxanbanfauni (57), Izaya Tiji Archive (1), Xavier Wulf (1), xtcblast (1)
+  [129]  24 tracks | SoFaygo (6), Summrs (5), FLEE (4), Rich Amiri (3)
+  [147]  32 tracks | imnotvrycreative (28), brakence (1), ericdoa (1), Odetari (1)
+
+======================================================================
+ARCHETYPE 11 — K-Pop
+8 communities
+======================================================================
+  [ 18]  15 tracks | Lyn (14), Lydia Ganada (1)
+  [ 23]  10 tracks | wave to earth (10)
+  [ 31]  14 tracks | CHUNG HA (14)
+  [ 32]  21 tracks | LE SSERAFIM (19), pesow (1), Seori (1)
+  [ 38]  23 tracks | aespa (22), Effie (1)
+  [ 41]  63 tracks | TWICE (56), NAYEON (3), FIFTY FIFTY (2), hongye (1)
+  [ 46]  33 tracks | NewJeans (23), BIBI (6), NMIXX (3), ZICO (1)
+  [ 47]  75 tracks | BLACKPINK (24), ITZY (11), JENNIE (5), JEON SOMI (5)
+
+======================================================================
+ARCHETYPE 12 — Indie/Alt/Pop (MIXED)
+28 communities
+======================================================================
+  [  0]  10 tracks | Benjamin (10)
+  [  1]  21 tracks | pryme! (21)
+  [  9]  19 tracks | FISHER (18), FISHERMANZZ (1)
+  [ 10]  27 tracks | The Weeknd (27)
+  [ 67]  17 tracks | Calvin Harris (15), Ellie Goulding (1), Taylor Swift (1)
+  [ 70]  17 tracks | onlywoke (17)
+  [ 98]  44 tracks | Frank Ocean (26), Brent Faiyaz (8), Chase Atlantic (4), Free Nationals (3)
+  [101]  41 tracks | Zock (10), Ley (6), Madcat (2), Daddy Yankee (2)
+  [114]  10 tracks | Jason Derulo (6), Trey Songz (3), Jay Sean (1)
+  [115]  18 tracks | Bryson Tiller (3), Morgan Wallen (2), Kane Brown (2), Chris Stapleton (1)
+  [119]  10 tracks | STAYC (4), berryblue (2), Ayesha Erotica (1), Ella Rosa (1)
+  [126]  11 tracks | Far East Movement (3), LMFAO (3), Jai Wolf (2), Major Lazer (2)
+  [127]  12 tracks | Squeeze (12)
+  [130]  23 tracks | PinkPantheress (19), Dua Lipa (1), Magdalena Bay (1), Milky Chance (1)
+  [131]  15 tracks | Black Eyed Peas (6), Justin Timberlake (5), Pitbull (2), Robin Thicke (1)
+  [132]  36 tracks | Rihanna (14), Madonna (3), Ariana Grande (3), Sabrina Carpenter (3)
+  [141]  13 tracks | Shy High (4), Kaysin (1), kurtains (1), JEV (1)
+  [143]  14 tracks | 3ee (4), Ezra Wood (3), Elisha La'verne (2), Avenoir (2)
+  [145]  18 tracks | defsharp (9), zandros (2), DJ CEREJASS (1), ilykimchi (1)
+  [149]  15 tracks | Elijah Fox (5), The Ink Spots (2), Tex Beneke (2), Iain Mackenzie (1)
+  [150]  10 tracks | Yazida (7), Iyaz (2), Rsieh Raxan (1)
+  [151]  12 tracks | kruu (7), jigitz (2), alan vuong (1), minj (1)
+  [152]  14 tracks | beabadoobee (3), Vansire (2), The Marías (2), Cigarettes After Sex (1)
+  [154]  19 tracks | Tame Impala (9), Phoenix (4), PAX (1), Portugal. The Man (1)
+  [155]  14 tracks | Cydnee with a C (5), aidenf7 (3), Cyrus Nyx (3), Elley Duhé (1)
+  [160]  40 tracks | The Strokes (35), Kings of Leon (1), Makeout Reef (1), Modest Mouse (1)
+  [161]  12 tracks | Linkin Park (7), Three Days Grace (2), Deftones (1), Nirvana (1)
+  [162]  35 tracks | Imagine Dragons (6), benches (6), Bloc Party (5), Green Day (4)
+
+======================================================================
+ARCHETYPE 13 — Atlanta Trap
+6 communities
+======================================================================
+  [ 30] 156 tracks | Future (143), Outkast (9), 6 Dogs (2), JulezJZ (1)
+  [ 81]  14 tracks | Gunna (14)
+  [ 82] 103 tracks | Gunna (101), Internet Money (1), Kap G (1)
+  [ 93] 144 tracks | Young Thug (116), Young Stoner Life (7), Lil Baby (6), T.I. (3)
+  [ 99]  73 tracks | Lil Baby (64), DaBaby (8), Money Man (1)
+  [100]  13 tracks | Lil Baby (13)
+
+======================================================================
+ARCHETYPE 14 — Orchestral Game OST
+5 communities
+======================================================================
+  [182]  16 tracks | Christopher Larkin (15), Daniel Lopatin (1)
+  [188]  25 tracks | berlioz (5), Erik Satie (2), Camille Saint-Saëns (2), Frédéric Chopin (2)
+  [190]  32 tracks | Yoko Shimomura (19), Masashi Hamauzu (3), Yu-Peng Chen (2), Nobuo Uematsu (1)
+  [207]  29 tracks | Jeremy Soule (28), League of Legends (1)
+  [208]  28 tracks | Ramin Djawadi (7), Hans Zimmer (5), Trevor Morris (3), Bernard Herrmann (1)
+
+======================================================================
+PROPOSED MANUAL OVERRIDES
+(fill in after review)
+cluster_id → move from archetype X to archetype Y
+======================================================================

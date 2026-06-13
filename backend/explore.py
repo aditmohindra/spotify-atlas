@@ -1,107 +1,152 @@
 ﻿import psycopg2
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from collections import defaultdict
+
 conn = psycopg2.connect('postgresql://spotify_atlas:spotify_atlas_password@127.0.0.1:5433/spotify_atlas')
 cur = conn.cursor()
 
-def get_cluster_for_track(run_id, track_name, artist_name):
-    cur.execute("""
-        SELECT ca.cluster_id, COUNT(*) OVER (PARTITION BY ca.cluster_id) as cluster_size,
-               COUNT(DISTINCT ar2.id) OVER (PARTITION BY ca.cluster_id) as unique_artists
-        FROM clustering_assignments ca
-        JOIN tracks t ON t.id = ca.track_id
-        JOIN artists ar ON ar.id = t.artist_id
-        JOIN clustering_assignments ca2 ON ca2.run_id = ca.run_id AND ca2.cluster_id = ca.cluster_id
-        JOIN tracks t2 ON t2.id = ca2.track_id
-        JOIN artists ar2 ON ar2.id = t2.artist_id
-        WHERE ca.run_id = %s AND t.name ILIKE %s AND ar.name ILIKE %s
-        LIMIT 1
-    """, (run_id, f'%{track_name}%', f'%{artist_name}%'))
-    row = cur.fetchone()
-    return row
+# Load 2D coordinates (scene UMAP geography)
+print("Loading 2D coordinates...")
+cur.execute("""
+    SELECT tc.track_id, tc.x, tc.y
+    FROM track_coordinates tc
+""")
+coord_rows = cur.fetchall()
+coords = {r[0]: (r[1], r[2]) for r in coord_rows}
+print(f"  Loaded {len(coords)} 2D coordinates")
 
-def get_cluster_top_artists(run_id, cluster_id, limit=6):
-    if cluster_id == -1:
-        return ["[NOISE]"]
-    cur.execute("""
-        SELECT ar.name, COUNT(*) as cnt
-        FROM clustering_assignments ca
-        JOIN tracks t ON t.id = ca.track_id
-        JOIN artists ar ON ar.id = t.artist_id
-        WHERE ca.run_id = %s AND ca.cluster_id = %s
-        GROUP BY ar.name ORDER BY cnt DESC LIMIT %s
-    """, (run_id, cluster_id, limit))
-    return [f"{r[0]} ({r[1]})" for r in cur.fetchall()]
+# Load vibe cluster assignments (run 29)
+print("Loading vibe cluster assignments (run 29)...")
+cur.execute("""
+    SELECT track_id, cluster_id
+    FROM clustering_assignments
+    WHERE run_id = 29
+""")
+vibe_rows = cur.fetchall()
+vibe_assignments = {r[0]: r[1] for r in vibe_rows}
+print(f"  Loaded {len(vibe_assignments)} vibe assignments")
 
-test_cases = [
-    # (category, track_name, artist_name)
-    # Late night introspection
-    ("Late Night", "Self Care", "Mac Miller"),
-    ("Late Night", "Saint Pablo", "Kanye West"),
-    ("Late Night", "Do Not Disturb", "Drake"),
-    ("Late Night", "Nights", "Frank Ocean"),
-    ("Late Night", "Ghost Town", "Kanye West"),
-    # Game/ambient
-    ("Game/Ambient", "Hollow Knight", "Christopher Larkin"),
-    ("Game/Ambient", "Stardew Valley Overture", "ConcernedApe"),
-    ("Game/Ambient", "Beneath the Mask", "Lyn"),
-    ("Game/Ambient", "Dearly Beloved", "Yoko Shimomura"),
-    ("Game/Ambient", "Deference for Darkness", "Martin O'Donnell"),
-    # Hype/cross-cultural
-    ("Hype", "HOUSTONFORNICATION", "Travis Scott"),
-    ("Hype", "High Heels Te Nachche", "Meet Bros."),
-    ("Hype", "Bijlee Bijlee", "Harrdy Sandhu"),
-    ("Hype", "SICKO MODE", "Travis Scott"),
-    ("Hype", "goosebumps", "Travis Scott"),
-    # Artist dominance stress test
-    ("Trap", "Drip Too Hard", "Gunna"),
-    ("Trap", "Pick Up the Phone", "Young Thug"),
-    ("Trap", "Relationship", "Future"),
-    ("Trap", "Yes Indeed", "Lil Baby"),
-    ("Trap", "Sold Out Dates", "Gunna"),
-]
+# Load scene cluster assignments (run 18 / production)
+print("Loading scene cluster assignments (run 18)...")
+cur.execute("""
+    SELECT track_id, cluster_id
+    FROM track_clusters
+    WHERE cluster_id != -1
+""")
+scene_rows = cur.fetchall()
+scene_assignments = {r[0]: r[1] for r in scene_rows}
 
-output = []
-output.append("RUN 18 (scene) vs RUN 29 (vibe) — HEAD TO HEAD COMPARISON")
-output.append("=" * 80)
+# Load artist names for hover info
+cur.execute("""
+    SELECT t.id, t.name, ar.name
+    FROM tracks t
+    JOIN artists ar ON ar.id = t.artist_id
+""")
+track_info = {r[0]: (r[1], r[2]) for r in cur.fetchall()}
 
-current_category = None
-for category, track_name, artist_name in test_cases:
-    if category != current_category:
-        current_category = category
-        output.append(f"\n{'─'*80}")
-        output.append(f"  CATEGORY: {category}")
-        output.append(f"{'─'*80}")
-
-    r18 = get_cluster_for_track(18, track_name, artist_name)
-    r29 = get_cluster_for_track(29, track_name, artist_name)
-
-    output.append(f"\n  {track_name} — {artist_name}")
-
-    if r18:
-        cluster_id, size, diversity = r18
-        artists = get_cluster_top_artists(18, cluster_id)
-        diversity_pct = round(diversity/size*100) if size > 0 else 0
-        output.append(f"    Run 18 (scene): cluster={cluster_id:>4}  size={size:>4}  diversity={diversity_pct:>3}%")
-        output.append(f"                   {', '.join(artists[:4])}")
-    else:
-        output.append(f"    Run 18 (scene): NOT FOUND")
-
-    if r29:
-        cluster_id, size, diversity = r29
-        artists = get_cluster_top_artists(29, cluster_id)
-        diversity_pct = round(diversity/size*100) if size > 0 else 0
-        noise = " ⚠ NOISE" if cluster_id == -1 else ""
-        output.append(f"    Run 29 (vibe):  cluster={cluster_id:>4}  size={size:>4}  diversity={diversity_pct:>3}%{noise}")
-        output.append(f"                   {', '.join(artists[:4])}")
-    else:
-        output.append(f"    Run 29 (vibe):  NOT FOUND")
-
-output.append(f"\n{'='*80}")
-output.append("END OF COMPARISON")
-
-result = "\n".join(output)
-path = "ml/enrichment/run18_vs_run29_comparison.txt"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(result)
-
-print(result)
 conn.close()
+
+# Build plot data
+track_ids = list(coords.keys())
+xs = [coords[tid][0] for tid in track_ids]
+ys = [coords[tid][1] for tid in track_ids]
+vibe_clusters = [vibe_assignments.get(tid, -1) for tid in track_ids]
+
+# Get unique vibe cluster IDs (excluding noise)
+unique_vibes = sorted(set(v for v in vibe_clusters if v != -1))
+n_clusters = len(unique_vibes)
+print(f"\nVibe clusters to color: {n_clusters}")
+
+# Generate color palette
+cmap = plt.colormaps['tab20'].resampled(20)
+colors_20 = [cmap(i) for i in range(20)]
+# Extend with tab20b and tab20c for more colors
+cmap2 = plt.colormaps['tab20b'].resampled(20)
+cmap3 = plt.colormaps['tab20c'].resampled(20)
+all_colors = colors_20 + [cmap2(i) for i in range(20)] + [cmap3(i) for i in range(20)]
+
+cluster_to_color = {}
+for i, cid in enumerate(unique_vibes):
+    cluster_to_color[cid] = all_colors[i % len(all_colors)]
+
+# Separate noise from clustered
+noise_mask = [v == -1 for v in vibe_clusters]
+clustered_mask = [v != -1 for v in vibe_clusters]
+
+fig, axes = plt.subplots(1, 2, figsize=(24, 10))
+
+# --- Plot 1: Vibe clusters on scene geography ---
+ax1 = axes[0]
+ax1.set_facecolor('#0a0a0a')
+fig.patch.set_facecolor('#0a0a0a')
+
+# Plot noise first (gray, small)
+noise_xs = [xs[i] for i, m in enumerate(noise_mask) if m]
+noise_ys = [ys[i] for i, m in enumerate(noise_mask) if m]
+ax1.scatter(noise_xs, noise_ys, c='#2a2a2a', s=1, alpha=0.3, zorder=1)
+
+# Plot clustered points colored by vibe cluster
+cluster_xs = defaultdict(list)
+cluster_ys = defaultdict(list)
+for i, tid in enumerate(track_ids):
+    v = vibe_clusters[i]
+    if v != -1:
+        cluster_xs[v].append(xs[i])
+        cluster_ys[v].append(ys[i])
+
+for cid in unique_vibes:
+    color = cluster_to_color[cid]
+    ax1.scatter(cluster_xs[cid], cluster_ys[cid],
+                c=[color], s=2, alpha=0.6, zorder=2)
+
+ax1.set_title('Vibe Clusters on Scene Geography\n(Run 29 colors, Run 18 2D layout)',
+              color='white', fontsize=13, pad=10)
+ax1.set_xticks([])
+ax1.set_yticks([])
+for spine in ax1.spines.values():
+    spine.set_visible(False)
+
+# --- Plot 2: Scene clusters on scene geography (for comparison) ---
+ax2 = axes[1]
+ax2.set_facecolor('#0a0a0a')
+
+scene_cluster_list = sorted(set(v for v in scene_assignments.values() if v != -1))
+scene_color_map = {cid: all_colors[i % len(all_colors)] for i, cid in enumerate(scene_cluster_list)}
+
+scene_cluster_xs = defaultdict(list)
+scene_cluster_ys = defaultdict(list)
+scene_noise_xs = []
+scene_noise_ys = []
+
+for tid in track_ids:
+    x, y = coords[tid]
+    sc = scene_assignments.get(tid, -1)
+    if sc == -1:
+        scene_noise_xs.append(x)
+        scene_noise_ys.append(y)
+    else:
+        scene_cluster_xs[sc].append(x)
+        scene_cluster_ys[sc].append(y)
+
+ax2.scatter(scene_noise_xs, scene_noise_ys, c='#2a2a2a', s=1, alpha=0.3, zorder=1)
+for cid in scene_cluster_list:
+    color = scene_color_map[cid]
+    ax2.scatter(scene_cluster_xs[cid], scene_cluster_ys[cid],
+                c=[color], s=2, alpha=0.6, zorder=2)
+
+ax2.set_title('Scene Clusters on Scene Geography\n(Run 18 colors, Run 18 2D layout)',
+              color='white', fontsize=13, pad=10)
+ax2.set_xticks([])
+ax2.set_yticks([])
+for spine in ax2.spines.values():
+    spine.set_visible(False)
+
+plt.tight_layout(pad=2.0)
+output_path = 'ml/visualization/vibe_vs_scene_comparison.png'
+plt.savefig(output_path, dpi=150, bbox_inches='tight',
+            facecolor='#0a0a0a', edgecolor='none')
+plt.close()
+print(f"\nSaved to {output_path}")
+print("Open the file to compare vibe vs scene clustering on the same 2D geography")

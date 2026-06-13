@@ -9,5 +9,13 @@ from app.models.models import (
     TrackCoordinate,
     TrackCluster,
     ClusterLabel,
-    UserEra
+    UserEra,
+    ClusteringRun,
+    ClusteringAssignment,
+    TrackClusterCoordinate,
+    ClusterCentroid,
+    ClusterArchetype,
+    CommunityArchetypeAssignment,
+    ClusterLabelArchive,
+    TrackVibeCoordinate,
 )
