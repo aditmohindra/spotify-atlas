@@ -6,8 +6,10 @@ Stores three representations per community:
 - map2d_centroid: 2D mean of visualization coordinates (galaxy map labels)
 
 Usage:
-    uv run python ml/clustering/compute_centroids.py
+    uv run python ml/clustering/compute_centroids.py            # uses track_clusters
+    uv run python ml/clustering/compute_centroids.py --run-id 18  # uses clustering_assignments
 """
+import argparse
 import os
 import sys
 import random
@@ -21,7 +23,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 from app.models.models import (
     TrackCluster, TrackEmbedding, TrackClusterCoordinate,
-    TrackCoordinate, ClusterCentroid,
+    TrackCoordinate, ClusterCentroid, ClusteringAssignment,
 )
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -32,35 +34,55 @@ SessionLocal = sessionmaker(bind=engine)
 UMAP_RUN_ID = 16
 
 
-def compute_centroids():
+def _load_cluster_map(db, run_id: int | None) -> dict[int, list[int]]:
+    """Return {cluster_id: [track_id, ...]} from the appropriate source."""
+    cluster_map: dict[int, list[int]] = {}
+
+    if run_id is not None:
+        print(f"Loading from clustering_assignments run_id={run_id}")
+        rows = (
+            db.query(ClusteringAssignment.cluster_id, ClusteringAssignment.track_id)
+            .filter(
+                ClusteringAssignment.run_id == run_id,
+                ClusteringAssignment.cluster_id != -1,
+            )
+            .all()
+        )
+    else:
+        print("Loading from track_clusters")
+        rows = (
+            db.query(TrackCluster.cluster_id, TrackCluster.track_id)
+            .filter(TrackCluster.cluster_id != -1)
+            .all()
+        )
+
+    for cluster_id, track_id in rows:
+        cluster_map.setdefault(cluster_id, []).append(track_id)
+
+    return cluster_map
+
+
+def compute_centroids(run_id: int | None = None):
     db = SessionLocal()
     try:
-        # Clear stale centroids before recomputing
+        # Always start fresh
         db.execute(text("DELETE FROM cluster_centroids"))
         db.commit()
-        print("Cleared old centroids from cluster_centroids")
+        print("Cleared existing rows from cluster_centroids")
 
-        # Load all distinct cluster_ids (exclude noise = -1)
-        cluster_ids = sorted(set(
-            row[0] for row in db.query(TrackCluster.cluster_id).distinct().all()
-            if row[0] != -1
-        ))
-        print(f"Found {len(cluster_ids)} production clusters (run 18 / track_clusters).")
+        cluster_map = _load_cluster_map(db, run_id)
+        cluster_ids = sorted(cluster_map)
+        source_label = f"clustering_assignments run_id={run_id}" if run_id is not None else "track_clusters"
+        print(f"Found {len(cluster_ids)} clusters from {source_label}")
 
         track_counts = []
 
         for i, cluster_id in enumerate(cluster_ids):
-            # --- track_ids for this cluster ---
-            track_ids = [
-                row[0] for row in
-                db.query(TrackCluster.track_id)
-                .filter(TrackCluster.cluster_id == cluster_id)
-                .all()
-            ]
+            track_ids = cluster_map[cluster_id]
             n = len(track_ids)
             track_counts.append(n)
 
-            # --- raw_centroid: 1536D scene embeddings ---
+            # raw_centroid: 1536D mean of scene embeddings (always document_type='scene')
             emb_rows = (
                 db.query(TrackEmbedding.vector)
                 .filter(
@@ -143,4 +165,14 @@ def compute_centroids():
 
 
 if __name__ == "__main__":
-    compute_centroids()
+    parser = argparse.ArgumentParser(description="Compute cluster centroids.")
+    parser.add_argument(
+        "--run-id",
+        type=int,
+        default=None,
+        metavar="RUN_ID",
+        help="Load assignments from clustering_assignments WHERE run_id=RUN_ID. "
+             "Omit to load from track_clusters (production behavior).",
+    )
+    args = parser.parse_args()
+    compute_centroids(run_id=args.run_id)

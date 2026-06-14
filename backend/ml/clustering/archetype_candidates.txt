@@ -5,429 +5,420 @@ ARCHETYPE CANDIDATES — Review and pick the best method + k
 
 === AGGLOMERATIVE k=8 (8 archetypes) ===
 
-  Archetype 0 (227 communities):
-    Top artists: pryme!, Pi’erre Bourne, youngnys, DJ Purpberry, 5EB, Zack Knight, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV
-    Sample communities: pryme! || Pi’erre Bourne | youngnys | DJ Purpberry || 5EB | Zack Knight || E the profit || Sheck Wes
+  Archetype 0 (23 communities):
+    Top artists: Lofi Lia, MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, EsDeeKid, fakemink, Feng, Men I Trust, coye
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || EsDeeKid | fakemink | Feng || Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 1 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 1 (73 communities):
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Fred again.., Sammy Virji, MPH
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Fred again.. | Sammy Virji | MPH
 
-  Archetype 2 (24 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Sleepy Tom, Soft Soundscapes, Tom Santa, Lonestar Void, The Slumbering One, Christopher Larkin, Daniel Lopatin, Barely Cloudy
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Sleepy Tom || Soft Soundscapes | Tom Santa | Lonestar Void || The Slumbering One
+  Archetype 2 (63 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack, Destroy Lonely, Rick Owens, Prod. 94, Closed on Sunday, Murr, Lullaby Legends, Yo Yo Honey Singh, Pritam, Shubh
+    Sample communities: Travis Scott | Offset | Huncho Jack || Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex
 
   Archetype 3 (1 communities):
-    Top artists: Bad Boombox
-    Sample communities: Bad Boombox
+    Top artists: 
 
   Archetype 4 (1 communities):
-    Top artists: Benjamin
-    Sample communities: Benjamin
+    Top artists: Migos, Quavo, YBN Nahmir
+    Sample communities: Migos | Quavo | YBN Nahmir
 
-  Archetype 5 (1 communities):
-    Top artists: Moors
-    Sample communities: Moors
+  Archetype 5 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 6 (1 communities):
-    Top artists: Squeeze
-    Sample communities: Squeeze
+  Archetype 6 (3 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
   Archetype 7 (1 communities):
-    Top artists: FISHER, FISHERMANZZ
-    Sample communities: FISHER | FISHERMANZZ
+    Top artists: DM DOKURO, Arcade Player, The Greatest Bits
+    Sample communities: DM DOKURO | Arcade Player | The Greatest Bits
 
 
 === AGGLOMERATIVE k=9 (9 archetypes) ===
 
-  Archetype 0 (24 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Sleepy Tom, Soft Soundscapes, Tom Santa, Lonestar Void, The Slumbering One, Christopher Larkin, Daniel Lopatin, Barely Cloudy
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Sleepy Tom || Soft Soundscapes | Tom Santa | Lonestar Void || The Slumbering One
+  Archetype 0 (63 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack, Destroy Lonely, Rick Owens, Prod. 94, Closed on Sunday, Murr, Lullaby Legends, Yo Yo Honey Singh, Pritam, Shubh
+    Sample communities: Travis Scott | Offset | Huncho Jack || Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex
 
-  Archetype 1 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 1 (73 communities):
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Fred again.., Sammy Virji, MPH
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Fred again.. | Sammy Virji | MPH
 
-  Archetype 2 (220 communities):
-    Top artists: pryme!, Pi’erre Bourne, youngnys, DJ Purpberry, 5EB, Zack Knight, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV
-    Sample communities: pryme! || Pi’erre Bourne | youngnys | DJ Purpberry || 5EB | Zack Knight || E the profit || Sheck Wes
+  Archetype 2 (4 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, Men I Trust, coye, Frank Ocean, Lofi Lia, Celestial Alignment, Ngyn
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 3 (7 communities):
-    Top artists: Lyn, Lydia Ganada, CHUNG HA, LE SSERAFIM, pesow, Seori, aespa, Effie, TWICE, NAYEON, FIFTY FIFTY, NewJeans
-    Sample communities: Lyn | Lydia Ganada || CHUNG HA || LE SSERAFIM | pesow | Seori || aespa | Effie || TWICE | NAYEON | FIFTY FIFTY
+  Archetype 3 (19 communities):
+    Top artists: EsDeeKid, fakemink, Feng, asoookha, Lofi Lia, mellow fox, Pegassi, Aminé, KETTAMA, Pi’erre Bourne, Metro Boomin, Pop Smoke
+    Sample communities: EsDeeKid | fakemink | Feng || asoookha | Lofi Lia | mellow fox || Pegassi | Aminé | KETTAMA || Pi’erre Bourne | Metro Boomin | Pop Smoke
 
   Archetype 4 (1 communities):
-    Top artists: Benjamin
-    Sample communities: Benjamin
+    Top artists: Migos, Quavo, YBN Nahmir
+    Sample communities: Migos | Quavo | YBN Nahmir
 
-  Archetype 5 (1 communities):
-    Top artists: Moors
-    Sample communities: Moors
+  Archetype 5 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 6 (1 communities):
-    Top artists: Squeeze
-    Sample communities: Squeeze
+  Archetype 6 (3 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
   Archetype 7 (1 communities):
-    Top artists: FISHER, FISHERMANZZ
-    Sample communities: FISHER | FISHERMANZZ
+    Top artists: DM DOKURO, Arcade Player, The Greatest Bits
+    Sample communities: DM DOKURO | Arcade Player | The Greatest Bits
 
   Archetype 8 (1 communities):
-    Top artists: Bad Boombox
-    Sample communities: Bad Boombox
+    Top artists: 
 
 
 === AGGLOMERATIVE k=10 (10 archetypes) ===
 
-  Archetype 0 (220 communities):
-    Top artists: pryme!, Pi’erre Bourne, youngnys, DJ Purpberry, 5EB, Zack Knight, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV
-    Sample communities: pryme! || Pi’erre Bourne | youngnys | DJ Purpberry || 5EB | Zack Knight || E the profit || Sheck Wes
+  Archetype 0 (61 communities):
+    Top artists: Destroy Lonely, Rick Owens, Prod. 94, Closed on Sunday, Murr, Lullaby Legends, Yo Yo Honey Singh, Pritam, Shubh, DJ HEARTSTRING, Panteros666, DJ Traytex
+    Sample communities: Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex || Kendrick Lamar | Kuhsigh | Yung Pinch
 
-  Archetype 1 (3 communities):
-    Top artists: Sleepy Tom, Soft Soundscapes, Tom Santa, Lonestar Void, The Slumbering One
-    Sample communities: Sleepy Tom || Soft Soundscapes | Tom Santa | Lonestar Void || The Slumbering One
+  Archetype 1 (73 communities):
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Fred again.., Sammy Virji, MPH
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Fred again.. | Sammy Virji | MPH
 
-  Archetype 2 (21 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Christopher Larkin, Daniel Lopatin, Barely Cloudy, REI, Samuel Kim, berlioz, Erik Satie, Pyotr Ilyich Tchaikovsky
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Christopher Larkin | Daniel Lopatin || Barely Cloudy | REI | Samuel Kim || berlioz | Erik Satie | Pyotr Ilyich Tchaikovsky
+  Archetype 2 (4 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, Men I Trust, coye, Frank Ocean, Lofi Lia, Celestial Alignment, Ngyn
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 3 (7 communities):
-    Top artists: Lyn, Lydia Ganada, CHUNG HA, LE SSERAFIM, pesow, Seori, aespa, Effie, TWICE, NAYEON, FIFTY FIFTY, NewJeans
-    Sample communities: Lyn | Lydia Ganada || CHUNG HA || LE SSERAFIM | pesow | Seori || aespa | Effie || TWICE | NAYEON | FIFTY FIFTY
+  Archetype 3 (19 communities):
+    Top artists: EsDeeKid, fakemink, Feng, asoookha, Lofi Lia, mellow fox, Pegassi, Aminé, KETTAMA, Pi’erre Bourne, Metro Boomin, Pop Smoke
+    Sample communities: EsDeeKid | fakemink | Feng || asoookha | Lofi Lia | mellow fox || Pegassi | Aminé | KETTAMA || Pi’erre Bourne | Metro Boomin | Pop Smoke
 
-  Archetype 4 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 4 (2 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack
+    Sample communities: Travis Scott | Offset | Huncho Jack
 
-  Archetype 5 (1 communities):
-    Top artists: Moors
-    Sample communities: Moors
+  Archetype 5 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 6 (1 communities):
-    Top artists: Squeeze
-    Sample communities: Squeeze
+  Archetype 6 (3 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
   Archetype 7 (1 communities):
-    Top artists: FISHER, FISHERMANZZ
-    Sample communities: FISHER | FISHERMANZZ
+    Top artists: DM DOKURO, Arcade Player, The Greatest Bits
+    Sample communities: DM DOKURO | Arcade Player | The Greatest Bits
 
   Archetype 8 (1 communities):
-    Top artists: Bad Boombox
-    Sample communities: Bad Boombox
+    Top artists: 
 
   Archetype 9 (1 communities):
-    Top artists: Benjamin
-    Sample communities: Benjamin
+    Top artists: Migos, Quavo, YBN Nahmir
+    Sample communities: Migos | Quavo | YBN Nahmir
 
 
 === AGGLOMERATIVE k=11 (11 archetypes) ===
 
-  Archetype 0 (218 communities):
-    Top artists: pryme!, Pi’erre Bourne, youngnys, DJ Purpberry, 5EB, Zack Knight, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV
-    Sample communities: pryme! || Pi’erre Bourne | youngnys | DJ Purpberry || 5EB | Zack Knight || E the profit || Sheck Wes
+  Archetype 0 (4 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, Men I Trust, coye, Frank Ocean, Lofi Lia, Celestial Alignment, Ngyn
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 1 (2 communities):
-    Top artists: ADB, jev., Eve
-    Sample communities: ADB | jev. || Eve
+  Archetype 1 (73 communities):
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Fred again.., Sammy Virji, MPH
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Fred again.. | Sammy Virji | MPH
 
-  Archetype 2 (21 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Christopher Larkin, Daniel Lopatin, Barely Cloudy, REI, Samuel Kim, berlioz, Erik Satie, Pyotr Ilyich Tchaikovsky
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Christopher Larkin | Daniel Lopatin || Barely Cloudy | REI | Samuel Kim || berlioz | Erik Satie | Pyotr Ilyich Tchaikovsky
+  Archetype 2 (10 communities):
+    Top artists: Destroy Lonely, Rick Owens, Prod. 94, Closed on Sunday, Murr, Lullaby Legends, Yo Yo Honey Singh, Pritam, Shubh, DJ HEARTSTRING, Panteros666, DJ Traytex
+    Sample communities: Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex || Odd Mob | Entasia | Torren Foot
 
-  Archetype 3 (7 communities):
-    Top artists: Lyn, Lydia Ganada, CHUNG HA, LE SSERAFIM, pesow, Seori, aespa, Effie, TWICE, NAYEON, FIFTY FIFTY, NewJeans
-    Sample communities: Lyn | Lydia Ganada || CHUNG HA || LE SSERAFIM | pesow | Seori || aespa | Effie || TWICE | NAYEON | FIFTY FIFTY
+  Archetype 3 (19 communities):
+    Top artists: EsDeeKid, fakemink, Feng, asoookha, Lofi Lia, mellow fox, Pegassi, Aminé, KETTAMA, Pi’erre Bourne, Metro Boomin, Pop Smoke
+    Sample communities: EsDeeKid | fakemink | Feng || asoookha | Lofi Lia | mellow fox || Pegassi | Aminé | KETTAMA || Pi’erre Bourne | Metro Boomin | Pop Smoke
 
-  Archetype 4 (3 communities):
-    Top artists: Sleepy Tom, Soft Soundscapes, Tom Santa, Lonestar Void, The Slumbering One
-    Sample communities: Sleepy Tom || Soft Soundscapes | Tom Santa | Lonestar Void || The Slumbering One
+  Archetype 4 (51 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Playboi Carti, Ken Carson, Yeat, Odymel, Jengi, D.O.D, aekasora, Brayden Potts, Ljones
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Playboi Carti | Ken Carson | Yeat || Odymel | Jengi | D.O.D || aekasora | Brayden Potts | Ljones || Kijugo | kurochuu. | LoFi Waiter
 
-  Archetype 5 (1 communities):
-    Top artists: Moors
-    Sample communities: Moors
+  Archetype 5 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 6 (1 communities):
-    Top artists: Squeeze
-    Sample communities: Squeeze
+  Archetype 6 (3 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
   Archetype 7 (1 communities):
-    Top artists: FISHER, FISHERMANZZ
-    Sample communities: FISHER | FISHERMANZZ
+    Top artists: DM DOKURO, Arcade Player, The Greatest Bits
+    Sample communities: DM DOKURO | Arcade Player | The Greatest Bits
 
   Archetype 8 (1 communities):
-    Top artists: Bad Boombox
-    Sample communities: Bad Boombox
+    Top artists: 
 
   Archetype 9 (1 communities):
-    Top artists: Benjamin
-    Sample communities: Benjamin
+    Top artists: Migos, Quavo, YBN Nahmir
+    Sample communities: Migos | Quavo | YBN Nahmir
 
-  Archetype 10 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 10 (2 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack
+    Sample communities: Travis Scott | Offset | Huncho Jack
 
 
 === AGGLOMERATIVE k=12 (12 archetypes) ===
 
-  Archetype 0 (21 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Christopher Larkin, Daniel Lopatin, Barely Cloudy, REI, Samuel Kim, berlioz, Erik Satie, Pyotr Ilyich Tchaikovsky
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Christopher Larkin | Daniel Lopatin || Barely Cloudy | REI | Samuel Kim || berlioz | Erik Satie | Pyotr Ilyich Tchaikovsky
+  Archetype 0 (10 communities):
+    Top artists: Destroy Lonely, Rick Owens, Prod. 94, Closed on Sunday, Murr, Lullaby Legends, Yo Yo Honey Singh, Pritam, Shubh, DJ HEARTSTRING, Panteros666, DJ Traytex
+    Sample communities: Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex || Odd Mob | Entasia | Torren Foot
 
-  Archetype 1 (2 communities):
-    Top artists: ADB, jev., Eve
-    Sample communities: ADB | jev. || Eve
+  Archetype 1 (73 communities):
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Fred again.., Sammy Virji, MPH
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Fred again.. | Sammy Virji | MPH
 
-  Archetype 2 (216 communities):
-    Top artists: pryme!, Pi’erre Bourne, youngnys, DJ Purpberry, 5EB, Zack Knight, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV
-    Sample communities: pryme! || Pi’erre Bourne | youngnys | DJ Purpberry || 5EB | Zack Knight || E the profit || Sheck Wes
+  Archetype 2 (3 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
-  Archetype 3 (7 communities):
-    Top artists: Lyn, Lydia Ganada, CHUNG HA, LE SSERAFIM, pesow, Seori, aespa, Effie, TWICE, NAYEON, FIFTY FIFTY, NewJeans
-    Sample communities: Lyn | Lydia Ganada || CHUNG HA || LE SSERAFIM | pesow | Seori || aespa | Effie || TWICE | NAYEON | FIFTY FIFTY
+  Archetype 3 (19 communities):
+    Top artists: EsDeeKid, fakemink, Feng, asoookha, Lofi Lia, mellow fox, Pegassi, Aminé, KETTAMA, Pi’erre Bourne, Metro Boomin, Pop Smoke
+    Sample communities: EsDeeKid | fakemink | Feng || asoookha | Lofi Lia | mellow fox || Pegassi | Aminé | KETTAMA || Pi’erre Bourne | Metro Boomin | Pop Smoke
 
-  Archetype 4 (3 communities):
-    Top artists: Sleepy Tom, Soft Soundscapes, Tom Santa, Lonestar Void, The Slumbering One
-    Sample communities: Sleepy Tom || Soft Soundscapes | Tom Santa | Lonestar Void || The Slumbering One
+  Archetype 4 (51 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Playboi Carti, Ken Carson, Yeat, Odymel, Jengi, D.O.D, aekasora, Brayden Potts, Ljones
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Playboi Carti | Ken Carson | Yeat || Odymel | Jengi | D.O.D || aekasora | Brayden Potts | Ljones || Kijugo | kurochuu. | LoFi Waiter
 
-  Archetype 5 (2 communities):
-    Top artists: Witness, Linkin Park, Three Days Grace, System Of A Down
-    Sample communities: Witness || Linkin Park | Three Days Grace | System Of A Down
+  Archetype 5 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 6 (1 communities):
-    Top artists: Squeeze
-    Sample communities: Squeeze
+  Archetype 6 (2 communities):
+    Top artists: Men I Trust, coye, Frank Ocean, Lofi Lia, Celestial Alignment, Ngyn
+    Sample communities: Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
   Archetype 7 (1 communities):
-    Top artists: FISHER, FISHERMANZZ
-    Sample communities: FISHER | FISHERMANZZ
+    Top artists: DM DOKURO, Arcade Player, The Greatest Bits
+    Sample communities: DM DOKURO | Arcade Player | The Greatest Bits
 
   Archetype 8 (1 communities):
-    Top artists: Bad Boombox
-    Sample communities: Bad Boombox
+    Top artists: 
 
   Archetype 9 (1 communities):
-    Top artists: Benjamin
-    Sample communities: Benjamin
+    Top artists: Migos, Quavo, YBN Nahmir
+    Sample communities: Migos | Quavo | YBN Nahmir
 
-  Archetype 10 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 10 (2 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack
+    Sample communities: Travis Scott | Offset | Huncho Jack
 
-  Archetype 11 (1 communities):
-    Top artists: Moors
-    Sample communities: Moors
+  Archetype 11 (2 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii
 
 
 === KMEANS k=8 (8 archetypes) ===
 
-  Archetype 0 (7 communities):
-    Top artists: The Weeknd, Calvin Harris, Ellie Goulding, Taylor Swift, Frank Ocean, Brent Faiyaz, Chase Atlantic, Jason Derulo, Trey Songz, Jay Sean, Far East Movement, LMFAO
-    Sample communities: The Weeknd || Calvin Harris | Ellie Goulding | Taylor Swift || Frank Ocean | Brent Faiyaz | Chase Atlantic || Jason Derulo | Trey Songz | Jay Sean || Far East Movement | LMFAO | Major Lazer
+  Archetype 0 (18 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack, Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: Travis Scott | Offset | Huncho Jack || Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz || Odymel | Jengi | D.O.D
 
-  Archetype 1 (64 communities):
-    Top artists: Bad Boombox, John Summit, Purple Disco Machine, The Temper Trap, Max Styler, Pleasurekraft, Maxinne, Fred again.., Fredo Wave, Swedish House Mafia, wes mills, wilo wilde
-    Sample communities: Bad Boombox || John Summit | Purple Disco Machine | The Temper Trap || Max Styler | Pleasurekraft | Maxinne || Fred again.. | Fredo Wave | Swedish House Mafia || wes mills | wilo wilde | Wes Patrick
+  Archetype 1 (74 communities):
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Fred again.., Sammy Virji, MPH
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Fred again.. | Sammy Virji | MPH
 
-  Archetype 2 (29 communities):
-    Top artists: Benjamin, pryme!, FISHER, FISHERMANZZ, Moors, Lyn, Lydia Ganada, wave to earth, CHUNG HA, LE SSERAFIM, pesow, Seori
-    Sample communities: Benjamin || pryme! || FISHER | FISHERMANZZ || Moors || Lyn | Lydia Ganada
+  Archetype 2 (16 communities):
+    Top artists: Lil Uzi Vert, Trippie Redd, XXXTENTACION, Yo Yo Honey Singh, Pritam, Shubh, DJ HEARTSTRING, Panteros666, DJ Traytex, Odd Mob, Entasia, Torren Foot
+    Sample communities: Lil Uzi Vert | Trippie Redd | XXXTENTACION || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex || Odd Mob | Entasia | Torren Foot || Migos | Quavo | YBN Nahmir
 
-  Archetype 3 (16 communities):
-    Top artists: Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, ç…§äº•é †æ”¿, JayJayMf, Jayboii, Jaylon Ashaun, 1000night, Henriko Magnifico, Soft Soundscapes, Tom Santa, Lonestar Void
-    Sample communities: Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || ç…§äº•é †æ”¿ || JayJayMf | Jayboii | Jaylon Ashaun || 1000night || Henriko Magnifico
+  Archetype 3 (6 communities):
+    Top artists: 
 
-  Archetype 4 (57 communities):
-    Top artists: Pi’erre Bourne, youngnys, DJ Purpberry, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV, DONDA, Drake, Len, PARTYNEXTDOOR
-    Sample communities: Pi’erre Bourne | youngnys | DJ Purpberry || Sheck Wes || J. Cole | Dreamville | Jonah Love || NAV || DONDA
+  Archetype 4 (18 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, aekasora, Brayden Potts, Ljones, EsDeeKid, fakemink, Feng
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || aekasora | Brayden Potts | Ljones || EsDeeKid | fakemink | Feng || asoookha | Lofi Lia | mellow fox
 
-  Archetype 5 (25 communities):
-    Top artists: 5EB, Zack Knight, Imran Khan, Mustafa Zahid, Tory Lanez, Yo Yo Honey Singh, Meet Bros Anjjan, Westwood, Sainté, ADB, jev., Jaybexo
-    Sample communities: 5EB | Zack Knight || Imran Khan | Mustafa Zahid || Tory Lanez || Yo Yo Honey Singh | Meet Bros Anjjan || Westwood | Sainté
+  Archetype 5 (9 communities):
+    Top artists: Men I Trust, coye, Frank Ocean, Lofi Lia, Celestial Alignment, Ngyn
+    Sample communities: Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 6 (40 communities):
-    Top artists: E the profit, Dom Corleo, LUCKI, upgrades, Macon, oopsy, On The Radar, Ovrkast., Lelo, HUGEL, Witness, sosocamo
-    Sample communities: E the profit || Dom Corleo || LUCKI | upgrades | Macon || oopsy | On The Radar | Ovrkast. || Lelo | HUGEL
+  Archetype 6 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 7 (26 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, Otaku, ぬいぐるみクレヨン Lush Crayon, 猫 シ Corp., Webinar™, Ren Avel, KOCHAM, ALI, C418, Max LL
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || Otaku || ぬいぐるみクレヨン Lush Crayon | 猫 シ Corp. | Webinar™ || Ren Avel | KOCHAM | ALI || C418 | Max LL | Scizzie
+  Archetype 7 (24 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Playboi Carti, Ken Carson, Yeat, Kijugo, kurochuu., LoFi Waiter, Lil Wayne, T.I., Denzel Curry
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Playboi Carti | Ken Carson | Yeat || Kijugo | kurochuu. | LoFi Waiter || Lil Wayne | T.I. | Denzel Curry || DM DOKURO | Arcade Player | The Greatest Bits
 
 
 === KMEANS k=9 (9 archetypes) ===
 
-  Archetype 0 (39 communities):
-    Top artists: FISHER, FISHERMANZZ, John Summit, Purple Disco Machine, The Temper Trap, Fred again.., Fredo Wave, Swedish House Mafia, Calvin Harris, Ellie Goulding, Taylor Swift, Matroda
-    Sample communities: FISHER | FISHERMANZZ || John Summit | Purple Disco Machine | The Temper Trap || Fred again.. | Fredo Wave | Swedish House Mafia || Calvin Harris | Ellie Goulding | Taylor Swift || Matroda | Tiga
+  Archetype 0 (17 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Kijugo, kurochuu., LoFi Waiter
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Kijugo | kurochuu. | LoFi Waiter
 
   Archetype 1 (16 communities):
-    Top artists: 5EB, Zack Knight, ç…§äº•é †æ”¿, JayJayMf, Jayboii, Jaylon Ashaun, Shy High, Lovelydaze, Kaysin, 1000night, Henriko Magnifico, Dazegxd
-    Sample communities: 5EB | Zack Knight || ç…§äº•é †æ”¿ || JayJayMf | Jayboii | Jaylon Ashaun || Shy High | Lovelydaze | Kaysin || 1000night
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Closed on Sunday, Murr, Lullaby Legends
+    Sample communities: Future | Gunna | Young Thug || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Closed on Sunday | Murr | Lullaby Legends || Zock | Ley | Paskman
 
-  Archetype 2 (8 communities):
-    Top artists: Benjamin, Squeeze, Elijah Fox, The Ink Spots, Tex Beneke, cortex, Cortex, Michel Colombier, Christopher Larkin, Daniel Lopatin, berlioz, Erik Satie
-    Sample communities: Benjamin || Squeeze || Elijah Fox | The Ink Spots | Tex Beneke || cortex | Cortex | Michel Colombier || Christopher Larkin | Daniel Lopatin
+  Archetype 2 (24 communities):
+    Top artists: Pritam, Travis Scott, Offset, Huncho Jack, Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar
+    Sample communities: Travis Scott | Offset | Huncho Jack || Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Yo Yo Honey Singh | Pritam | Shubh
 
-  Archetype 3 (92 communities):
-    Top artists: Pi’erre Bourne, youngnys, DJ Purpberry, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV, DONDA, Tory Lanez, Drake
-    Sample communities: Pi’erre Bourne | youngnys | DJ Purpberry || E the profit || Sheck Wes || J. Cole | Dreamville | Jonah Love || NAV
+  Archetype 3 (19 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, LXNGVX, slxughter, Eternxlkz, Playboi Carti, Ken Carson, Yeat, Odd Mob, Entasia, Torren Foot
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || LXNGVX | slxughter | Eternxlkz || Playboi Carti | Ken Carson | Yeat || Odd Mob | Entasia | Torren Foot || Lil Wayne | T.I. | Denzel Curry
 
-  Archetype 4 (33 communities):
-    Top artists: pryme!, The Weeknd, Moors, Lyn, Lydia Ganada, wave to earth, CHUNG HA, LE SSERAFIM, pesow, Seori, Lelo, HUGEL
-    Sample communities: pryme! || The Weeknd || Moors || Lyn | Lydia Ganada || wave to earth
+  Archetype 4 (11 communities):
+    Top artists: 
 
   Archetype 5 (27 communities):
-    Top artists: Closed on Sunday, Murr, Burbank, DM DOKURO, Disasterpeace, Toby Fox, Jetson, Levity, Imprintafter, Sleepy Tom, asoookha, Asake
-    Sample communities: Closed on Sunday | Murr | Burbank || DM DOKURO | Disasterpeace | Toby Fox || Jetson | Levity | Imprintafter || Sleepy Tom || asoookha | Asake | a l l i e
+    Top artists: Fred again.., Sammy Virji, MPH, NAV, Linkin Park, terra, Dazegxd, Ella Rosa, Drumsound & Bassline Smith, imnotvrycreative, corefish, ericdoa
+    Sample communities: Fred again.. | Sammy Virji | MPH || NAV | Linkin Park | terra || Dazegxd | Ella Rosa | Drumsound & Bassline Smith || imnotvrycreative | corefish | ericdoa || C418 | ぬいぐるみクレヨン Lush Crayon | 猫 シ Corp.
 
-  Archetype 6 (9 communities):
-    Top artists: THE ORAL CIGARETTES, Yoko Shimomura, Masashi Hamauzu, Yu-Peng Chen, Sound Cyclone, Muray, sho, Tatsuya Kitani, 平田志穂子, Yumi Kawamura, 藤田真由美, Susumu Hirasawa
-    Sample communities: THE ORAL CIGARETTES || Yoko Shimomura | Masashi Hamauzu | Yu-Peng Chen || Sound Cyclone | Muray | sho || Tatsuya Kitani || 平田志穂子 | Yumi Kawamura | 藤田真由美
+  Archetype 6 (27 communities):
+    Top artists: Lil Uzi Vert, Trippie Redd, XXXTENTACION, Destroy Lonely, Rick Owens, Prod. 94, Halo, mischluft, 1000 Eyes, Diljit Dosanjh, AP Dhillon, Imran Khan
+    Sample communities: Lil Uzi Vert | Trippie Redd | XXXTENTACION || Destroy Lonely | Rick Owens | Prod. 94 || Halo | mischluft | 1000 Eyes || Diljit Dosanjh | AP Dhillon | Imran Khan || Kato | void | Restricted
 
-  Archetype 7 (32 communities):
-    Top artists: Bad Boombox, Max Styler, Pleasurekraft, Maxinne, wes mills, wilo wilde, Wes Patrick, Far East Movement, LMFAO, Major Lazer, Halo, SERAPHINE NOIR
-    Sample communities: Bad Boombox || Max Styler | Pleasurekraft | Maxinne || wes mills | wilo wilde | Wes Patrick || Far East Movement | LMFAO | Major Lazer || Halo | SERAPHINE NOIR | Clouds
+  Archetype 7 (8 communities):
+    Top artists: Pi’erre Bourne, Gunna, Young Thug, Future, The Strokes, benches, Imagine Dragons, SIDEPIECE, it's murph, Tiësto, Migos, Metro Boomin
+    Sample communities: Gunna | Young Thug | Future || The Strokes | benches | Imagine Dragons || SIDEPIECE | it's murph | Tiësto || Migos | Metro Boomin | Rae Sremmurd || oopsy | Quavo | Pi’erre Bourne
 
-  Archetype 8 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 8 (22 communities):
+    Top artists: Lofi Lia, MALUGI, 3LNA, Wahlstedt, Odymel, Jengi, D.O.D, Chris Lake, Matroda, Avicii, aekasora, Brayden Potts
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Odymel | Jengi | D.O.D || Chris Lake | Matroda | Avicii || aekasora | Brayden Potts | Ljones || EsDeeKid | fakemink | Feng
 
 
 === KMEANS k=10 (10 archetypes) ===
 
-  Archetype 0 (10 communities):
-    Top artists: A$AP Rocky, Kanye West, A$AP ANT, Famous Dex, A$AP Mob, Metro Boomin, Mac Miller, Macklemore, Westwood, Sainté, ¥$, Consequence
-    Sample communities: A$AP Rocky | A$AP ANT | Famous Dex || A$AP Mob | Metro Boomin | A$AP Rocky || Mac Miller | Macklemore || Westwood | Sainté || ¥$ | Kanye West
+  Archetype 0 (5 communities):
+    Top artists: 
 
-  Archetype 1 (27 communities):
-    Top artists: Moors, Closed on Sunday, Murr, Burbank, DM DOKURO, Disasterpeace, Toby Fox, Halo, SERAPHINE NOIR, Clouds, Sleepy Tom, asoookha
-    Sample communities: Moors || Closed on Sunday | Murr | Burbank || DM DOKURO | Disasterpeace | Toby Fox || Halo | SERAPHINE NOIR | Clouds || Sleepy Tom
+  Archetype 1 (26 communities):
+    Top artists: TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Destroy Lonely, Rick Owens, Prod. 94, Closed on Sunday, Murr, Lullaby Legends
+    Sample communities: TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends || Zock | Ley | Paskman
 
-  Archetype 2 (13 communities):
-    Top artists: ç…§äº•é †æ”¿, JayJayMf, Jayboii, Jaylon Ashaun, 1000night, Henriko Magnifico, Lex Amarni, narcsonalities, junesforever, Brocko, Kyle Starkey, Luke Dean
-    Sample communities: ç…§äº•é †æ”¿ || JayJayMf | Jayboii | Jaylon Ashaun || 1000night || Henriko Magnifico || Lex Amarni | narcsonalities | junesforever
+  Archetype 2 (25 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack, Lil Uzi Vert, Trippie Redd, XXXTENTACION, Yo Yo Honey Singh, Pritam, Shubh, aekasora, Brayden Potts, Ljones
+    Sample communities: Travis Scott | Offset | Huncho Jack || Lil Uzi Vert | Trippie Redd | XXXTENTACION || Yo Yo Honey Singh | Pritam | Shubh || aekasora | Brayden Potts | Ljones || Kanye West | Lex Amarni | Trabuko102
 
-  Archetype 3 (34 communities):
-    Top artists: Dom Corleo, oopsy, On The Radar, Ovrkast., Lelo, HUGEL, Witness, sosocamo, PlaqueBoyMax, ADB, jev., Jaybexo
-    Sample communities: Dom Corleo || oopsy | On The Radar | Ovrkast. || Lelo | HUGEL || Witness || sosocamo
+  Archetype 3 (43 communities):
+    Top artists: Future, Gunna, Young Thug, Fred again.., Sammy Virji, MPH, Halo, mischluft, 1000 Eyes, NAV, Linkin Park, terra
+    Sample communities: Future | Gunna | Young Thug || Gunna | Young Thug | Future || Fred again.. | Sammy Virji | MPH || Halo | mischluft | 1000 Eyes || NAV | Linkin Park | terra
 
-  Archetype 4 (33 communities):
-    Top artists: John Summit, Purple Disco Machine, The Temper Trap, Max Styler, Pleasurekraft, Maxinne, Fred again.., Fredo Wave, Swedish House Mafia, Matroda, Tiga, James Hype
-    Sample communities: John Summit | Purple Disco Machine | The Temper Trap || Max Styler | Pleasurekraft | Maxinne || Fred again.. | Fredo Wave | Swedish House Mafia || Matroda | Tiga || James Hype | Adapter | Thomas Newson
+  Archetype 4 (8 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, EsDeeKid, fakemink, Feng, Men I Trust, coye, Frank Ocean
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || EsDeeKid | fakemink | Feng || Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 5 (34 communities):
-    Top artists: Bad Boombox, wes mills, wilo wilde, Wes Patrick, ISOxo, ISOKNOCK, Skrillex, Indigo, Kai Wachi, Chase & Status, AC Slater, Chapter & Verse
-    Sample communities: Bad Boombox || wes mills | wilo wilde | Wes Patrick || ISOxo | ISOKNOCK || Skrillex | Indigo | Kai Wachi || Chase & Status | AC Slater | Chapter & Verse
+  Archetype 5 (25 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Odd Mob, Entasia, Torren Foot, Kijugo, kurochuu., LoFi Waiter, Lil Wayne, T.I., Denzel Curry
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Odd Mob | Entasia | Torren Foot || Kijugo | kurochuu. | LoFi Waiter || Lil Wayne | T.I. | Denzel Curry || DM DOKURO | Arcade Player | The Greatest Bits
 
-  Archetype 6 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 6 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 7 (53 communities):
-    Top artists: Pi’erre Bourne, youngnys, DJ Purpberry, E the profit, Sheck Wes, J. Cole, Dreamville, Jonah Love, NAV, DONDA, Tory Lanez, Drake
-    Sample communities: Pi’erre Bourne | youngnys | DJ Purpberry || E the profit || Sheck Wes || J. Cole | Dreamville | Jonah Love || NAV
+  Archetype 7 (17 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz, Playboi Carti, Ken Carson, Yeat
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz || Playboi Carti | Ken Carson | Yeat || Odymel | Jengi | D.O.D
 
-  Archetype 8 (37 communities):
-    Top artists: Benjamin, pryme!, 5EB, Zack Knight, FISHER, FISHERMANZZ, The Weeknd, Lyn, Lydia Ganada, LUCKI, upgrades, Macon
-    Sample communities: Benjamin || pryme! || 5EB | Zack Knight || FISHER | FISHERMANZZ || The Weeknd
+  Archetype 8 (5 communities):
+    Top artists: Pi’erre Bourne, Migos, Metro Boomin, Rae Sremmurd, oopsy, Quavo, Don Toliver, Roddy Ricch
+    Sample communities: Migos | Metro Boomin | Rae Sremmurd || oopsy | Quavo | Pi’erre Bourne || Don Toliver | Pi’erre Bourne | Roddy Ricch
 
-  Archetype 9 (15 communities):
-    Top artists: THE ORAL CIGARETTES, Otaku, Barely Cloudy, REI, Samuel Kim, Yoko Shimomura, Masashi Hamauzu, Yu-Peng Chen, Nujabes, potsu, re:plus, Sound Cyclone
-    Sample communities: THE ORAL CIGARETTES || Otaku || Barely Cloudy | REI | Samuel Kim || Yoko Shimomura | Masashi Hamauzu | Yu-Peng Chen || Nujabes | potsu | re:plus
+  Archetype 9 (11 communities):
+    Top artists: Pegassi, Aminé, KETTAMA
+    Sample communities: Pegassi | Aminé | KETTAMA
 
 
 === KMEANS k=11 (11 archetypes) ===
 
-  Archetype 0 (15 communities):
-    Top artists: Benjamin, pryme!, The Weeknd, Eve, Frank Ocean, Brent Faiyaz, Chase Atlantic, Jason Derulo, Trey Songz, Jay Sean, Bryson Tiller, Kane Brown
-    Sample communities: Benjamin || pryme! || The Weeknd || Eve || Frank Ocean | Brent Faiyaz | Chase Atlantic
+  Archetype 0 (16 communities):
+    Top artists: imnotvrycreative, corefish, ericdoa, C418, ぬいぐるみクレヨン Lush Crayon, 猫 シ Corp., Diljit Dosanjh, AP Dhillon, Imran Khan, Barretta, Kankan, FLEE
+    Sample communities: imnotvrycreative | corefish | ericdoa || C418 | ぬいぐるみクレヨン Lush Crayon | 猫 シ Corp. || Diljit Dosanjh | AP Dhillon | Imran Khan || Barretta | Kankan | FLEE || Kato | void | Restricted
 
-  Archetype 1 (42 communities):
-    Top artists: Pi’erre Bourne, youngnys, DJ Purpberry, Sheck Wes, NAV, Tory Lanez, Drake, Len, PARTYNEXTDOOR, Quality Control, Ced Q, LUCKI
-    Sample communities: Pi’erre Bourne | youngnys | DJ Purpberry || Sheck Wes || NAV || Tory Lanez || Drake | Len | PARTYNEXTDOOR
+  Archetype 1 (6 communities):
+    Top artists: Yo Yo Honey Singh, Pritam, Shubh
+    Sample communities: Yo Yo Honey Singh | Pritam | Shubh
 
   Archetype 2 (25 communities):
-    Top artists: 5EB, Zack Knight, Moors, onlywoke, ç…§äº•é †æ”¿, Zock, Ley, Daddy Yankee, JayJayMf, Jayboii, Jaylon Ashaun, Squeeze
-    Sample communities: 5EB | Zack Knight || Moors || onlywoke || ç…§äº•é †æ”¿ || Zock | Ley | Daddy Yankee
+    Top artists: Future, Gunna, Young Thug, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Destroy Lonely, Rick Owens, Prod. 94
+    Sample communities: Future | Gunna | Young Thug || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends
 
-  Archetype 3 (27 communities):
-    Top artists: Lelo, HUGEL, Halo, SERAPHINE NOIR, Clouds, defsharp, zandros, aidn., cortex, Cortex, Michel Colombier, ISOxo
-    Sample communities: Lelo | HUGEL || Halo | SERAPHINE NOIR | Clouds || defsharp | zandros | aidn. || cortex | Cortex | Michel Colombier || ISOxo | ISOKNOCK
+  Archetype 3 (8 communities):
+    Top artists: 
 
-  Archetype 4 (8 communities):
-    Top artists: Lyn, Lydia Ganada, wave to earth, CHUNG HA, LE SSERAFIM, pesow, Seori, aespa, Effie, TWICE, NAYEON, FIFTY FIFTY
-    Sample communities: Lyn | Lydia Ganada || wave to earth || CHUNG HA || LE SSERAFIM | pesow | Seori || aespa | Effie
+  Archetype 4 (28 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Playboi Carti, Ken Carson, Yeat, Odd Mob, Entasia, Torren Foot, Kijugo, kurochuu., LoFi Waiter
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Playboi Carti | Ken Carson | Yeat || Odd Mob | Entasia | Torren Foot || Kijugo | kurochuu. | LoFi Waiter || Lil Wayne | T.I. | Denzel Curry
 
-  Archetype 5 (52 communities):
-    Top artists: A$AP Rocky, E the profit, J. Cole, Dreamville, Jonah Love, DONDA, Dom Corleo, A$AP ANT, Famous Dex, A$AP Mob, Metro Boomin, oopsy
-    Sample communities: E the profit || J. Cole | Dreamville | Jonah Love || DONDA || Dom Corleo || A$AP Rocky | A$AP ANT | Famous Dex
+  Archetype 5 (10 communities):
+    Top artists: Lil Uzi Vert, Trippie Redd, XXXTENTACION, Vishal-Shekhar, Arijit Singh, Ankit Tiwari, Sonika Sharma Agarwal, Soft Soundscapes, Hansei
+    Sample communities: Lil Uzi Vert | Trippie Redd | XXXTENTACION || Vishal-Shekhar | Arijit Singh | Ankit Tiwari || Sonika Sharma Agarwal | Soft Soundscapes | Hansei
 
-  Archetype 6 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 6 (32 communities):
+    Top artists: Gunna, Young Thug, Future, Fred again.., Sammy Virji, MPH, Halo, mischluft, 1000 Eyes, NAV, Linkin Park, terra
+    Sample communities: Gunna | Young Thug | Future || Fred again.. | Sammy Virji | MPH || Halo | mischluft | 1000 Eyes || NAV | Linkin Park | terra || Dazegxd | Ella Rosa | Drumsound & Bassline Smith
 
-  Archetype 7 (8 communities):
-    Top artists: Christopher Larkin, Daniel Lopatin, berlioz, Erik Satie, Pyotr Ilyich Tchaikovsky, Yoko Shimomura, Masashi Hamauzu, Yu-Peng Chen, ConcernedApe, Arcade Player, Darren Ang, Lofi Lia
-    Sample communities: Christopher Larkin | Daniel Lopatin || berlioz | Erik Satie | Pyotr Ilyich Tchaikovsky || Yoko Shimomura | Masashi Hamauzu | Yu-Peng Chen || ConcernedApe || Arcade Player | Darren Ang | Lofi Lia
+  Archetype 7 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 8 (15 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Otaku, ぬいぐるみクレヨン Lush Crayon, 猫 シ Corp., Webinar™, Barely Cloudy, REI, Samuel Kim, Nujabes
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Otaku || ぬいぐるみクレヨン Lush Crayon | 猫 シ Corp. | Webinar™ || Barely Cloudy | REI | Samuel Kim
+  Archetype 8 (5 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, EsDeeKid, fakemink, Feng, Men I Trust, coye, Frank Ocean
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || EsDeeKid | fakemink | Feng || Men I Trust | coye | Frank Ocean || Pi’erre Bourne | Metro Boomin | Pop Smoke
 
-  Archetype 9 (15 communities):
-    Top artists: Closed on Sunday, Murr, Burbank, Jetson, Levity, Imprintafter, asoookha, Asake, a l l i e, Ren Avel, KOCHAM, ALI
-    Sample communities: Closed on Sunday | Murr | Burbank || Jetson | Levity | Imprintafter || asoookha | Asake | a l l i e || Ren Avel | KOCHAM | ALI || C418 | Max LL | Scizzie
+  Archetype 9 (33 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack, DJ HEARTSTRING, Panteros666, DJ Traytex, Odymel, Jengi, D.O.D, aekasora, Brayden Potts, Ljones
+    Sample communities: Travis Scott | Offset | Huncho Jack || DJ HEARTSTRING | Panteros666 | DJ Traytex || Odymel | Jengi | D.O.D || aekasora | Brayden Potts | Ljones || Lofi Lia | Celestial Alignment | Ngyn
 
-  Archetype 10 (49 communities):
-    Top artists: FISHER, FISHERMANZZ, Bad Boombox, John Summit, Purple Disco Machine, The Temper Trap, Max Styler, Pleasurekraft, Maxinne, Fred again.., Fredo Wave, Swedish House Mafia
-    Sample communities: FISHER | FISHERMANZZ || Bad Boombox || John Summit | Purple Disco Machine | The Temper Trap || Max Styler | Pleasurekraft | Maxinne || Fred again.. | Fredo Wave | Swedish House Mafia
+  Archetype 10 (2 communities):
+    Top artists: UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
 
 === KMEANS k=12 (12 archetypes) ===
 
-  Archetype 0 (12 communities):
-    Top artists: JayJayMf, Jayboii, Jaylon Ashaun, 1000night, Henriko Magnifico, Lex Amarni, narcsonalities, junesforever, Brocko, Kyle Starkey, Luke Dean, Jude Bradshaw
-    Sample communities: JayJayMf | Jayboii | Jaylon Ashaun || 1000night || Henriko Magnifico || Lex Amarni | narcsonalities | junesforever || Brocko
+  Archetype 0 (10 communities):
+    Top artists: Vishal-Shekhar, Arijit Singh, Ankit Tiwari, Sonika Sharma Agarwal, Soft Soundscapes, Hansei
+    Sample communities: Vishal-Shekhar | Arijit Singh | Ankit Tiwari || Sonika Sharma Agarwal | Soft Soundscapes | Hansei
 
-  Archetype 1 (26 communities):
-    Top artists: Benjamin, pryme!, 5EB, Zack Knight, Lyn, Lydia Ganada, LUCKI, upgrades, Macon, wave to earth, CHUNG HA, LE SSERAFIM
-    Sample communities: Benjamin || pryme! || 5EB | Zack Knight || Lyn | Lydia Ganada || LUCKI | upgrades | Macon
+  Archetype 1 (2 communities):
+    Top artists: Future, Gunna, Young Thug, Shiro SAGISU, THE ORAL CIGARETTES, Tatsuya Kitani
+    Sample communities: Future | Gunna | Young Thug || Shiro SAGISU | THE ORAL CIGARETTES | Tatsuya Kitani
 
-  Archetype 2 (13 communities):
-    Top artists: DM DOKURO, Disasterpeace, Toby Fox, THE ORAL CIGARETTES, Otaku, ぬいぐるみクレヨン Lush Crayon, 猫 シ Corp., Webinar™, Barely Cloudy, REI, Samuel Kim, Sound Cyclone
-    Sample communities: DM DOKURO | Disasterpeace | Toby Fox || THE ORAL CIGARETTES || Otaku || ぬいぐるみクレヨン Lush Crayon | 猫 シ Corp. | Webinar™ || Barely Cloudy | REI | Samuel Kim
+  Archetype 2 (16 communities):
+    Top artists: Fred again.., Sammy Virji, MPH, Janis Zielinski, Gaston Fiore, Prospa, Otaku, KI/KI, Eskha, John Summit, Martin Ikin, Mau P
+    Sample communities: Fred again.. | Sammy Virji | MPH || Janis Zielinski | Gaston Fiore | Prospa || Otaku | KI/KI | Eskha || John Summit | Martin Ikin | Mau P || Witness | Robin Gan | Kanye West
 
-  Archetype 3 (43 communities):
-    Top artists: FISHER, FISHERMANZZ, John Summit, Purple Disco Machine, The Temper Trap, Max Styler, Pleasurekraft, Maxinne, Fred again.., Fredo Wave, Swedish House Mafia, wes mills
-    Sample communities: FISHER | FISHERMANZZ || John Summit | Purple Disco Machine | The Temper Trap || Max Styler | Pleasurekraft | Maxinne || Fred again.. | Fredo Wave | Swedish House Mafia || wes mills | wilo wilde | Wes Patrick
+  Archetype 3 (10 communities):
+    Top artists: Men I Trust, coye, Frank Ocean, Lofi Lia, Celestial Alignment, Ngyn, Pi’erre Bourne, Metro Boomin, Pop Smoke
+    Sample communities: Men I Trust | coye | Frank Ocean || Lofi Lia | Celestial Alignment | Ngyn || Pi’erre Bourne | Metro Boomin | Pop Smoke
 
-  Archetype 4 (6 communities):
-    Top artists: Kanye West, Westwood, Sainté, ¥$, Consequence, Westside Gunn, Mach-Hommy, Kuhsigh, Yung Pinch, kwes e, Kendrick Lamar, 2Pac
-    Sample communities: Westwood | Sainté || ¥$ | Kanye West || Kanye West | Consequence || Westside Gunn | Mach-Hommy || Kuhsigh | Yung Pinch | kwes e
+  Archetype 4 (19 communities):
+    Top artists: MALUGI, 3LNA, Wahlstedt, Chris Lake, Matroda, Avicii, aekasora, Brayden Potts, Ljones, EsDeeKid, fakemink, Feng
+    Sample communities: MALUGI | 3LNA | Wahlstedt || Chris Lake | Matroda | Avicii || aekasora | Brayden Potts | Ljones || EsDeeKid | fakemink | Feng || asoookha | Lofi Lia | mellow fox
 
-  Archetype 5 (39 communities):
-    Top artists: E the profit, J. Cole, Dreamville, Jonah Love, Dom Corleo, oopsy, On The Radar, Ovrkast., Mac Miller, Macklemore, Witness, sosocamo
-    Sample communities: E the profit || J. Cole | Dreamville | Jonah Love || Dom Corleo || oopsy | On The Radar | Ovrkast. || Mac Miller | Macklemore
+  Archetype 5 (44 communities):
+    Top artists: Gunna, Young Thug, Future, TWICE, BLACKPINK, NewJeans, $uicideboy$, SUSPEKT, YNW Melly, Destroy Lonely, Rick Owens, Prod. 94
+    Sample communities: Gunna | Young Thug | Future || TWICE | BLACKPINK | NewJeans || $uicideboy$ | SUSPEKT | YNW Melly || Destroy Lonely | Rick Owens | Prod. 94 || Closed on Sunday | Murr | Lullaby Legends
 
-  Archetype 6 (47 communities):
-    Top artists: Pi’erre Bourne, youngnys, DJ Purpberry, Sheck Wes, NAV, DONDA, Quality Control, Ced Q, YBN Nahmir, YBN (Young Boss N*ggas), Playboi Carti, rareslit
-    Sample communities: Pi’erre Bourne | youngnys | DJ Purpberry || Sheck Wes || NAV || DONDA || Quality Control | Ced Q
+  Archetype 6 (6 communities):
+    Top artists: Drake, The Weeknd, Tory Lanez, onlywoke, Yazida, kruu, Shankar-Ehsaan-Loy, Vishal-Shekhar, Pritam, Chase & Status, DESTROY BORING, aarxn
+    Sample communities: Drake | The Weeknd | Tory Lanez || onlywoke | Yazida | kruu || Shankar-Ehsaan-Loy | Vishal-Shekhar | Pritam || Chase & Status | DESTROY BORING | aarxn || Frank Ocean | hako | Kanye West
 
-  Archetype 7 (29 communities):
-    Top artists: Moors, Closed on Sunday, Murr, Burbank, Zock, Ley, Daddy Yankee, Jetson, Levity, Imprintafter, Squeeze, Halo
-    Sample communities: Moors || Closed on Sunday | Murr | Burbank || Zock | Ley | Daddy Yankee || Jetson | Levity | Imprintafter || Squeeze
+  Archetype 7 (2 communities):
+    Top artists: UdieNnx, Vintage Culture, DJ Raulipues, LXNGVX, slxughter, Eternxlkz
+    Sample communities: UdieNnx | Vintage Culture | DJ Raulipues || LXNGVX | slxughter | Eternxlkz
 
-  Archetype 8 (8 communities):
-    Top artists: The Weeknd, Tory Lanez, Drake, Len, PARTYNEXTDOOR, Frank Ocean, Brent Faiyaz, Chase Atlantic, Jason Derulo, Trey Songz, Jay Sean, Bryson Tiller
-    Sample communities: The Weeknd || Tory Lanez || Drake | Len | PARTYNEXTDOOR || Frank Ocean | Brent Faiyaz | Chase Atlantic || Jason Derulo | Trey Songz | Jay Sean
+  Archetype 8 (23 communities):
+    Top artists: Travis Scott, Offset, Huncho Jack, Lil Uzi Vert, Trippie Redd, XXXTENTACION, Yo Yo Honey Singh, Pritam, Shubh, DJ HEARTSTRING, Panteros666, DJ Traytex
+    Sample communities: Travis Scott | Offset | Huncho Jack || Lil Uzi Vert | Trippie Redd | XXXTENTACION || Yo Yo Honey Singh | Pritam | Shubh || DJ HEARTSTRING | Panteros666 | DJ Traytex || Odd Mob | Entasia | Torren Foot
 
-  Archetype 9 (26 communities):
-    Top artists: Bad Boombox, ISOxo, ISOKNOCK, Skrillex, Indigo, Kai Wachi, Oppidan, Interplanetary Criminal, Y U QT, Dazegxd, TREASURE SERIES, pk
-    Sample communities: Bad Boombox || ISOxo | ISOKNOCK || Skrillex | Indigo | Kai Wachi || Oppidan | Interplanetary Criminal | Y U QT || Dazegxd | TREASURE SERIES | pk
+  Archetype 9 (27 communities):
+    Top artists: Kendrick Lamar, Kuhsigh, Yung Pinch, Playboi Carti, Ken Carson, Yeat, Odymel, Jengi, D.O.D, Kijugo, kurochuu., LoFi Waiter
+    Sample communities: Kendrick Lamar | Kuhsigh | Yung Pinch || Playboi Carti | Ken Carson | Yeat || Odymel | Jengi | D.O.D || Kijugo | kurochuu. | LoFi Waiter || Lil Wayne | T.I. | Denzel Curry
 
-  Archetype 10 (7 communities):
-    Top artists: berlioz, Erik Satie, Pyotr Ilyich Tchaikovsky, Yoko Shimomura, Masashi Hamauzu, Yu-Peng Chen, ConcernedApe, Arcade Player, Darren Ang, Lofi Lia, daigoro789, Claire Waluch
-    Sample communities: berlioz | Erik Satie | Pyotr Ilyich Tchaikovsky || Yoko Shimomura | Masashi Hamauzu | Yu-Peng Chen || ConcernedApe || Arcade Player | Darren Ang | Lofi Lia || daigoro789 | Claire Waluch | Franco Albertini
+  Archetype 10 (9 communities):
+    Top artists: Skrillex, Starjunk 95, SERAPHINE NOIR, FISHER, Crystal Waters, Squeeze, Spandau Ballet, Surf Curse, Ren Avel, Honshu Lo fi, Cœur De Pirate, The Strokes
+    Sample communities: Skrillex | Starjunk 95 | SERAPHINE NOIR || FISHER | Crystal Waters || Squeeze | Spandau Ballet | Surf Curse || Ren Avel | Honshu Lo fi | Cœur De Pirate || The Strokes | Green Day | OneRepublic
 
-  Archetype 11 (8 communities):
-    Top artists: Imran Khan, Mustafa Zahid, Yo Yo Honey Singh, Meet Bros Anjjan, Sonika Sharma Agarwal, oldhouseproduction, Kavita Raam, AP Dhillon, Diljit Dosanjh, Shubh, Guru Randhawa, Pritam
-    Sample communities: Imran Khan | Mustafa Zahid || Yo Yo Honey Singh | Meet Bros Anjjan || Sonika Sharma Agarwal | oldhouseproduction | Kavita Raam || AP Dhillon || Diljit Dosanjh | Shubh | Guru Randhawa
+  Archetype 11 (3 communities):
+    Top artists: MEDUZA, Justin Bieber, Majestic, James Hype, Joshwa, 5EB, pryme!, Benjamin, Eve
+    Sample communities: MEDUZA | Justin Bieber | Majestic || James Hype | Joshwa | 5EB || pryme! | Benjamin | Eve

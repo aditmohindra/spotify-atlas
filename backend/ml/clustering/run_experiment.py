@@ -51,12 +51,18 @@ def _load_run_or_abort(db, run_id: int) -> ClusteringRun:
     return run
 
 
-def run_full_experiment(config: dict = None, reuse_coordinates_from: int = None):
+def run_full_experiment(
+    config: dict = None,
+    reuse_coordinates_from: int = None,
+    explicit_document_type: bool = False,
+):
     """Run a clustering experiment.
 
     config: experiment parameters (defaults to DEFAULT_CONFIG).
     reuse_coordinates_from: if set, skip Stage 1 and load track_cluster_coordinates
         from this run_id. UMAP params are copied from that source run.
+    explicit_document_type: when True, the document_type in config was explicitly
+        supplied by the caller and should not be overridden by the source run.
     """
     if config is None:
         config = DEFAULT_CONFIG
@@ -67,21 +73,24 @@ def run_full_experiment(config: dict = None, reuse_coordinates_from: int = None)
         print("STARTING CLUSTERING EXPERIMENT")
         print("=" * 60)
 
-        # When reusing coordinates, inherit UMAP params from the source run
-        # so the new ClusteringRun row accurately reflects what projection was used.
+        # When reusing coordinates, inherit UMAP params (and document_type unless
+        # the caller passed --document-type explicitly) from the source run so that
+        # the new ClusteringRun row accurately reflects what projection was used.
         if reuse_coordinates_from is not None:
             src = _load_run_or_abort(db, reuse_coordinates_from)
             config = dict(config)
             config["umap_n_components"] = src.umap_n_components
             config["umap_n_neighbors"] = src.umap_n_neighbors
             config["umap_min_dist"] = src.umap_min_dist
+            if not explicit_document_type:
+                config["document_type"] = src.document_type
             if not config.get("notes"):
                 config["notes"] = (
                     f"HDBSCAN-only (coordinates reused from run {reuse_coordinates_from})"
                 )
             print(f"Reusing UMAP coordinates from run_id={reuse_coordinates_from} "
                   f"({src.umap_n_components}D, n_neighbors={src.umap_n_neighbors}, "
-                  f"min_dist={src.umap_min_dist})")
+                  f"min_dist={src.umap_min_dist}, document_type={config['document_type']})")
 
         print(f"Config: {config}")
 
@@ -178,4 +187,8 @@ if __name__ == "__main__":
     }
     config.update({k: v for k, v in overrides.items() if v is not None})
 
-    run_full_experiment(config=config, reuse_coordinates_from=args.reuse_coordinates_from_run)
+    run_full_experiment(
+        config=config,
+        reuse_coordinates_from=args.reuse_coordinates_from_run,
+        explicit_document_type=args.document_type is not None,
+    )
