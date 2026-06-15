@@ -9,6 +9,43 @@ router = APIRouter()
 
 VIBE_RUN_ID = 29
 
+EFFECTIVE_VIBE_CLUSTER = """
+    CASE
+        WHEN ca.assignment_type = 'between_worlds' THEN -1
+        WHEN ca.assignment_type = 'soft'           THEN ca.soft_cluster_id
+        ELSE ca.cluster_id
+    END
+"""
+
+
+def _community_track_counts(db: Session, layer: str) -> dict[int, int]:
+    if layer == "vibe":
+        rows = db.execute(text(f"""
+            SELECT {EFFECTIVE_VIBE_CLUSTER} AS cluster_id, COUNT(*) AS cnt
+            FROM clustering_assignments ca
+            WHERE ca.run_id = :run_id
+            GROUP BY 1
+        """), {"run_id": VIBE_RUN_ID}).fetchall()
+    else:
+        rows = db.execute(text("""
+            SELECT cluster_id, COUNT(*) AS cnt
+            FROM track_clusters
+            GROUP BY cluster_id
+        """)).fetchall()
+    return {r[0]: r[1] for r in rows if r[0] != -1}
+
+
+def _rarity_from_track_count(count: int) -> str:
+    if count < 50:
+        return "Extremely Rare"
+    if count < 200:
+        return "Rare"
+    if count < 500:
+        return "Niche"
+    if count < 1500:
+        return "Underground"
+    return "Core"
+
 
 def compute_taste_profile(user_id: int, db: Session, since: str = None, layer: str = "vibe"):
     from app.models.models import ListeningEvent, Track, TrackCluster, Artist
@@ -109,6 +146,8 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None, layer: s
     artists_info = db.query(Artist.id, Artist.name).filter(Artist.id.in_(artist_ids)).all()
     artist_names = {a.id: a.name for a in artists_info}
 
+    community_sizes = _community_track_counts(db, layer)
+
     communities = []
     for cluster_id, weight in sorted(cluster_weights.items(), key=lambda x: x[1], reverse=True):
         label = labels.get(cluster_id)
@@ -125,17 +164,8 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None, layer: s
 
         top_artists = [a for a, _ in sorted(artist_weights.items(), key=lambda x: x[1], reverse=True)[:3]]
 
-        total_tracks_in_cluster = len(tids)
-        if total_tracks_in_cluster <= 20:
-            rarity = "Extremely Rare"
-        elif total_tracks_in_cluster <= 50:
-            rarity = "Rare"
-        elif total_tracks_in_cluster <= 100:
-            rarity = "Niche"
-        elif total_tracks_in_cluster <= 200:
-            rarity = "Underground"
-        else:
-            rarity = "Core"
+        community_track_count = community_sizes.get(cluster_id, 0)
+        rarity = _rarity_from_track_count(community_track_count)
 
         communities.append({
             "cluster_id": cluster_id,
@@ -147,7 +177,7 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None, layer: s
             "weight": round(weight, 1),
             "top_artists": top_artists,
             "rarity": rarity,
-            "track_count": total_tracks_in_cluster,
+            "track_count": community_track_count,
             "archetype": label["cluster_archetype"] if label else None
         })
 
