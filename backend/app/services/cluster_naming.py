@@ -23,11 +23,13 @@ BANNED_WORDS_ANYWHERE = [
 ]
 
 FILLER_SUFFIXES = [
-    "Jams", "Anthems", "Vibes", "Party", "Parties", "Raves", "Circle",
+    "Jams", "Anthems", "Anthem", "Vibes", "Vibe", "Party", "Parties", "Raves", "Circle",
     "Club", "Hour", "Mix", "Energy", "Sessions", "Lounge", "Nights",
     "Night", "Drive", "Cypher", "Set", "Fest", "Event", "Hangout",
-    "Culture", "Rhythm", "Rhythms", "Diaries", "Echoes", "Revival",
-    "Narratives", "Scene", "World", "Era", "Movement", "Experience"
+    "Culture", "Rhythm", "Rhythms", "Diaries", "Echoes", "Echo", "Revival",
+    "Narratives", "Scene", "World", "Era", "Movement", "Experience",
+    "Wave", "Waves", "Chronicles", "Odyssey", "Dreamscape", "Realm",
+    "Nexus", "Vault", "Matrix", "Pulse",
 ]
 
 def clean_display_name(name: str) -> str:
@@ -60,12 +62,14 @@ def get_cluster_data(cluster_id: int, db: Session) -> dict:
     ).filter(Track.id.in_(track_ids)).all()
 
     artist_counts = defaultdict(int)
+    unique_artist_ids = set()
     genres = set()
     moods = set()
     track_names = []
 
     for track, artist in tracks_with_artists:
         artist_counts[artist.name] += 1
+        unique_artist_ids.add(artist.id)
         track_names.append(track.name)
 
         if artist.genres:
@@ -81,17 +85,26 @@ def get_cluster_data(cluster_id: int, db: Session) -> dict:
                         moods.add(tag)
 
     top_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)[:8]
+    track_count = len(track_ids)
+    diversity_pct = round(len(unique_artist_ids) / track_count * 100) if track_count else 0
 
     return {
         "cluster_id": cluster_id,
-        "track_count": len(track_ids),
+        "track_count": track_count,
         "top_artists": [a for a, _ in top_artists],
         "top_tracks": track_names[:10],
         "genres": list(genres)[:15],
-        "moods": list(moods)[:15]
+        "moods": list(moods)[:15],
+        "diversity_pct": diversity_pct,
     }
 
-def name_cluster_sync(cluster_data: dict) -> dict:
+DIVERSITY_GENRE_SIGNALS = {
+    "cloud rap", "soundcloud", "trap", "drill", "edm", "k-pop", "kpop",
+    "bollywood", "jazz", "classical",
+}
+
+
+def name_cluster_sync(cluster_data: dict, diversity_pct: int = 0) -> dict:
     prompt = f"""You are a cultural anthropologist, not a music journalist.
 
     Your task is NOT to name music. Your task is to identify the specific human community hiding inside this Spotify cluster.
@@ -213,22 +226,30 @@ def name_cluster_sync(cluster_data: dict) -> dict:
         "keywords": ["", "", ""]
     }}"""
 
-    response = httpx.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "gpt-4o",
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 400,
-            "temperature": 0.9
-        },
-        timeout=30.0
-    )
+    for attempt in range(5):
+        response = httpx.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "gpt-4o",
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 400,
+                "temperature": 0.9
+            },
+            timeout=30.0
+        )
+        data = response.json()
+        if "choices" in data:
+            break
+        wait = 2 ** attempt
+        print(f"    [retry {attempt + 1}/5] OpenAI error: {data.get('error', {}).get('message', data)} — waiting {wait}s")
+        time.sleep(wait)
+    else:
+        raise RuntimeError(f"OpenAI API failed after 5 attempts: {data}")
 
-    data = response.json()
     text = data["choices"][0]["message"]["content"].strip()
 
     if text.startswith("```"):
@@ -239,6 +260,15 @@ def name_cluster_sync(cluster_data: dict) -> dict:
     result["display_name"] = clean_display_name(result["display_name"])
     assert "display_name" in result
     assert "canonical_name" in result
+
+    # Diversity guard: high-diversity clusters shouldn't be pinned to one genre
+    if diversity_pct >= 50:
+        desc_lower = result.get("description", "").lower()
+        if any(signal in desc_lower for signal in DIVERSITY_GENRE_SIGNALS):
+            result["description"] = (
+                result["description"].rstrip(" .")
+                + " This community spans many artists and genres, unified by emotional texture rather than a single scene."
+            )
 
     # Log password and reasoning for debugging
     if "password" in result:

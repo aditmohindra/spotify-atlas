@@ -96,12 +96,14 @@ def get_cluster_data_for_run(cluster_id: int, run_id: int, db) -> dict:
     )
 
     artist_counts: dict[str, int] = defaultdict(int)
+    unique_artist_ids: set[int] = set()
     genres: set[str] = set()
     moods: set[str] = set()
     track_names: list[str] = []
 
     for track, artist in tracks_with_artists:
         artist_counts[artist.name] += 1
+        unique_artist_ids.add(artist.id)
         track_names.append(track.name)
         if artist.genres:
             for g in artist.genres:
@@ -113,14 +115,17 @@ def get_cluster_data_for_run(cluster_id: int, run_id: int, db) -> dict:
                         moods.add(tag)
 
     top_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)[:8]
+    track_count = len(track_ids)
+    diversity_pct = round(len(unique_artist_ids) / track_count * 100) if track_count else 0
 
     return {
         "cluster_id": cluster_id,
-        "track_count": len(track_ids),
+        "track_count": track_count,
         "top_artists": [a for a, _ in top_artists],
         "top_tracks": track_names[:10],
         "genres": list(genres)[:15],
         "moods": list(moods)[:15],
+        "diversity_pct": diversity_pct,
     }
 
 
@@ -305,7 +310,7 @@ def name_community_with_context(
         f"Use this context to make the name feel like it belongs to a broader cultural family.\n"
     )
     cluster_data["moods"] = [context_block] + cluster_data.get("moods", [])
-    return name_cluster_sync(cluster_data)
+    return name_cluster_sync(cluster_data, diversity_pct=cluster_data.get("diversity_pct", 0))
 
 
 # ---------------------------------------------------------------------------
@@ -343,6 +348,11 @@ def main():
         action="store_true",
         help="Process 5 diverse clusters without writing to DB.",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip archive step and skip clusters already in cluster_labels for this layer.",
+    )
     args = parser.parse_args()
 
     layer = args.layer
@@ -369,8 +379,11 @@ def main():
         else:
             print("No archetype assignments found — skipping archetype naming step.")
 
-        # --- Archive existing labels for this layer ---
-        archive_labels(db, layer=layer, dry_run=args.dry_run)
+        # --- Archive existing labels for this layer (skipped on resume) ---
+        if args.resume:
+            print("Resume mode: skipping archive step.")
+        else:
+            archive_labels(db, layer=layer, dry_run=args.dry_run)
 
         # --- Determine cluster IDs to name ---
         if args.dry_run:
@@ -378,7 +391,17 @@ def main():
             print(f"\n[DRY RUN] Processing {len(all_cluster_ids)} clusters: {all_cluster_ids}")
         else:
             all_cluster_ids = _get_cluster_ids_for_layer(run_id, db)
-            print(f"\nFound {len(all_cluster_ids)} clusters to name (layer={layer})")
+            if args.resume:
+                already_done = {
+                    row[0] for row in db.query(ClusterLabel.cluster_id)
+                    .filter(ClusterLabel.cluster_layer == layer)
+                    .all()
+                }
+                remaining = [c for c in all_cluster_ids if c not in already_done]
+                print(f"\nResume: {len(already_done)} already named, {len(remaining)} remaining (layer={layer})")
+                all_cluster_ids = remaining
+            else:
+                print(f"\nFound {len(all_cluster_ids)} clusters to name (layer={layer})")
 
         # --- Name archetypes (scene layer / when archetypes exist) ---
         archetype_names: dict[int, str] = {}

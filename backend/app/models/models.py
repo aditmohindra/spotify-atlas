@@ -159,9 +159,10 @@ class TrackCluster(Base):
 
 class ClusterLabel(Base):
     __tablename__ = "cluster_labels"
+    __table_args__ = (UniqueConstraint('cluster_id', 'cluster_layer', name='uq_cluster_labels_id_layer'),)
 
     id = Column(Integer, primary_key=True, index=True)
-    cluster_id = Column(Integer, unique=True, nullable=False)
+    cluster_id = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     canonical_name = Column(String, nullable=True)
     description = Column(Text, nullable=True)
@@ -286,6 +287,7 @@ class CommunityArchetypeAssignment(Base):
 
 class ClusterLabelArchive(Base):
     __tablename__ = "cluster_labels_archive"
+    __table_args__ = (UniqueConstraint('cluster_id', 'cluster_layer', name='uq_cluster_labels_archive_id_layer'),)
 
     id = Column(Integer, primary_key=True)
     cluster_id = Column(Integer, nullable=False)
