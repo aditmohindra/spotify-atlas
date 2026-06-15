@@ -168,6 +168,8 @@ class ClusterLabel(Base):
     keywords = Column(ARRAY(String), nullable=True)
     cluster_archetype = Column(String, nullable=True)
     label_version = Column(Integer, default=1, nullable=True)
+    source_run_id = Column(Integer, nullable=True, default=18)
+    cluster_layer = Column(String, nullable=True, default='scene')
     created_at = Column(DateTime, server_default=func.now())
 
 
@@ -221,6 +223,9 @@ class ClusteringAssignment(Base):
     track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
     cluster_id = Column(Integer, nullable=False)
     probability = Column(Float, nullable=True)
+    assignment_type = Column(String, nullable=True, default='hard')  # 'hard' | 'soft' | 'between_worlds'
+    soft_cluster_id = Column(Integer, nullable=True)
+    soft_similarity = Column(Float, nullable=True)
 
     run = relationship("ClusteringRun", back_populates="assignments")
     track = relationship("Track")
@@ -237,6 +242,16 @@ class TrackClusterCoordinate(Base):
 
     track = relationship("Track")
     run = relationship("ClusteringRun", back_populates="coordinates")
+
+
+class VibeClusterCentroid(Base):
+    __tablename__ = "vibe_cluster_centroids"
+
+    id = Column(Integer, primary_key=True)
+    cluster_id = Column(Integer, unique=True, nullable=False)
+    raw_centroid = Column(ARRAY(Float), nullable=False)  # 1536D mean of vibe embeddings
+    track_count = Column(Integer, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
 
 
 class ClusterCentroid(Base):
@@ -280,4 +295,6 @@ class ClusterLabelArchive(Base):
     keywords = Column(ARRAY(String), nullable=True)
     cluster_archetype = Column(String, nullable=True)
     label_version = Column(Integer, nullable=True)
+    source_run_id = Column(Integer, nullable=True, default=18)
+    cluster_layer = Column(String, nullable=True, default='scene')
     archived_at = Column(DateTime, default=datetime.utcnow)
