@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { getTasteProfile } from "@/lib/api";
+import { getArchetypeColor } from "@/hooks/useMapData";
 import type { TasteProfile, Community } from "@/lib/types";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -14,18 +15,6 @@ const CLUSTER_COLORS = [
   "#f9a8d4", "#7dd3fc", "#6ee7b7", "#fcd34d", "#d8b4fe",
 ];
 
-const ARCHETYPE_COLORS: Record<string, string> = {
-  "The Trap":           "#f59e0b",
-  "Terminally Online":  "#3b82f6",
-  "Festival Regular":   "#8b5cf6",
-  "Anime Passport":     "#ec4899",
-  "Toronto Winter Arc": "#14b8a6",
-  "Lo-Fi Otaku":        "#6366f1",
-  "Desi Household":     "#f97316",
-  "Drip Report":        "#ef4444",
-  "Nostalgic Club Kid": "#84cc16",
-};
-
 const PAGE_SIZE = 25;
 
 function clusterColor(id: number): string {
@@ -34,7 +23,7 @@ function clusterColor(id: number): string {
 }
 
 function archetypeColor(name: string): string {
-  return ARCHETYPE_COLORS[name] ?? "#6b7280";
+  return getArchetypeColor(name);
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────

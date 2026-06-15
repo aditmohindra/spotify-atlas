@@ -3,28 +3,11 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { getTasteProfile } from "@/lib/api";
+import { getArchetypeColor } from "@/hooks/useMapData";
 import type { TasteProfile, Community } from "@/lib/types";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { SectionHeader } from "@/components/atlas/SectionHeader";
 import { PageShell } from "@/components/atlas/PageShell";
-
-// ── Archetype color palette ───────────────────────────────────────────────────
-
-const ARCHETYPE_COLORS: Record<string, string> = {
-  "The Trap": "#f59e0b",
-  "Terminally Online": "#3b82f6",
-  "Festival Regular": "#8b5cf6",
-  "Anime Passport": "#ec4899",
-  "Toronto Winter Arc": "#14b8a6",
-  "Lo-Fi Otaku": "#6366f1",
-  "Desi Household": "#f97316",
-  "Drip Report": "#ef4444",
-  "Nostalgic Club Kid": "#84cc16",
-};
-
-function archetypeColor(name: string): string {
-  return ARCHETYPE_COLORS[name] ?? "#9ca3af";
-}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -139,7 +122,7 @@ interface TimelineEntryProps {
 }
 
 function TimelineEntry({ label, period, community, description, accentColor }: TimelineEntryProps) {
-  const pillColor = community?.archetype ? archetypeColor(community.archetype) : "#9ca3af";
+  const pillColor = community?.archetype ? getArchetypeColor(community.archetype) : "#9ca3af";
 
   return (
     <div
@@ -497,7 +480,7 @@ export default function InsightsPage() {
                   <div className="flex rounded-full overflow-hidden h-8">
                     {archetypes.map((arch, i) => {
                       const pct = totalPct > 0 ? (arch.percentage / totalPct) * 100 : 0;
-                      const color = archetypeColor(arch.name);
+                      const color = getArchetypeColor(arch.name);
                       if (pct < 0.5) return null;
                       return (
                         <div
@@ -517,7 +500,7 @@ export default function InsightsPage() {
                   {/* Legend */}
                   <div className="flex flex-wrap gap-x-5 gap-y-2.5">
                     {archetypes.map((arch) => {
-                      const color = archetypeColor(arch.name);
+                      const color = getArchetypeColor(arch.name);
                       const pct = totalPct > 0 ? (arch.percentage / totalPct) * 100 : 0;
                       if (pct < 0.5) return null;
                       return (

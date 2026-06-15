@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { getTasteProfile, getTasteSummary, API_BASE_URL } from "@/lib/api";
+import { getArchetypeColor } from "@/hooks/useMapData";
 import type { TasteProfile, TasteSummary, Community } from "@/lib/types";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -20,18 +21,6 @@ const ARCHETYPE_DESCRIPTIONS: Record<string, string> = {
   "Drip Report": "Streetwear-adjacent rap, flexing anthems, and music that sounds expensive.",
   "Nostalgic Club Kid": "2000s dancefloors, pop anthems, and the music that made you who you are.",
 };
-
-const ARCHETYPE_PALETTE = [
-  { bg: "#fef9ec", border: "#fde68a", accent: "#b45309" },
-  { bg: "#eef3fb", border: "#bfdbfe", accent: "#1d4ed8" },
-  { bg: "#f5f0fb", border: "#ddd6fe", accent: "#7c3aed" },
-  { bg: "#fef2f2", border: "#fecaca", accent: "#dc2626" },
-  { bg: "#f0fdf4", border: "#bbf7d0", accent: "#15803d" },
-  { bg: "#fff7ed", border: "#fed7aa", accent: "#ea580c" },
-  { bg: "#f0f9ff", border: "#bae6fd", accent: "#0284c7" },
-  { bg: "#fdf4ff", border: "#f5d0fe", accent: "#a21caf" },
-  { bg: "#fffbeb", border: "#fef08a", accent: "#ca8a04" },
-] as const;
 
 const CLUSTER_COLORS = [
   "#60a5fa", "#34d399", "#f87171", "#fbbf24", "#a78bfa",
@@ -283,14 +272,14 @@ export default function IdentityPage() {
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
-            {top3Archetypes.map((arch, i) => {
-              const palette = ARCHETYPE_PALETTE[i % ARCHETYPE_PALETTE.length];
+            {top3Archetypes.map((arch) => {
+              const color = getArchetypeColor(arch.name);
               return (
                 <div
                   key={arch.name}
-                  style={{ background: palette.bg, border: `1px solid ${palette.border}`, borderRadius: 10, padding: "11px 13px" }}
+                  style={{ background: `${color}12`, border: `1px solid ${color}40`, borderRadius: 10, padding: "11px 13px" }}
                 >
-                  <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.1rem", color: palette.accent, lineHeight: 1, marginBottom: 4 }}>
+                  <div style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: "1.1rem", color, lineHeight: 1, marginBottom: 4 }}>
                     {arch.percentage.toFixed(1)}%
                   </div>
                   <div style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontWeight: 600, fontSize: 11, color: "#101828", lineHeight: 1.3 }}>
@@ -314,7 +303,7 @@ export default function IdentityPage() {
                   {arch.name}
                 </span>
                 <div style={{ flex: 1, height: 4, borderRadius: 2, background: "#f3f4f6", overflow: "hidden" }}>
-                  <div style={{ width: `${(arch.percentage / maxRestPct) * 100}%`, height: "100%", background: "#1db954", opacity: 0.38, borderRadius: 2, transition: "width 0.5s" }} />
+                  <div style={{ width: `${(arch.percentage / maxRestPct) * 100}%`, height: "100%", background: getArchetypeColor(arch.name), opacity: 0.85, borderRadius: 2, transition: "width 0.5s" }} />
                 </div>
                 <span style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontSize: 10, color: "#9ca3af", width: 36, textAlign: "right", flexShrink: 0 }}>
                   {arch.percentage.toFixed(1)}%
