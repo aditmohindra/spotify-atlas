@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 export const ARCHETYPE_COLORS: Record<string, string> = {
-  "The Trap": "#f97316",
-  "Terminally Online": "#8b5cf6",
-  "Festival Regular": "#3b82f6",
-  "Anime Passport": "#ec4899",
-  "Toronto Winter Arc": "#14b8a6",
-  "Lo-Fi Otaku": "#f59e0b",
-  "Desi Household": "#ef4444",
-  "Drip Report": "#6366f1",
-  "Nostalgic Club Kid": "#22c55e",
-  // Legacy DB names — kept as fallbacks in case old values appear
-  "East Blue and Chill?": "#f59e0b",
-  "Drippy": "#6366f1",
+  "Trap Dynasty":        "#f97316",
+  "Terminally Online":   "#8b5cf6",
+  "Festival Regular":    "#3b82f6",
+  "Anime Passport":      "#ec4899",
+  "Lo-Fi Otaku":         "#f59e0b",
+  "Desi Household":      "#ef4444",
+  "Rap Canon Devotee":   "#6366f1",
+  "K-Pop Citizen":       "#22c55e",
+  "Side Quest Soul":     "#14b8a6",
+  "Late Night Romantic": "#e11d48",
+  "Indie Main Character":"#a855f7",
+  "Club Circuit":        "#0ea5e9",
 };
 
 export function getArchetypeColor(archetype: string | null | undefined): string {
@@ -56,42 +57,120 @@ export interface MapData {
   points: TrackPoint[];
 }
 
-export function useMapData() {
+interface GalaxyTrack {
+  track_id: number;
+  spotify_track_id: string;
+  name: string;
+  artist: string;
+  x: number;
+  y: number;
+  cluster_id: number;
+  community_name: string;
+  assignment_type: "hard" | "soft" | "between_worlds";
+}
+
+interface GalaxyCommunity {
+  cluster_id: number;
+  name: string;
+  canonical_name: string | null;
+  cluster_archetype: string | null;
+  track_count: number;
+}
+
+interface GalaxyResponse {
+  layer: string;
+  total_tracks: number;
+  total_communities: number;
+  tracks: GalaxyTrack[];
+  communities: GalaxyCommunity[];
+}
+
+export function useMapData(layer: "vibe" | "scene" = "vibe") {
   const [data, setData] = useState<MapData | null>(null);
   const [clusters, setClusters] = useState<ClusterInfo[]>([]);
   const [labels, setLabels] = useState<ClusterLabel[]>([]);
+  const [stats, setStats] = useState<{
+    totalTracks: number;
+    totalCommunities: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch("http://127.0.0.1:8000/map").then((r) => r.json()),
-      fetch("http://127.0.0.1:8000/map/clusters").then((r) => r.json()),
-      fetch("http://127.0.0.1:8000/clusters/labels").then((r) => r.json()),
-    ])
-      .then(([mapData, clusterData, labelsData]) => {
-        const labelsMap: Record<number, ClusterLabel> = {};
-        for (const label of labelsData.labels as ClusterLabel[]) {
-          labelsMap[label.cluster_id] = label;
-        }
+    setLoading(true);
+    setError(null);
+    setStats(null);
 
-        const enriched: ClusterInfo[] = clusterData.clusters.map((c: ClusterInfo) => ({
-          ...c,
-          name: labelsMap[c.cluster_id]?.name,
-          canonical_name: labelsMap[c.cluster_id]?.canonical_name,
-          cluster_archetype: labelsMap[c.cluster_id]?.cluster_archetype ?? null,
+    fetch(`${API_BASE_URL}/galaxy?layer=${layer}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`Request failed with status ${r.status}`);
+        return r.json() as Promise<GalaxyResponse>;
+      })
+      .then((response) => {
+        const points: TrackPoint[] = response.tracks.map((t) => ({
+          id: t.track_id,
+          name: t.name,
+          artist: t.artist,
+          x: t.x,
+          y: t.y,
+          cluster_id: t.cluster_id,
+          spotify_id: t.spotify_track_id,
         }));
 
-        setData(mapData);
+        const centroidAcc = new Map<
+          number,
+          { sumX: number; sumY: number; count: number }
+        >();
+        for (const pt of points) {
+          if (pt.cluster_id === -1) continue;
+          const prev = centroidAcc.get(pt.cluster_id) ?? {
+            sumX: 0,
+            sumY: 0,
+            count: 0,
+          };
+          centroidAcc.set(pt.cluster_id, {
+            sumX: prev.sumX + pt.x,
+            sumY: prev.sumY + pt.y,
+            count: prev.count + 1,
+          });
+        }
+
+        const enriched: ClusterInfo[] = response.communities.map((c) => {
+          const acc = centroidAcc.get(c.cluster_id);
+          return {
+            cluster_id: c.cluster_id,
+            track_count: c.track_count,
+            centroid_x: acc ? acc.sumX / acc.count : 0,
+            centroid_y: acc ? acc.sumY / acc.count : 0,
+            top_artists: [],
+            sample_tracks: [],
+            name: c.name,
+            canonical_name: c.canonical_name ?? undefined,
+            cluster_archetype: c.cluster_archetype ?? null,
+          };
+        });
+
+        const clusterLabels: ClusterLabel[] = response.communities.map((c) => ({
+          cluster_id: c.cluster_id,
+          name: c.name,
+          canonical_name: c.canonical_name ?? undefined,
+          cluster_archetype: c.cluster_archetype ?? null,
+        }));
+
+        setData({ total: response.total_tracks, points });
         setClusters(enriched);
-        setLabels(labelsData.labels as ClusterLabel[]);
+        setLabels(clusterLabels);
+        setStats({
+          totalTracks: response.total_tracks,
+          totalCommunities: response.total_communities,
+        });
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [layer]);
 
-  return { data, clusters, labels, loading, error };
+  return { data, clusters, labels, stats, loading, error };
 }

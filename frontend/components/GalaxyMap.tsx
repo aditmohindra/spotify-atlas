@@ -6,7 +6,6 @@ import {
   TrackPoint,
   ClusterInfo,
   getArchetypeColor,
-  ARCHETYPE_COLORS,
 } from "@/hooks/useMapData";
 import TrackSidebar from "./TrackSidebar";
 import ClusterSidebar from "./ClusterSidebar";
@@ -22,15 +21,24 @@ interface GalaxyMapProps {
   hideUI?: boolean;
   /** @deprecated use embedMode="true" */
   hideControls?: boolean;
+  layer?: "vibe" | "scene";
+  onLayerChange?: (layer: "vibe" | "scene") => void;
 }
 
-export default function GalaxyMap({ embedMode, hideUI = false, hideControls = false }: GalaxyMapProps) {
+export default function GalaxyMap({
+  embedMode,
+  hideUI = false,
+  hideControls = false,
+  layer,
+  onLayerChange,
+}: GalaxyMapProps) {
   /** Canvas-only mode: sidebar hidden, all controls hidden, fixed overlay */
   const isEmbed = hideUI || hideControls || embedMode === "true";
   /** Sidebar-only embed: Atlas Regions visible but search/zoom controls hidden, fixed overlay */
   const isSidebar = embedMode === "sidebar";
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { data, clusters, loading, error } = useMapData();
+  const { data, clusters, stats, loading, error } = useMapData(layer ?? "vibe");
+  const activeLayer = layer ?? "vibe";
 
   const [selectedTrack, setSelectedTrack] = useState<TrackPoint | null>(null);
   const [hoveredTrack, setHoveredTrack] = useState<TrackPoint | null>(null);
@@ -385,6 +393,17 @@ export default function GalaxyMap({ embedMode, hideUI = false, hideControls = fa
 
   useEffect(() => { draw(); }, [draw]);
 
+  useEffect(() => {
+    transform.current = { scale: 1, offsetX: 0, offsetY: 0 };
+    setDisplayScale(1);
+    setSelectedCluster(null);
+    setSelectedArchetype(null);
+    setSelectedTrack(null);
+    setSearchResult(null);
+    setSearch("");
+    setShowSearch(false);
+  }, [activeLayer]);
+
   const hitTest = useCallback(
     (mx: number, my: number): TrackPoint | null => {
       const canvas = canvasRef.current;
@@ -590,7 +609,12 @@ export default function GalaxyMap({ embedMode, hideUI = false, hideControls = fa
       ? { position: "fixed", inset: 0, zIndex: 9999, marginTop: 0, height: "100vh" }
       : {};
 
-  if (loading)
+  if (loading) {
+    const isScene = activeLayer === "scene";
+    const communityFallback = isScene ? 171 : 102;
+    const totalCommunities = stats?.totalCommunities ?? communityFallback;
+    const totalTracks = stats?.totalTracks;
+
     return (
       <div
         className="w-full flex items-center justify-center"
@@ -601,14 +625,18 @@ export default function GalaxyMap({ embedMode, hideUI = false, hideControls = fa
             className="text-sm tracking-widest uppercase"
             style={{ color: "#9ca3af" }}
           >
-            Loading Atlas
+            Loading {isScene ? "Cultural Atlas" : "Vibe Atlas"} · {totalCommunities}{" "}
+            communities
           </div>
-          <div className="text-xs" style={{ color: "#d1d5db" }}>
-            9,892 tracks · 204 communities
-          </div>
+          {totalTracks != null && (
+            <div className="text-xs" style={{ color: "#d1d5db" }}>
+              {totalTracks.toLocaleString()} tracks · {totalCommunities} communities
+            </div>
+          )}
         </div>
       </div>
     );
+  }
 
   if (error)
     return (
@@ -685,6 +713,50 @@ export default function GalaxyMap({ embedMode, hideUI = false, hideControls = fa
               aria-label="Zoom in"
             >
               +
+            </button>
+          </div>
+
+          {/* Layer toggle — bottom left, next to zoom controls */}
+          <div
+            className="absolute z-10 flex items-center"
+            style={{
+              bottom: 20,
+              left: ATLAS_SIDEBAR + 80,
+              background: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 20,
+              boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+            }}
+          >
+            <button
+              onClick={() => onLayerChange?.("vibe")}
+              style={{
+                padding: "6px 14px",
+                background: activeLayer === "vibe" ? "#f0fdf4" : "none",
+                border: "none",
+                borderRight: "1px solid #e5e7eb",
+                cursor: "pointer",
+                color: activeLayer === "vibe" ? "#166534" : "#6b7280",
+                fontSize: 12,
+                fontWeight: activeLayer === "vibe" ? 600 : 400,
+              }}
+            >
+              Vibe Atlas
+            </button>
+            <button
+              onClick={() => onLayerChange?.("scene")}
+              style={{
+                padding: "6px 14px",
+                background: activeLayer === "scene" ? "#f0fdf4" : "none",
+                border: "none",
+                cursor: "pointer",
+                color: activeLayer === "scene" ? "#166534" : "#6b7280",
+                fontSize: 12,
+                fontWeight: activeLayer === "scene" ? 600 : 400,
+              }}
+            >
+              Cultural Atlas
             </button>
           </div>
 

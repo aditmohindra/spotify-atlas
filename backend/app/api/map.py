@@ -10,7 +10,7 @@ router = APIRouter()
 
 # Simple in-memory cache: { layer: (timestamp, response_dict) }
 _galaxy_cache: dict = {}
-_CACHE_TTL_SECONDS = 300  # 5 minutes
+_CACHE_TTL_SECONDS = 0  # TEMP: disabled — set back to 300 after verifying fresh DB reads
 
 VIBE_RUN_ID = 29
 SCENE_RUN_ID = 18
@@ -77,7 +77,7 @@ def _build_vibe_payload(db: Session) -> dict:
     rows = db.execute(sql, {"run_id": VIBE_RUN_ID}).mappings().all()
 
     label_sql = text("""
-        SELECT cluster_id, name, canonical_name
+        SELECT cluster_id, name, canonical_name, cluster_archetype
         FROM cluster_labels
         WHERE cluster_layer = 'vibe'
     """)
@@ -111,7 +111,7 @@ def _build_scene_payload(db: Session) -> dict:
     rows = db.execute(sql).mappings().all()
 
     label_sql = text("""
-        SELECT cluster_id, name, canonical_name
+        SELECT cluster_id, name, canonical_name, cluster_archetype
         FROM cluster_labels
         WHERE cluster_layer = 'scene'
     """)
@@ -143,17 +143,19 @@ def _assemble_payload(layer: str, rows, labels: dict, noise_name: str) -> dict:
     communities = []
     for cid, label_row in labels.items():
         communities.append({
-            "cluster_id":    cid,
-            "name":          label_row["name"],
-            "canonical_name": label_row["canonical_name"],
-            "track_count":   community_track_counts.get(cid, 0),
+            "cluster_id":       cid,
+            "name":             label_row["name"],
+            "canonical_name":   label_row["canonical_name"],
+            "cluster_archetype": label_row["cluster_archetype"],
+            "track_count":      community_track_counts.get(cid, 0),
         })
     if -1 in community_track_counts:
         communities.append({
-            "cluster_id":    -1,
-            "name":          noise_name,
-            "canonical_name": None,
-            "track_count":   community_track_counts[-1],
+            "cluster_id":       -1,
+            "name":             noise_name,
+            "canonical_name":   None,
+            "cluster_archetype": None,
+            "track_count":      community_track_counts[-1],
         })
     communities.sort(key=lambda c: c["cluster_id"])
 
