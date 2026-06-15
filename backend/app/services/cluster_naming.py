@@ -30,6 +30,7 @@ FILLER_SUFFIXES = [
     "Narratives", "Scene", "World", "Era", "Movement", "Experience",
     "Wave", "Waves", "Chronicles", "Odyssey", "Dreamscape", "Realm",
     "Nexus", "Vault", "Matrix", "Pulse",
+    "Aesthetic", "Lore", "Files", "Archive", "Tape", "Tribute", "Session",
 ]
 
 def clean_display_name(name: str) -> str:
@@ -104,8 +105,22 @@ DIVERSITY_GENRE_SIGNALS = {
 }
 
 
-def name_cluster_sync(cluster_data: dict, diversity_pct: int = 0) -> dict:
+def name_cluster_sync(cluster_data: dict, diversity_pct: int = 0, forbidden_names: set[str] | None = None) -> dict:
+    if forbidden_names:
+        sorted_forbidden = sorted(forbidden_names)
+        forbidden_block = (
+            "⛔ HARD CONSTRAINT — FORBIDDEN DISPLAY NAMES ⛔\n"
+            "The following names are already taken by other communities. "
+            "You MUST NOT use any of these as your display_name. "
+            "If your first instinct is one of these names, choose a completely different password.\n"
+            + ", ".join(f'"{n}"' for n in sorted_forbidden)
+            + "\n\n"
+        )
+    else:
+        forbidden_block = ""
+
     prompt = f"""You are a cultural anthropologist, not a music journalist.
+{forbidden_block}
 
     Your task is NOT to name music. Your task is to identify the specific human community hiding inside this Spotify cluster.
 
@@ -260,6 +275,40 @@ def name_cluster_sync(cluster_data: dict, diversity_pct: int = 0) -> dict:
     result["display_name"] = clean_display_name(result["display_name"])
     assert "display_name" in result
     assert "canonical_name" in result
+
+    # Post-generation enforcement: retry if the LLM chose a forbidden name anyway
+    if forbidden_names and result["display_name"] in forbidden_names:
+        conflict = result["display_name"]
+        print(f"    [forbidden-retry] '{conflict}' is taken — retrying with explicit conflict note")
+        retry_prompt = (
+            f"{prompt}\n\n"
+            f"CORRECTION REQUIRED: You returned \"{conflict}\" but that name is already taken. "
+            f"You MUST choose a completely different name. "
+            f"Find a different password — a different track, place, fandom reference, or cultural artifact."
+        )
+        for attempt in range(3):
+            resp = httpx.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+                json={"model": "gpt-4o", "messages": [{"role": "user", "content": retry_prompt}],
+                      "max_tokens": 400, "temperature": 0.9},
+                timeout=30.0,
+            )
+            rdata = resp.json()
+            if "choices" not in rdata:
+                time.sleep(2 ** attempt)
+                continue
+            rtext = rdata["choices"][0]["message"]["content"].strip()
+            if rtext.startswith("```"):
+                rtext = "\n".join(rtext.split("\n")[1:-1])
+            retry_result = json.loads(rtext)
+            retry_result["display_name"] = clean_display_name(retry_result["display_name"])
+            if retry_result["display_name"] not in forbidden_names:
+                result = retry_result
+                break
+            print(f"    [forbidden-retry {attempt+1}] still got forbidden name '{retry_result['display_name']}'")
+        else:
+            print(f"    WARNING: could not escape forbidden name after 3 retries — keeping '{result['display_name']}'")
 
     # Diversity guard: high-diversity clusters shouldn't be pinned to one genre
     if diversity_pct >= 50:

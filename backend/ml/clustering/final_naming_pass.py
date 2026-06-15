@@ -299,6 +299,7 @@ def name_community_with_context(
     sibling_top_artists: list[str],
     run_id: int | None,
     db,
+    forbidden_names: set[str] | None = None,
 ) -> dict:
     cluster_data = _get_cluster_data(cluster_id, run_id, db)
     context_block = (
@@ -310,7 +311,11 @@ def name_community_with_context(
         f"Use this context to make the name feel like it belongs to a broader cultural family.\n"
     )
     cluster_data["moods"] = [context_block] + cluster_data.get("moods", [])
-    return name_cluster_sync(cluster_data, diversity_pct=cluster_data.get("diversity_pct", 0))
+    return name_cluster_sync(
+        cluster_data,
+        diversity_pct=cluster_data.get("diversity_pct", 0),
+        forbidden_names=forbidden_names,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -398,7 +403,7 @@ def main():
                     .all()
                 }
                 remaining = [c for c in all_cluster_ids if c not in already_done]
-                print(f"\nResume: {len(already_done)} already named, {len(remaining)} remaining (layer={layer})")
+                print(f"\nResuming: {len(already_done)} clusters already named, {len(remaining)} remaining (layer={layer})")
                 all_cluster_ids = remaining
             else:
                 print(f"\nFound {len(all_cluster_ids)} clusters to name (layer={layer})")
@@ -448,11 +453,19 @@ def main():
                         a for a, _ in sorted(sibling_artist_counts.items(), key=lambda x: -x[1])[:8]
                     ]
 
+        # --- Load all existing names (both layers) to prevent cross-layer duplicates ---
+        all_existing_names: set[str] = {
+            row[0] for row in db.query(ClusterLabel.name).all()
+        }
+        print(f"Loaded {len(all_existing_names)} existing names (all layers) as forbidden pool")
+
         # --- Name communities ---
         print(f"\nNaming {len(all_cluster_ids)} communities...")
         named = 0
         failed = 0
         dry_run_results: list[dict] = []
+        # Keep track of names assigned this run to avoid intra-run dupes too
+        session_names: set[str] = set()
 
         for cluster_id in all_cluster_ids:
             # Archetype context (best-effort)
@@ -469,10 +482,12 @@ def main():
 
             try:
                 result = name_community_with_context(
-                    cluster_id, arch_name, arch_desc, siblings, run_id, db
+                    cluster_id, arch_name, arch_desc, siblings, run_id, db,
+                    forbidden_names=all_existing_names | session_names,
                 )
                 display  = result["display_name"]
                 canonical = result.get("canonical_name", "")
+                session_names.add(display)
                 named += 1
 
                 print(
@@ -503,7 +518,7 @@ def main():
                     db.add(label)
                     db.commit()
 
-                time.sleep(0.5)
+                time.sleep(3)
 
             except Exception as e:
                 failed += 1
