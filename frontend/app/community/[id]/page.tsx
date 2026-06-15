@@ -183,9 +183,9 @@ export default function CommunityDetailPage() {
     const { signal } = controller;
 
     Promise.all([
-      getCommunityDetail(clusterId, 1, { signal }),
-      getRelatedCommunities(clusterId, { signal }),
-      getTasteProfile(1, "all", { signal }),
+      getCommunityDetail(clusterId, 1, "vibe", { signal }),
+      getRelatedCommunities(clusterId, "vibe", { signal }),
+      getTasteProfile(1, "all", "vibe", { signal }),
     ])
       .then(([detailData, relatedData, tasteData]) => {
         setDetail(detailData);

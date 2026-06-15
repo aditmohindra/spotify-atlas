@@ -7,8 +7,10 @@ from datetime import datetime, timedelta
 
 router = APIRouter()
 
+VIBE_RUN_ID = 29
 
-def compute_taste_profile(user_id: int, db: Session, since: str = None):
+
+def compute_taste_profile(user_id: int, db: Session, since: str = None, layer: str = "vibe"):
     from app.models.models import ListeningEvent, Track, TrackCluster, Artist
 
     query = db.query(
@@ -46,12 +48,25 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
 
     track_ids = list(track_weights.keys())
 
-    clusters = db.query(
-        TrackCluster.track_id,
-        TrackCluster.cluster_id
-    ).filter(TrackCluster.track_id.in_(track_ids)).all()
-
-    track_to_cluster = {tc.track_id: tc.cluster_id for tc in clusters}
+    if layer == "vibe":
+        assignment_rows = db.execute(text("""
+            SELECT track_id,
+                   CASE
+                       WHEN assignment_type = 'between_worlds' THEN -1
+                       WHEN assignment_type = 'soft'           THEN soft_cluster_id
+                       ELSE cluster_id
+                   END AS cluster_id
+            FROM clustering_assignments
+            WHERE run_id = :run_id
+              AND track_id = ANY(:track_ids)
+        """), {"run_id": VIBE_RUN_ID, "track_ids": track_ids}).fetchall()
+        track_to_cluster = {r[0]: r[1] for r in assignment_rows}
+    else:
+        clusters = db.query(
+            TrackCluster.track_id,
+            TrackCluster.cluster_id
+        ).filter(TrackCluster.track_id.in_(track_ids)).all()
+        track_to_cluster = {tc.track_id: tc.cluster_id for tc in clusters}
 
     cluster_weights = defaultdict(float)
     cluster_track_ids = defaultdict(list)
@@ -67,8 +82,12 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
         return {"user_id": user_id, "total_weight": 0, "communities": []}
 
     label_rows = db.execute(text(
-        "SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype FROM cluster_labels"
-    )).fetchall()
+        """
+        SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype
+        FROM cluster_labels
+        WHERE cluster_layer = :layer
+        """
+    ), {"layer": layer}).fetchall()
     labels = {
         r[0]: {
             "name": r[1],
@@ -134,6 +153,7 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
 
     return {
         "user_id": user_id,
+        "layer": layer,
         "total_weight": round(total_weight, 1),
         "communities": communities[:50]
     }
@@ -143,9 +163,18 @@ def compute_taste_profile(user_id: int, db: Session, since: str = None):
 async def get_taste_profile(
     user_id: int = 1,
     time_range: str = "all",
+    layer: str = "vibe",
     db: Session = Depends(get_db)
 ):
-    return compute_taste_profile(user_id, db, time_range if time_range != "all" else None)
+    if layer not in ("vibe", "scene"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="layer must be 'vibe' or 'scene'")
+    return compute_taste_profile(
+        user_id,
+        db,
+        time_range if time_range != "all" else None,
+        layer=layer,
+    )
 
 @router.get("/profile/summary")
 async def get_taste_summary(user_id: int = 1, db: Session = Depends(get_db)):

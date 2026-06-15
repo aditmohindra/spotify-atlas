@@ -1,8 +1,24 @@
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.database.connection import get_db
 
 router = APIRouter()
+
+VIBE_RUN_ID = 29
+
+EFFECTIVE_VIBE_CLUSTER = """
+    CASE
+        WHEN ca.assignment_type = 'between_worlds' THEN -1
+        WHEN ca.assignment_type = 'soft'           THEN ca.soft_cluster_id
+        ELSE ca.cluster_id
+    END
+"""
+
+
+def _validate_layer(layer: str) -> None:
+    if layer not in ("vibe", "scene"):
+        raise HTTPException(status_code=400, detail="layer must be 'vibe' or 'scene'")
 
 
 @router.post("/clusters/name")
@@ -52,15 +68,20 @@ async def generate_archetypes(background_tasks: BackgroundTasks, db: Session = D
 
 
 @router.get("/clusters/archetypes")
-async def get_archetypes(db: Session = Depends(get_db)):
-    from sqlalchemy import text
+async def get_archetypes(
+    layer: str = Query(default="vibe"),
+    db: Session = Depends(get_db),
+):
     from collections import defaultdict
+
+    _validate_layer(layer)
 
     rows = db.execute(text("""
         SELECT cluster_id, name, canonical_name, description, cluster_archetype
         FROM cluster_labels
+        WHERE cluster_layer = :layer
         ORDER BY name
-    """)).fetchall()
+    """), {"layer": layer}).fetchall()
 
     archetypes = defaultdict(list)
     for row in rows:
@@ -73,6 +94,7 @@ async def get_archetypes(db: Session = Depends(get_db)):
         })
 
     return {
+        "layer": layer,
         "archetypes": [
             {
                 "name": archetype,
@@ -85,63 +107,125 @@ async def get_archetypes(db: Session = Depends(get_db)):
 
 
 @router.get("/clusters/{cluster_id}/related")
-async def get_related_clusters(cluster_id: int, db: Session = Depends(get_db)):
-    from app.services.cluster_relations import get_related_clusters
-    related = get_related_clusters(cluster_id, db)
-    return {"cluster_id": cluster_id, "related": related}
+async def get_related_clusters(
+    cluster_id: int,
+    layer: str = Query(default="vibe"),
+    db: Session = Depends(get_db),
+):
+    from app.services.cluster_relations import get_related_clusters as _get_related
+
+    _validate_layer(layer)
+    related = _get_related(cluster_id, db, layer=layer)
+    return {"cluster_id": cluster_id, "layer": layer, "related": related}
+
 
 @router.get("/clusters/{cluster_id}/detail")
-async def get_cluster_detail(cluster_id: int, user_id: int = 1, db: Session = Depends(get_db)):
-    from sqlalchemy import text
+async def get_cluster_detail(
+    cluster_id: int,
+    user_id: int = 1,
+    layer: str = Query(default="vibe"),
+    db: Session = Depends(get_db),
+):
+    _validate_layer(layer)
 
     label = db.execute(text(
-        "SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype FROM cluster_labels WHERE cluster_id = :id"
-    ), {"id": cluster_id}).fetchone()
+        """
+        SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype
+        FROM cluster_labels
+        WHERE cluster_id = :id AND cluster_layer = :layer
+        """
+    ), {"id": cluster_id, "layer": layer}).fetchone()
 
     if not label:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Community not found")
 
-    artists = db.execute(text("""
-        SELECT a.name, COUNT(*) as cnt
-        FROM track_clusters tc
-        JOIN tracks t ON t.id = tc.track_id
-        JOIN artists a ON a.id = t.artist_id
-        WHERE tc.cluster_id = :id
-        GROUP BY a.name
-        ORDER BY cnt DESC
-        LIMIT 5
-    """), {"id": cluster_id}).fetchall()
+    if layer == "vibe":
+        artists = db.execute(text(f"""
+            SELECT a.name, COUNT(*) as cnt
+            FROM clustering_assignments ca
+            JOIN tracks t ON t.id = ca.track_id
+            JOIN artists a ON a.id = t.artist_id
+            WHERE ca.run_id = :run_id
+              AND {EFFECTIVE_VIBE_CLUSTER} = :id
+            GROUP BY a.name
+            ORDER BY cnt DESC
+            LIMIT 5
+        """), {"run_id": VIBE_RUN_ID, "id": cluster_id}).fetchall()
 
-    tracks = db.execute(text("""
-        SELECT t.name, a.name as artist, t.spotify_track_id
-        FROM track_clusters tc
-        JOIN tracks t ON t.id = tc.track_id
-        JOIN artists a ON a.id = t.artist_id
-        WHERE tc.cluster_id = :id
-        ORDER BY RANDOM()
-        LIMIT 8
-    """), {"id": cluster_id}).fetchall()
+        tracks = db.execute(text(f"""
+            SELECT t.name, a.name as artist, t.spotify_track_id
+            FROM clustering_assignments ca
+            JOIN tracks t ON t.id = ca.track_id
+            JOIN artists a ON a.id = t.artist_id
+            WHERE ca.run_id = :run_id
+              AND {EFFECTIVE_VIBE_CLUSTER} = :id
+            ORDER BY RANDOM()
+            LIMIT 8
+        """), {"run_id": VIBE_RUN_ID, "id": cluster_id}).fetchall()
 
-    track_count = db.execute(text(
-        "SELECT COUNT(*) FROM track_clusters WHERE cluster_id = :id"
-    ), {"id": cluster_id}).scalar()
+        track_count = db.execute(text(f"""
+            SELECT COUNT(*)
+            FROM clustering_assignments ca
+            WHERE ca.run_id = :run_id
+              AND {EFFECTIVE_VIBE_CLUSTER} = :id
+        """), {"run_id": VIBE_RUN_ID, "id": cluster_id}).scalar()
 
-    user_percentage = None
-    user_community = db.execute(text("""
-        SELECT 
-            SUM(CASE 
-                WHEN le.source = 'saved_tracks' THEN 2.0
-                WHEN le.source LIKE '%top_short%' THEN 3.0
-                WHEN le.source LIKE '%top_medium%' THEN 2.5
-                WHEN le.source LIKE '%top_long%' THEN 2.0
-                WHEN le.source LIKE 'playlist_%' THEN 1.5
-                ELSE 1.0
-            END) as weight
-        FROM listening_events le
-        JOIN track_clusters tc ON tc.track_id = le.track_id
-        WHERE tc.cluster_id = :id AND le.user_id = :uid
-    """), {"id": cluster_id, "uid": user_id}).fetchone()
+        user_community = db.execute(text(f"""
+            SELECT
+                SUM(CASE
+                    WHEN le.source = 'saved_tracks' THEN 2.0
+                    WHEN le.source LIKE '%top_short%' THEN 3.0
+                    WHEN le.source LIKE '%top_medium%' THEN 2.5
+                    WHEN le.source LIKE '%top_long%' THEN 2.0
+                    WHEN le.source LIKE 'playlist_%' THEN 1.5
+                    ELSE 1.0
+                END) as weight
+            FROM listening_events le
+            JOIN clustering_assignments ca ON ca.track_id = le.track_id
+                                          AND ca.run_id = :run_id
+            WHERE le.user_id = :uid
+              AND {EFFECTIVE_VIBE_CLUSTER} = :id
+        """), {"run_id": VIBE_RUN_ID, "uid": user_id, "id": cluster_id}).fetchone()
+    else:
+        artists = db.execute(text("""
+            SELECT a.name, COUNT(*) as cnt
+            FROM track_clusters tc
+            JOIN tracks t ON t.id = tc.track_id
+            JOIN artists a ON a.id = t.artist_id
+            WHERE tc.cluster_id = :id
+            GROUP BY a.name
+            ORDER BY cnt DESC
+            LIMIT 5
+        """), {"id": cluster_id}).fetchall()
+
+        tracks = db.execute(text("""
+            SELECT t.name, a.name as artist, t.spotify_track_id
+            FROM track_clusters tc
+            JOIN tracks t ON t.id = tc.track_id
+            JOIN artists a ON a.id = t.artist_id
+            WHERE tc.cluster_id = :id
+            ORDER BY RANDOM()
+            LIMIT 8
+        """), {"id": cluster_id}).fetchall()
+
+        track_count = db.execute(text(
+            "SELECT COUNT(*) FROM track_clusters WHERE cluster_id = :id"
+        ), {"id": cluster_id}).scalar()
+
+        user_community = db.execute(text("""
+            SELECT
+                SUM(CASE
+                    WHEN le.source = 'saved_tracks' THEN 2.0
+                    WHEN le.source LIKE '%top_short%' THEN 3.0
+                    WHEN le.source LIKE '%top_medium%' THEN 2.5
+                    WHEN le.source LIKE '%top_long%' THEN 2.0
+                    WHEN le.source LIKE 'playlist_%' THEN 1.5
+                    ELSE 1.0
+                END) as weight
+            FROM listening_events le
+            JOIN track_clusters tc ON tc.track_id = le.track_id
+            WHERE tc.cluster_id = :id AND le.user_id = :uid
+        """), {"id": cluster_id, "uid": user_id}).fetchone()
 
     return {
         "cluster_id": label[0],
@@ -150,6 +234,7 @@ async def get_cluster_detail(cluster_id: int, user_id: int = 1, db: Session = De
         "description": label[3],
         "keywords": label[4] or [],
         "archetype": label[5],
+        "layer": layer,
         "track_count": track_count,
         "top_artists": [r[0] for r in artists],
         "sample_tracks": [{"name": r[0], "artist": r[1], "spotify_id": r[2]} for r in tracks],

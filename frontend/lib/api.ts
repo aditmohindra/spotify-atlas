@@ -58,18 +58,23 @@ async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
 // Profile
 // ---------------------------------------------------------------------------
 
+/** Atlas layer: vibe (Run 29) or scene (Run 18). */
+export type AtlasLayer = "vibe" | "scene";
+
 /**
  * Fetch the user's taste profile (top communities, weighted).
- * GET /profile/taste?user_id={userId}&time_range={timeRange}
+ * GET /profile/taste?user_id={userId}&time_range={timeRange}&layer={layer}
  */
 export function getTasteProfile(
   userId = 1,
   timeRange: TasteTimeRange = "all",
+  layer: AtlasLayer = "vibe",
   init?: RequestInit,
 ): Promise<TasteProfile> {
   const params = new URLSearchParams({
     user_id: String(userId),
     time_range: timeRange,
+    layer,
   });
   return getJson<TasteProfile>(`/profile/taste?${params.toString()}`, init);
 }
@@ -94,22 +99,30 @@ export function getTasteSummary(
 
 /**
  * Fetch all archetypes and the communities grouped under each.
- * GET /clusters/archetypes
+ * GET /clusters/archetypes?layer={layer}
  */
-export function getArchetypes(init?: RequestInit): Promise<ArchetypesResponse> {
-  return getJson<ArchetypesResponse>("/clusters/archetypes", init);
+export function getArchetypes(
+  layer: AtlasLayer = "vibe",
+  init?: RequestInit,
+): Promise<ArchetypesResponse> {
+  const params = new URLSearchParams({ layer });
+  return getJson<ArchetypesResponse>(`/clusters/archetypes?${params.toString()}`, init);
 }
 
 /**
  * Fetch full detail for a single community, hydrated with the user's weight.
- * GET /clusters/{communityId}/detail?user_id={userId}
+ * GET /clusters/{communityId}/detail?user_id={userId}&layer={layer}
  */
 export function getCommunityDetail(
   communityId: number,
   userId = 1,
+  layer: AtlasLayer = "vibe",
   init?: RequestInit,
 ): Promise<CommunityDetail> {
-  const params = new URLSearchParams({ user_id: String(userId) });
+  const params = new URLSearchParams({
+    user_id: String(userId),
+    layer,
+  });
   return getJson<CommunityDetail>(
     `/clusters/${communityId}/detail?${params.toString()}`,
     init,
@@ -118,13 +131,18 @@ export function getCommunityDetail(
 
 /**
  * Fetch communities most similar to a given community.
- * GET /clusters/{communityId}/related
+ * GET /clusters/{communityId}/related?layer={layer}
  */
 export function getRelatedCommunities(
   communityId: number,
+  layer: AtlasLayer = "vibe",
   init?: RequestInit,
 ): Promise<RelatedResponse> {
-  return getJson<RelatedResponse>(`/clusters/${communityId}/related`, init);
+  const params = new URLSearchParams({ layer });
+  return getJson<RelatedResponse>(
+    `/clusters/${communityId}/related?${params.toString()}`,
+    init,
+  );
 }
 
 /**

@@ -1,37 +1,27 @@
 import numpy as np
 from sqlalchemy.orm import Session
-from collections import defaultdict
 
-_centroid_cache = None
+_centroid_cache: dict[str, dict] = {}
+
+VIBE_RUN_ID = 29
 
 
-def compute_cluster_centroids(db: Session) -> dict:
+def _load_centroids(db: Session, layer: str) -> dict:
     global _centroid_cache
-    if _centroid_cache is not None:
-        return _centroid_cache
+    if layer in _centroid_cache:
+        return _centroid_cache[layer]
 
-    from app.models.models import TrackCluster, TrackEmbedding
+    from app.models.models import ClusterCentroid, VibeClusterCentroid
 
-    print("Computing cluster centroids (first time)...")
+    if layer == "vibe":
+        rows = db.query(VibeClusterCentroid).all()
+    else:
+        rows = db.query(ClusterCentroid).all()
 
-    clusters = db.query(TrackCluster).all()
-    cluster_track_ids = defaultdict(list)
-    for c in clusters:
-        if c.cluster_id != -1:
-            cluster_track_ids[c.cluster_id].append(c.track_id)
-
-    embeddings = db.query(TrackEmbedding).all()
-    embedding_map = {e.track_id: np.array(e.vector) for e in embeddings}
-
-    centroids = {}
-    for cluster_id, track_ids in cluster_track_ids.items():
-        vecs = [embedding_map[tid] for tid in track_ids if tid in embedding_map]
-        if vecs:
-            centroids[cluster_id] = np.mean(vecs, axis=0)
-
-    _centroid_cache = centroids
-    print(f"Cached {len(centroids)} cluster centroids")
-    return _centroid_cache
+    centroids = {r.cluster_id: np.array(r.raw_centroid) for r in rows}
+    _centroid_cache[layer] = centroids
+    print(f"Cached {len(centroids)} {layer} cluster centroids")
+    return centroids
 
 
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
@@ -42,16 +32,24 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(a, b) / (norm_a * norm_b))
 
 
-def get_related_clusters(cluster_id: int, db: Session, top_n: int = 5) -> list:
+def get_related_clusters(
+    cluster_id: int,
+    db: Session,
+    layer: str = "vibe",
+    top_n: int = 5,
+) -> list:
     from app.models.models import ClusterLabel
 
-    centroids = compute_cluster_centroids(db)
+    centroids = _load_centroids(db, layer)
 
     if cluster_id not in centroids:
         return []
 
     target = centroids[cluster_id]
-    labels = {l.cluster_id: l for l in db.query(ClusterLabel).all()}
+    labels = {
+        l.cluster_id: l
+        for l in db.query(ClusterLabel).filter(ClusterLabel.cluster_layer == layer).all()
+    }
 
     scores = []
     for cid, centroid in centroids.items():
@@ -63,7 +61,7 @@ def get_related_clusters(cluster_id: int, db: Session, top_n: int = 5) -> list:
             "cluster_id": cid,
             "name": label.name if label else f"Cluster {cid}",
             "canonical_name": label.canonical_name if label else "",
-            "similarity": round(sim, 4)
+            "similarity": round(sim, 4),
         })
 
     scores.sort(key=lambda x: x["similarity"], reverse=True)
