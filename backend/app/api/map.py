@@ -1,8 +1,169 @@
-from fastapi import APIRouter, Depends
+import time
+from collections import defaultdict
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.database.connection import get_db
 
 router = APIRouter()
+
+# Simple in-memory cache: { layer: (timestamp, response_dict) }
+_galaxy_cache: dict = {}
+_CACHE_TTL_SECONDS = 300  # 5 minutes
+
+VIBE_RUN_ID = 29
+SCENE_RUN_ID = 18
+
+
+@router.get("/galaxy")
+async def get_galaxy(
+    layer: str = Query(default="vibe"),
+    db: Session = Depends(get_db),
+):
+    if layer not in ("vibe", "scene"):
+        raise HTTPException(status_code=400, detail="layer must be 'vibe' or 'scene'")
+
+    cached = _galaxy_cache.get(layer)
+    if cached:
+        cached_at, payload = cached
+        if time.time() - cached_at < _CACHE_TTL_SECONDS:
+            return payload
+
+    t0 = time.time()
+
+    if layer == "vibe":
+        payload = _build_vibe_payload(db)
+    else:
+        payload = _build_scene_payload(db)
+
+    elapsed = time.time() - t0
+    print(f"[galaxy] layer={layer} query_time={elapsed:.3f}s tracks={payload['total_tracks']}")
+
+    _galaxy_cache[layer] = (time.time(), payload)
+    return payload
+
+
+def _build_vibe_payload(db: Session) -> dict:
+    sql = text("""
+        SELECT
+            t.id                          AS track_id,
+            t.spotify_track_id,
+            t.name,
+            a.name                        AS artist,
+            tvc.x,
+            tvc.y,
+            CASE
+                WHEN ca.assignment_type = 'between_worlds' THEN -1
+                WHEN ca.assignment_type = 'soft'           THEN ca.soft_cluster_id
+                ELSE ca.cluster_id
+            END                           AS cluster_id,
+            ca.assignment_type,
+            CASE
+                WHEN ca.assignment_type = 'between_worlds' THEN 'Between Worlds'
+                ELSE cl.name
+            END                           AS community_name
+        FROM tracks t
+        JOIN artists a               ON t.artist_id      = a.id
+        JOIN track_vibe_coordinates tvc ON t.id          = tvc.track_id
+        JOIN clustering_assignments ca  ON t.id          = ca.track_id
+                                       AND ca.run_id     = :run_id
+        LEFT JOIN cluster_labels cl  ON cl.cluster_id   = CASE
+                                            WHEN ca.assignment_type = 'soft' THEN ca.soft_cluster_id
+                                            ELSE ca.cluster_id
+                                        END
+                                       AND cl.cluster_layer = 'vibe'
+    """)
+    rows = db.execute(sql, {"run_id": VIBE_RUN_ID}).mappings().all()
+
+    label_sql = text("""
+        SELECT cluster_id, name, canonical_name
+        FROM cluster_labels
+        WHERE cluster_layer = 'vibe'
+    """)
+    labels = {r["cluster_id"]: r for r in db.execute(label_sql).mappings().all()}
+
+    return _assemble_payload("vibe", rows, labels, noise_name="Between Worlds")
+
+
+def _build_scene_payload(db: Session) -> dict:
+    sql = text("""
+        SELECT
+            t.id                    AS track_id,
+            t.spotify_track_id,
+            t.name,
+            a.name                  AS artist,
+            tc_coord.x,
+            tc_coord.y,
+            tc.cluster_id,
+            'hard'                  AS assignment_type,
+            CASE
+                WHEN tc.cluster_id = -1 THEN 'Uncharted'
+                ELSE cl.name
+            END                     AS community_name
+        FROM tracks t
+        JOIN artists a              ON t.artist_id     = a.id
+        JOIN track_coordinates tc_coord ON t.id        = tc_coord.track_id
+        JOIN track_clusters tc      ON t.id            = tc.track_id
+        LEFT JOIN cluster_labels cl ON cl.cluster_id   = tc.cluster_id
+                                    AND cl.cluster_layer = 'scene'
+    """)
+    rows = db.execute(sql).mappings().all()
+
+    label_sql = text("""
+        SELECT cluster_id, name, canonical_name
+        FROM cluster_labels
+        WHERE cluster_layer = 'scene'
+    """)
+    labels = {r["cluster_id"]: r for r in db.execute(label_sql).mappings().all()}
+
+    return _assemble_payload("scene", rows, labels, noise_name="Uncharted")
+
+
+def _assemble_payload(layer: str, rows, labels: dict, noise_name: str) -> dict:
+    tracks = []
+    community_track_counts: dict[int, int] = defaultdict(int)
+
+    for r in rows:
+        cid = r["cluster_id"]
+        if cid is not None:
+            community_track_counts[cid] += 1
+        tracks.append({
+            "track_id":        r["track_id"],
+            "spotify_track_id": r["spotify_track_id"],
+            "name":            r["name"],
+            "artist":          r["artist"],
+            "x":               r["x"],
+            "y":               r["y"],
+            "cluster_id":      cid if cid is not None else -1,
+            "community_name":  r["community_name"],
+            "assignment_type": r["assignment_type"],
+        })
+
+    communities = []
+    for cid, label_row in labels.items():
+        communities.append({
+            "cluster_id":    cid,
+            "name":          label_row["name"],
+            "canonical_name": label_row["canonical_name"],
+            "track_count":   community_track_counts.get(cid, 0),
+        })
+    if -1 in community_track_counts:
+        communities.append({
+            "cluster_id":    -1,
+            "name":          noise_name,
+            "canonical_name": None,
+            "track_count":   community_track_counts[-1],
+        })
+    communities.sort(key=lambda c: c["cluster_id"])
+
+    return {
+        "layer":             layer,
+        "total_tracks":      len(tracks),
+        "total_communities": len([c for c in communities if c["cluster_id"] != -1]),
+        "tracks":            tracks,
+        "communities":       communities,
+    }
 
 
 @router.get("/map")
