@@ -8,6 +8,7 @@ import { API_BASE_URL } from "@/lib/api";
 
 const NAV_LINKS = [
   { label: "Identity", href: "/identity" },
+  { label: "Timeline", href: "/timeline" },
   { label: "Galaxy", href: "/map" },
   { label: "Communities", href: "/communities" },
   { label: "Insights", href: "/insights" },

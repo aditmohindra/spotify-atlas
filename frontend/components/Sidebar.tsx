@@ -26,6 +26,17 @@ function ProfileIcon() {
   );
 }
 
+function TimelineIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 3v18" />
+      <circle cx="12" cy="6" r="2" />
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="12" cy="18" r="2" />
+    </svg>
+  );
+}
+
 function GalaxyIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -67,6 +78,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: "Identity",    href: "/identity",    icon: <IdentityIcon /> },
   { label: "Profile",     href: "/profile",     icon: <ProfileIcon /> },
+  { label: "Timeline",    href: "/timeline",    icon: <TimelineIcon /> },
   { label: "Galaxy",      href: "/map",         icon: <GalaxyIcon /> },
   { label: "Communities", href: "/communities", icon: <CommunitiesIcon /> },
   { label: "Insights",    href: "/insights",    icon: <InsightsIcon /> },

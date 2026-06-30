@@ -221,3 +221,100 @@ export interface EnrichedMapCluster extends MapCluster {
   keywords?: string[];
   cluster_archetype?: string | null;
 }
+
+// ---------------------------------------------------------------------------
+// GET /eras?user_id={id}
+// PATCH /eras/{era_id}
+// ---------------------------------------------------------------------------
+
+/** A dominant community attached to an era. */
+export interface EraDominantCommunity {
+  cluster_id: number;
+  name: string;
+  /** Parent archetype name, or null if unassigned. */
+  archetype: string | null;
+}
+
+/** User-editable label fields for an era. */
+export interface EraLabel {
+  title: string | null;
+  description: string | null;
+  mood: string | null;
+  is_named: boolean;
+}
+
+/** A single listening era in chronological order. */
+export interface Era extends EraLabel {
+  era_id: number;
+  era_number: number;
+  start_date: string;
+  end_date: string;
+  event_count: number;
+  dominant_communities: EraDominantCommunity[];
+}
+
+/** Request body for PATCH /eras/{era_id}. */
+export interface EraLabelUpdate {
+  title?: string;
+  description?: string;
+  mood?: string;
+}
+
+/** Response for PATCH /eras/{era_id}. */
+export interface EraPatchResponse {
+  era_id: number;
+  era_number: number;
+  title: string | null;
+  description: string | null;
+  mood: string | null;
+  key_tracks: unknown[];
+  edited_at: string | null;
+}
+
+/** Ranked artist by raw event count within an era. */
+export interface EraArtistVolume {
+  name: string;
+  event_count: number;
+}
+
+/** Ranked artist by TF-IDF-style distinctiveness within an era. */
+export interface EraArtistDistinctiveness {
+  name: string;
+  distinctiveness_score: number;
+  era_frequency: number;
+}
+
+/** Representative track ranked by era distinctiveness. */
+export interface EraRepresentativeTrack {
+  name: string;
+  artist: string;
+  distinctiveness_score: number;
+}
+
+/** Aggregated genre/mood tag from track feature documents. */
+export interface EraTagCount {
+  tag: string;
+  count: number;
+}
+
+/** Percentage of era events per archetype. */
+export interface EraArchetypeBreakdown {
+  archetype: string;
+  percentage: number;
+}
+
+/** Response for GET /eras/{era_id}/depth. */
+export interface EraDepth {
+  era_id: number;
+  era_number: number;
+  title: string;
+  start_date: string;
+  end_date: string;
+  event_count: number;
+  top_artists_by_volume: EraArtistVolume[];
+  top_artists_by_distinctiveness: EraArtistDistinctiveness[];
+  representative_tracks: EraRepresentativeTrack[];
+  top_genres_moods: EraTagCount[];
+  archetype_breakdown: EraArchetypeBreakdown[];
+  dominant_communities: EraDominantCommunity[];
+}

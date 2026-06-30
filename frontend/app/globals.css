@@ -194,3 +194,8 @@
   .rounded-atlas-lg   { border-radius: var(--radius-lg); }
   .rounded-atlas-hero { border-radius: var(--radius-hero); }
 }
+
+@keyframes timeline-planet-breathe {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.07); filter: brightness(1.12); }
+}

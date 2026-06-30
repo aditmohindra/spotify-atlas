@@ -10,6 +10,10 @@
 import type {
   ArchetypesResponse,
   CommunityDetail,
+  Era,
+  EraDepth,
+  EraLabelUpdate,
+  EraPatchResponse,
   LabelsResponse,
   MapClustersResponse,
   MapData,
@@ -40,6 +44,34 @@ async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
     headers: { Accept: "application/json" },
+    ...init,
+  });
+
+  if (!res.ok) {
+    throw new ApiError(
+      `Request to ${path} failed with status ${res.status}`,
+      res.status,
+      url,
+    );
+  }
+
+  return (await res.json()) as T;
+}
+
+/** Internal: PATCH a path with JSON body, throwing `ApiError` on failure. */
+async function patchJson<T>(
+  path: string,
+  body: unknown,
+  init?: RequestInit,
+): Promise<T> {
+  const url = `${API_BASE_URL}${path}`;
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
     ...init,
   });
 
@@ -173,4 +205,46 @@ export function getMapClusters(
   init?: RequestInit,
 ): Promise<MapClustersResponse> {
   return getJson<MapClustersResponse>("/map/clusters", init);
+}
+
+// ---------------------------------------------------------------------------
+// Timeline eras (Phase 13)
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch all listening eras for a user, oldest first.
+ * GET /eras?user_id={userId}
+ */
+export function getEras(userId = 1, init?: RequestInit): Promise<Era[]> {
+  const params = new URLSearchParams({ user_id: String(userId) });
+  return getJson<Era[]>(`/eras?${params.toString()}`, init);
+}
+
+/**
+ * Update an era's title, description, and/or mood.
+ * PATCH /eras/{eraId}
+ */
+export function patchEra(
+  eraId: number,
+  updates: EraLabelUpdate,
+  init?: RequestInit,
+): Promise<EraPatchResponse> {
+  return patchJson<EraPatchResponse>(`/eras/${eraId}`, updates, init);
+}
+
+/**
+ * Fetch deep era analytics (artists, tracks, tags, archetype breakdown).
+ * GET /eras/{eraId}/depth?limit={limit}&track_limit={trackLimit}
+ */
+export function getEraDepth(
+  eraId: number,
+  limit = 3,
+  trackLimit = 5,
+  init?: RequestInit,
+): Promise<EraDepth> {
+  const params = new URLSearchParams({
+    limit: String(limit),
+    track_limit: String(trackLimit),
+  });
+  return getJson<EraDepth>(`/eras/${eraId}/depth?${params.toString()}`, init);
 }
