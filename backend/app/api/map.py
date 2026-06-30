@@ -10,7 +10,7 @@ router = APIRouter()
 
 # Simple in-memory cache: { layer: (timestamp, response_dict) }
 _galaxy_cache: dict = {}
-_CACHE_TTL_SECONDS = 0  # TEMP: disabled — set back to 300 after verifying fresh DB reads
+_CACHE_TTL_SECONDS = 300
 
 VIBE_RUN_ID = 29
 SCENE_RUN_ID = 18
