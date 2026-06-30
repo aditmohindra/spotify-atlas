@@ -67,6 +67,21 @@ function InsightsIcon() {
   );
 }
 
+function WrappedIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 3v6" />
+      <path d="M12 15v6" />
+      <path d="M4.93 4.93l4.24 4.24" />
+      <path d="M14.83 14.83l4.24 4.24" />
+      <path d="M3 12h6" />
+      <path d="M15 12h6" />
+      <path d="M4.93 19.07l4.24-4.24" />
+      <path d="M14.83 9.17l4.24-4.24" />
+    </svg>
+  );
+}
+
 // ── Nav items ─────────────────────────────────────────────────────────────────
 
 interface NavItem {
@@ -81,6 +96,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Timeline",    href: "/timeline",    icon: <TimelineIcon /> },
   { label: "Galaxy",      href: "/map",         icon: <GalaxyIcon /> },
   { label: "Communities", href: "/communities", icon: <CommunitiesIcon /> },
+  { label: "Wrapped",     href: "/wrapped",     icon: <WrappedIcon /> },
   { label: "Insights",    href: "/insights",    icon: <InsightsIcon /> },
 ];
 

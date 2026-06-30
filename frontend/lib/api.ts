@@ -21,6 +21,11 @@ import type {
   TasteProfile,
   TasteSummary,
   TasteTimeRange,
+  WrappedMeta,
+  WrappedTopAlbum,
+  WrappedTopArtist,
+  WrappedTopTrack,
+  WrappedWindow,
 } from "./types";
 
 /** Base URL for the backend. Override via NEXT_PUBLIC_API_BASE_URL if needed. */
@@ -247,4 +252,68 @@ export function getEraDepth(
     track_limit: String(trackLimit),
   });
   return getJson<EraDepth>(`/eras/${eraId}/depth?${params.toString()}`, init);
+}
+
+// ---------------------------------------------------------------------------
+// Wrapped snapshot analytics (Phase 19)
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch ranked top tracks for one Spotify top_* snapshot window.
+ * GET /wrapped/top-tracks?window={window}&limit={limit}
+ */
+export function getWrappedTopTracks(
+  window: WrappedWindow,
+  limit = 20,
+  init?: RequestInit,
+): Promise<WrappedTopTrack[]> {
+  const params = new URLSearchParams({
+    window,
+    limit: String(limit),
+  });
+  return getJson<WrappedTopTrack[]>(`/wrapped/top-tracks?${params.toString()}`, init);
+}
+
+/**
+ * Fetch ranked top artists derived from one Spotify top-track snapshot window.
+ * GET /wrapped/top-artists?window={window}&limit={limit}
+ */
+export function getWrappedTopArtists(
+  window: WrappedWindow,
+  limit = 20,
+  init?: RequestInit,
+): Promise<WrappedTopArtist[]> {
+  const params = new URLSearchParams({
+    window,
+    limit: String(limit),
+  });
+  return getJson<WrappedTopArtist[]>(`/wrapped/top-artists?${params.toString()}`, init);
+}
+
+/**
+ * Fetch derived top albums for one Spotify top-track snapshot window.
+ * GET /wrapped/top-albums?window={window}&limit={limit}
+ */
+export function getWrappedTopAlbums(
+  window: WrappedWindow,
+  limit = 10,
+  init?: RequestInit,
+): Promise<WrappedTopAlbum[]> {
+  const params = new URLSearchParams({
+    window,
+    limit: String(limit),
+  });
+  return getJson<WrappedTopAlbum[]>(`/wrapped/top-albums?${params.toString()}`, init);
+}
+
+/**
+ * Fetch freshness metadata for one wrapped snapshot window.
+ * GET /wrapped/meta?window={window}
+ */
+export function getWrappedMeta(
+  window: WrappedWindow,
+  init?: RequestInit,
+): Promise<WrappedMeta> {
+  const params = new URLSearchParams({ window });
+  return getJson<WrappedMeta>(`/wrapped/meta?${params.toString()}`, init);
 }

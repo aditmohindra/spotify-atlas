@@ -10,6 +10,7 @@ from app.api.map import router as map_router
 from app.api.clusters import router as clusters_router
 from app.api.profile import router as profile_router
 from app.api.eras import router as eras_router
+from app.api.wrapped import router as wrapped_router
 
 app = FastAPI(
     title="Spotify Atlas",
@@ -35,6 +36,7 @@ app.include_router(map_router)
 app.include_router(clusters_router)
 app.include_router(profile_router)
 app.include_router(eras_router)
+app.include_router(wrapped_router)
 
 @app.get("/")
 def root():

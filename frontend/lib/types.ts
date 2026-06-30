@@ -318,3 +318,40 @@ export interface EraDepth {
   archetype_breakdown: EraArchetypeBreakdown[];
   dominant_communities: EraDominantCommunity[];
 }
+
+// ---------------------------------------------------------------------------
+// Wrapped snapshot endpoints (Phase 19)
+// ---------------------------------------------------------------------------
+
+/** Allowed wrapped snapshot windows backed by Spotify top_* sources. */
+export type WrappedWindow = "short_term" | "medium_term" | "long_term";
+
+/** A ranked top-track entry from GET /wrapped/top-tracks. */
+export interface WrappedTopTrack {
+  rank: number;
+  track_name: string;
+  artist_name: string;
+  spotify_track_id: string;
+  album_name: string | null;
+}
+
+/** A ranked top-artist entry from GET /wrapped/top-artists. */
+export interface WrappedTopArtist {
+  rank: number;
+  artist_name: string;
+  spotify_artist_id: string | null;
+}
+
+/** A derived ranked top-album entry from GET /wrapped/top-albums. */
+export interface WrappedTopAlbum {
+  rank: number;
+  album_name: string;
+  artist_name: string;
+  track_count: number;
+}
+
+/** Snapshot freshness metadata from GET /wrapped/meta. */
+export interface WrappedMeta {
+  window: WrappedWindow;
+  as_of_date: string | null;
+}
