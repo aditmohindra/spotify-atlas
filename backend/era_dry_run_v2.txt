@@ -1,0 +1,182 @@
+﻿Naming 19 eras for user_id=1 (dry-run)
+
+--- Era 1 (id=1) ---
+  Dates: 2017-12-01 -> 2018-03-31
+  Events: 53
+  Communities: Secure The Bag, Cactus Jack Society, Glock 19
+  Title: Secure The Bag
+  Description: A high-octane period filled with assertive and energetic trap beats.
+  Mood: intense
+  Key tracks: Open It Up, Gang Gang, Huncho Jack
+
+--- Era 2 (id=2) ---
+  Dates: 2018-05-01 -> 2018-06-30
+  Events: 229
+  Communities: OVOXO, Secure The Bag, Cactus Jack Society
+  Title: Diamonds Dancing
+  Description: A period defined by a mix of sharp, pulsating beats and smooth, melodic flows punctuated by prominent features.
+  Mood: Vibrant
+  Key tracks: Diamonds Dancing, Praise The Lord (Da Shine), Freak Hoe
+    [validation-retry 1/3] rejected 'YSL Chain Crew' -> 'YSL Chain Crew': title contains banned word 'crew'
+    [validation-retry] accepted 'YSL Chain'
+
+--- Era 3 (id=3) ---
+  Dates: 2018-07-01 -> 2018-11-30
+  Events: 403
+  Communities: YSL Chain, Magic City Mondays, Cactus Jack Society
+  Title: YSL Chain
+  Description: This period features intricate beats and mellow flows that weave into a luxurious tapestry.
+  Mood: opulent
+  Key tracks: Tsunami, Pedestrian, On the Run, Trapstar, Boss Up
+
+--- Era 4 (id=4) ---
+  Dates: 2018-12-01 -> 2019-02-28
+  Events: 184
+  Communities: Magic City Mondays, YSL Chain, Secure The Bag
+  Title: Magic City Mondays
+  Description: A bass-heavy, trap-infused journey through high-energy beats and collaborative rap anthems.
+  Mood: intense swagger
+  Key tracks: Molly Water (feat. Fenix Flexin & OhGeesy), With That (feat. Duke), pad lock
+
+--- Era 5 (id=5) ---
+  Dates: 2019-03-01 -> 2020-03-31
+  Events: 342
+  Communities: Secure The Bag, YSL Chain, Hybrid Theory Kid
+  Title: Secure The Bag
+  Description: A sonic landscape defined by trap beats, slick flows, and the pursuit of success.
+  Mood: Ambitious
+  Key tracks: Racks in the Middle, Splashin, 4 Phones
+
+--- Era 6 (id=6) ---
+  Dates: 2020-04-01 -> 2020-11-30
+  Events: 158
+  Communities: Magic City Mondays, YSL Chain, OVOXO
+  Title: Magic City Mondays
+  Description: A vibrant era marked by the triumphant and high-energy sound of contemporary hip-hop and trap beats.
+  Mood: exhilarating
+  Key tracks: 100it Racks, Desires (with Future), Roses - Imanbek Remix, 0 To 100 / The Catch Up, Gang WithMe
+
+--- Era 7 (id=7) ---
+  Dates: 2020-12-01 -> 2021-08-31
+  Events: 106
+  Communities: Opium Collective, Magic City Mondays, Glock 19
+  Title: The Opium
+  Description: A high-energy period featuring hypnotic beats and standout collaborations synonymous with the Opium Collective.
+  Mood: intense
+  Key tracks: Drunk And Nasty (feat. Sharc), Light It Up (feat. Pop Smoke), Beno!
+
+--- Era 8 (id=8) ---
+  Dates: 2021-09-01 -> 2022-07-31
+  Events: 220
+  Communities: BLACKPINK Lightstick, Shingeki Academy, Opium Collective
+  Title: BLACKPINK Voltage
+  Description: A high-energy fusion of bold hip-hop beats and electrifying K-pop flair.
+  Mood: intense
+  Key tracks: Voltage, Mon├½y so big, Act Up, Doja
+
+--- Era 9 (id=9) ---
+  Dates: 2022-08-01 -> 2022-09-30
+  Events: 78
+  Communities: BLACKPINK Lightstick, Opium Collective, Hybrid Theory Kid
+  Title: BLACKPINK Lightstick
+  Description: A fusion of bold pop energy and contemporary rap resonance.
+  Mood: dynamic
+  Key tracks: She Wanna Meet, VTMNTSCOAT, Rewind
+    [validation-retry 1/3] rejected 'Opium Collective Freestyle' -> 'Opium Collective Freestyle': title contains banned word 'collective'
+    [validation-retry] accepted 'Opium Freestyle'
+
+--- Era 10 (id=10) ---
+  Dates: 2022-10-01 -> 2023-05-31
+  Events: 328
+  Communities: Opium Collective, Opium Files, Kill Yourself Part III
+  Title: Opium Freestyle
+  Description: A dynamic fusion of energetic flows and innovative beats defining this period's sound.
+  Mood: intense
+  Key tracks: Freestyle 2, Outlet, Sundance Freestyle, Never Seen Shit
+
+--- Era 11 (id=11) ---
+  Dates: 2023-06-01 -> 2023-08-31
+  Events: 70
+  Communities: BLACKPINK Lightstick, Cactus Jack Society, Secure The Bag
+  Title: BLACKPINK Lightstick
+  Description: A vibrant fusion of high-energy pop and introspective hip-hop.
+  Mood: dynamic
+  Key tracks: MELTDOWN (feat. Drake), I'll Make You Cry, Girls - Minit Remix, GOD'S COUNTRY
+
+--- Era 12 (id=12) ---
+  Dates: 2023-09-01 -> 2023-10-31
+  Events: 66
+  Communities: OVOXO, Opium Collective, Output Brooklyn
+  Title: Slime You Out
+  Description: This period features a mix of smooth, introspective beats and vibrant, playful rhythms with a strong R&B and hip-hop synergy.
+  Mood: dynamic
+  Key tracks: Slime You Out (feat. SZA), Flocky Flocky (feat. Travis Scott), telepat├¡a, Feel My Needs
+
+--- Era 13 (id=13) ---
+  Dates: 2023-11-01 -> 2023-12-31
+  Events: 176
+  Communities: Boiler Room, Output Brooklyn, Tomorrowland Main Stage
+  Title: Boiler Room Resonance
+  Description: A dynamic fusion of pulsating beats and vibrant remixes that define the Boiler Room sound.
+  Mood: electric
+  Key tracks: Bel Mercy, World Hold On - FISHER Rework, Tell Me Why - MEDUZA Remix
+
+--- Era 14 (id=14) ---
+  Dates: 2024-01-01 -> 2024-11-30
+  Events: 689
+  Communities: Output Brooklyn, De School Amsterdam, Tomorrowland Main Stage
+  Title: Output Brooklyn Sound
+  Description: A fusion of energetic beats and eclectic sounds dominating the Output Brooklyn scene.
+  Mood: dynamic
+  Key tracks: BREAK A SWEAT, BACKBONE, Leave Me Like This
+
+--- Era 15 (id=15) ---
+  Dates: 2024-12-01 -> 2025-01-31
+  Events: 113
+  Communities: Shingeki Academy, Velvet Room Visitor, Mii Plaza
+  Title: Shingeki Academy
+  Description: A vibrant fusion of global influences with a modern twist, marked by energetic beats and melodic rhythms.
+  Mood: dynamic
+  Key tracks: new pants era, Go Crazy, Patola, Fitness Check, Hikari E (From "One Piece") - Lofi Version
+    [validation-retry 1/3] rejected 'Opium Collective' -> 'Opium Collective': title contains banned word 'collective'
+    [validation-retry] accepted 'PluggnB Aquatics'
+
+--- Era 16 (id=16) ---
+  Dates: 2025-02-01 -> 2025-04-30
+  Events: 84
+  Communities: Opium Collective, Printworks Closing Set, Pluggnb Dropbox
+  Title: PluggnB Aquatics
+  Description: A lush, immersive dive into fluid soundscapes and atmospheric textures.
+  Mood: ambient depth
+  Key tracks: Dirtmouth, aquatic ambience, hold me
+
+--- Era 17 (id=17) ---
+  Dates: 2025-05-01 -> 2026-02-28
+  Events: 471
+  Communities: Velvet Room Visitor, SoundCloud 2021, De School Amsterdam
+  Title: Velvet Room Remix
+  Description: A tapestry of eclectic sounds, blending the international flavors and energetic remixes characteristic of a journey through a vibrant music landscape.
+  Mood: immersive flow
+  Key tracks: Blessing It -remix (feat. Substantial & Pase Rock from Five Deez), Lost In The Music - t e s t p r e s s Remix, RODMAN
+
+--- Era 18 (id=18) ---
+  Dates: 2026-03-01 -> 2026-05-31
+  Events: 84
+  Communities: Shingeki Academy, OVOXO, Dearly Beloved
+  Title: Shingeki
+  Description: A dynamic blend of introspective lyrics and vibrant instrumentals, rooted in diverse genres.
+  Mood: varied intensity
+  Key tracks: What Did I Miss?, Pursuing My True Self, Clock Town (First Day)
+    [validation-retry 1/3] rejected 'Indie Heads Reverie' -> 'Indie Heads Reverie': title uses generic AI phrase pattern ('reverie')
+    [validation-retry] accepted 'Reddit Indie Heads'
+
+--- Era 19 (id=19) ---
+  Dates: 2026-06-01 -> 2026-06-30
+  Events: 71
+  Communities: Reddit Indie Heads, Printworks Closing Set, Mac DeMarco's Porch
+  Title: Reddit Indie Heads
+  Description: A vibrant mix of indie rock and eclectic influences, creating a tapestry of sound with catchy rhythms and introspective melodies.
+  Mood: Energetic
+  Key tracks: Undercover Martyn, Feel This Way, Inflation
+
+Done ΓÇö 19 eras processed.

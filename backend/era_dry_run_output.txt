@@ -1,0 +1,174 @@
+﻿Naming 19 eras for user_id=1 (dry-run)
+
+--- Era 1 (id=1) ---
+  Dates: 2017-12-01 -> 2018-03-31
+  Events: 53
+  Communities: Secure The Bag, Cactus Jack Society, Glock 19
+  Title: Diamond Nocturne
+  Description: A soundscape of opulent beats and audacious flows, shimmering with futuristic trap and lavish bravado.
+  Mood: luxurious intensity
+  Key tracks: Supastars, Too Playa, Too Much Jewelry
+
+--- Era 2 (id=2) ---
+  Dates: 2018-05-01 -> 2018-06-30
+  Events: 229
+  Communities: OVOXO, Secure The Bag, Cactus Jack Society
+  Title: Nocturnal Highs
+  Description: A sonic blend of atmospheric intensity, melodic allure, and nocturnal charisma.
+  Mood: euphoric
+  Key tracks: Teenage Fever, Nightcrawler (feat. Swae Lee & Chief Keef), In Her Mouth
+
+--- Era 3 (id=3) ---
+  Dates: 2018-07-01 -> 2018-11-30
+  Events: 403
+  Communities: YSL Chain, Magic City Mondays, Cactus Jack Society
+  Title: Trap Star
+  Description: A high-octane blend of heavy beats and electrifying flows navigating through the realms of luxury and bravado.
+  Mood: intense swagger
+  Key tracks: Yoppa (with BlocBoy JB), Toast Up, X (feat. Future), Oxy (feat. Lil Wayne), Sambhle
+
+--- Era 4 (id=4) ---
+  Dates: 2018-12-01 -> 2019-02-28
+  Events: 184
+  Communities: Magic City Mondays, YSL Chain, Secure The Bag
+  Title: Diamond Hustler's
+  Description: Thundering 808s and braggadocious flows paint a soundscape of ambition and opulence.
+  Mood: Triumphant
+  Key tracks: Out the Hood, Worst Behavior, Diamonds All on My Wrist
+
+--- Era 5 (id=5) ---
+  Dates: 2019-03-01 -> 2020-03-31
+  Events: 342
+  Communities: Secure The Bag, YSL Chain, Hybrid Theory Kid
+  Title: Nocturnal Gold Rush
+  Description: A blend of high-energy trap beats and introspective lyrical currents fused with hints of melodic eccentricity.
+  Mood: dynamic contrasts
+  Key tracks: Like Mike (feat. Jay Critch & A Boogie wit da Hoodie), XXX. FEAT. U2., Buffy the Vampire
+
+--- Era 6 (id=6) ---
+  Dates: 2020-04-01 -> 2020-11-30
+  Events: 158
+  Communities: Magic City Mondays, YSL Chain, OVOXO
+  Title: Trap Star Oracle
+  Description: A vibrant, bass-heavy symphony of swagger and ambition woven through trap rhythms and lush melodies.
+  Mood: opulent
+  Key tracks: Who You Foolin, Live Off My Closet (feat. Future), HONEST, STREET SWEEPER (feat. Future)
+
+--- Era 7 (id=7) ---
+  Dates: 2020-12-01 -> 2021-08-31
+  Events: 106
+  Communities: Opium Collective, Magic City Mondays, Glock 19
+  Title: Neon Trap Circuit
+  Description: A sonically charged realm of head-nodding 808s and hypnotic flows.
+  Mood: intense
+  Key tracks: Straightenin, Emergency (feat. Gunna & Young Thug), can't leave without it, First Off (feat. Travis Scott), FORZA
+
+--- Era 8 (id=8) ---
+  Dates: 2021-09-01 -> 2022-07-31
+  Events: 220
+  Communities: BLACKPINK Lightstick, Shingeki Academy, Opium Collective
+  Title: Neon Pulse Reverie
+  Description: A kaleidoscopic fusion of glossy pop anthems, raw intensity, and futuristic beats.
+  Mood: electric
+  Key tracks: Cry Baby, Die Hard, Believe What I Say
+
+--- Era 9 (id=9) ---
+  Dates: 2022-08-01 -> 2022-09-30
+  Events: 78
+  Communities: BLACKPINK Lightstick, Opium Collective, Hybrid Theory Kid
+  Title: Technicolor Serenade
+  Description: A vibrant blend of kinetic beats and ethereal melodies creating a dynamic reverie.
+  Mood: Vibrant
+  Key tracks: Black Mamba, Dance Now (feat. Kenny Mason), Lauder Too (feat. Ravyn Lenae & Eryn Allen Kane)
+
+--- Era 10 (id=10) ---
+  Dates: 2022-10-01 -> 2023-05-31
+  Events: 328
+  Communities: Opium Collective, Opium Files, Kill Yourself Part III
+  Title: Opium Dreamscapes
+  Description: A sonic journey through hypnotic beats, sultry whispers, and otherworldly atmospheres.
+  Mood: Ethereal
+  Key tracks: Sextape, Maria I'm Drunk (feat. Justin Bieber & Young Thug), 10,000 Degrees
+
+--- Era 11 (id=11) ---
+  Dates: 2023-06-01 -> 2023-08-31
+  Events: 70
+  Communities: BLACKPINK Lightstick, Cactus Jack Society, Secure The Bag
+  Title: Neon Reverie
+  Description: A vibrant synthesis of pulsating beats and nocturnal mystique, blending edgy verses with shimmering dance rhythms.
+  Mood: Electric
+  Key tracks: Hell on Earth, Pt. 2 (feat. Benny The Butcher & Conway The Machine), 2212, MOONLIGHT SUNRISE (House remix)
+
+--- Era 12 (id=12) ---
+  Dates: 2023-09-01 -> 2023-10-31
+  Events: 66
+  Communities: OVOXO, Opium Collective, Output Brooklyn
+  Title: Neon Loft Reverie
+  Description: A sonic tapestry weaving dreamlike synths, shadowy beats, and ethereal flows into a hypnotic urban soundscape.
+  Mood: nocturnal
+  Key tracks: Notice It, Hell Yeah, Moonlight
+
+--- Era 13 (id=13) ---
+  Dates: 2023-11-01 -> 2023-12-31
+  Events: 176
+  Communities: Boiler Room, Output Brooklyn, Tomorrowland Main Stage
+  Title: Bassline Alchemist
+  Description: A pulsing fusion of deep house energy and festival exuberance, oscillating between subterranean grooves and euphoric drops.
+  Mood: electrifying
+  Key tracks: Rabbit Hole, Gas Pedal - Kyle Watson Remix, Lights Go Down
+
+--- Era 14 (id=14) ---
+  Dates: 2024-01-01 -> 2024-11-30
+  Events: 689
+  Communities: Output Brooklyn, De School Amsterdam, Tomorrowland Main Stage
+  Title: Euphoric Soundscape Pilgrim
+  Description: A vivid tapestry of global dance beats interwoven with hypnotic rhythms and euphoric melodies.
+  Mood: transcendent
+  Key tracks: La Verdolaga (feat. Tot├│ La Momposina), Dopamine - John Summit Remix, Freed From Desire
+
+--- Era 15 (id=15) ---
+  Dates: 2024-12-01 -> 2025-01-31
+  Events: 113
+  Communities: Shingeki Academy, Velvet Room Visitor, Mii Plaza
+  Title: Arcane Soundscapes
+  Description: An eclectic fusion of enigmatic melodies and rhythmically rich tapestries.
+  Mood: mystical exploration
+  Key tracks: Magic Johnson, Pray for Dilla, Viola
+
+--- Era 16 (id=16) ---
+  Dates: 2025-02-01 -> 2025-04-30
+  Events: 84
+  Communities: Opium Collective, Printworks Closing Set, Pluggnb Dropbox
+  Title: Neon Soundscape Trailblazer
+  Description: An audial journey through ethereal synth layers and adventurous beats, weaving through shadowy urban grooves and luminescent atmospheres.
+  Mood: futuristic
+  Key tracks: OLYMPIAN, midnight cruisin', DIFFERENT
+
+--- Era 17 (id=17) ---
+  Dates: 2025-05-01 -> 2026-02-28
+  Events: 471
+  Communities: Velvet Room Visitor, SoundCloud 2021, De School Amsterdam
+  Title: Echoes from the Underground
+  Description: A collage of atmospheric beats and intricate rhythms blending underground trap vibes with introspective electronic soundscapes.
+  Mood: enigmatic
+  Key tracks: guala., Conspiracy, GETAWAY
+
+--- Era 18 (id=18) ---
+  Dates: 2026-03-01 -> 2026-05-31
+  Events: 84
+  Communities: Shingeki Academy, OVOXO, Dearly Beloved
+  Title: Chronicles of the Eternal
+  Description: This era intertwines introspective rhythms with ethereal soundscapes, creating a tapestry of haunting yet uplifting sonics.
+  Mood: Mystically Energetic
+  Key tracks: Pursuing My True Self, melatonin, Creme's Interlude
+
+--- Era 19 (id=19) ---
+  Dates: 2026-06-01 -> 2026-06-30
+  Events: 71
+  Communities: Reddit Indie Heads, Printworks Closing Set, Mac DeMarco's Porch
+  Title: Indie Circuit Reverie
+  Description: A sonically vibrant blend of jangly guitars, catchy hooks, and introspective melodies that paint an audial dreamscape.
+  Mood: whimsical
+  Key tracks: Flashbacks, Reptilia, Undercover Martyn
+
+Done ΓÇö 19 eras processed.

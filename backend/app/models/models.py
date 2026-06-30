@@ -189,6 +189,23 @@ class UserEra(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="eras")
+    label = relationship("EraLabel", back_populates="era", uselist=False)
+
+
+class EraLabel(Base):
+    __tablename__ = "era_labels"
+    __table_args__ = (UniqueConstraint('era_id', name='uq_era_labels_era_id'),)
+
+    id = Column(Integer, primary_key=True, index=True)
+    era_id = Column(Integer, ForeignKey("user_eras.id"), nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    mood = Column(String, nullable=True)
+    key_tracks = Column(ARRAY(String), nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    edited_at = Column(DateTime, nullable=True)
+
+    era = relationship("UserEra", back_populates="label")
 
 
 class ClusteringRun(Base):
