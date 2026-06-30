@@ -176,17 +176,16 @@ class ClusterLabel(Base):
 
 class UserEra(Base):
     __tablename__ = "user_eras"
+    __table_args__ = (UniqueConstraint('user_id', 'era_number', name='uq_user_eras_user_era_number'),)
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    era_id = Column(Integer, nullable=False)
-    title = Column(String, nullable=True)
-    description = Column(Text, nullable=True)
-    mood = Column(String, nullable=True)
-    start_date = Column(DateTime, nullable=True)
-    end_date = Column(DateTime, nullable=True)
-    dominant_clusters = Column(ARRAY(Integer), nullable=True)
-    key_tracks = Column(ARRAY(String), nullable=True)
+    era_number = Column(Integer, nullable=False)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
+    event_count = Column(Integer, nullable=False)
+    dominant_cluster_ids = Column(ARRAY(Integer), nullable=True)
+    centroid_vector = Column(ARRAY(Float), nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="eras")
