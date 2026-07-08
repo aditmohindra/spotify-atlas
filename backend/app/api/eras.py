@@ -11,6 +11,7 @@ from app.services.feature_engineering_v2 import parse_tags_from_feature_document
 router = APIRouter()
 
 RELIABLE_SOURCES = ("saved_tracks", "recently_played")
+LISTENING_SOURCES = ("extended_history",)
 VIBE_RUN_ID = 29
 
 EFFECTIVE_VIBE_CLUSTER = """
@@ -68,12 +69,16 @@ def _fetch_dominant_communities(db: Session, cluster_ids: list[int] | None) -> l
 
 
 @router.get("/eras")
-async def get_eras(user_id: int = 1, db: Session = Depends(get_db)):
+async def get_eras(
+    user_id: int = 1,
+    type: str = Query(default="discovery", pattern="^(discovery|listening)$"),
+    db: Session = Depends(get_db),
+):
     from app.models.models import UserEra, EraLabel
 
     eras = (
         db.query(UserEra)
-        .filter(UserEra.user_id == user_id)
+        .filter(UserEra.user_id == user_id, UserEra.era_type == type)
         .order_by(UserEra.era_number)
         .all()
     )
@@ -89,6 +94,7 @@ async def get_eras(user_id: int = 1, db: Session = Depends(get_db)):
         {
             "era_id": era.id,
             "era_number": era.era_number,
+            "era_type": era.era_type,
             "start_date": era.start_date.isoformat(),
             "end_date": era.end_date.isoformat(),
             "event_count": era.event_count,
@@ -198,6 +204,8 @@ async def get_era_depth(
     label = db.query(EraLabel).filter(EraLabel.era_id == era_id).first()
     title = label.title if label else _default_era_title(era.era_number)
 
+    era_sources = LISTENING_SOURCES if era.era_type == "listening" else RELIABLE_SOURCES
+
     era_rows = db.execute(
         text("""
             SELECT
@@ -209,11 +217,12 @@ async def get_era_depth(
             JOIN tracks t ON t.id = le.track_id
             LEFT JOIN artists a ON a.id = t.artist_id
             WHERE le.user_id = :user_id
-              AND le.source IN ('saved_tracks', 'recently_played')
+              AND le.source = ANY(:sources)
               AND le.played_at BETWEEN :start_date AND :end_date
         """),
         {
             "user_id": user_id,
+            "sources": list(era_sources),
             "start_date": era.start_date,
             "end_date": era.end_date,
         },
@@ -256,8 +265,9 @@ async def get_era_depth(
             SELECT COUNT(*)
             FROM listening_events
             WHERE user_id = :user_id
+              AND source = ANY(:sources)
         """),
-        {"user_id": user_id},
+        {"user_id": user_id, "sources": list(era_sources)},
     ).scalar() or 0
 
     global_artist_rows = db.execute(
@@ -267,9 +277,10 @@ async def get_era_depth(
             JOIN tracks t ON t.id = le.track_id
             LEFT JOIN artists a ON a.id = t.artist_id
             WHERE le.user_id = :user_id
+              AND le.source = ANY(:sources)
             GROUP BY COALESCE(a.name, 'Unknown Artist')
         """),
-        {"user_id": user_id},
+        {"user_id": user_id, "sources": list(era_sources)},
     ).fetchall()
 
     global_track_rows = db.execute(
@@ -277,9 +288,10 @@ async def get_era_depth(
             SELECT le.track_id, COUNT(*) AS cnt
             FROM listening_events le
             WHERE le.user_id = :user_id
+              AND le.source = ANY(:sources)
             GROUP BY le.track_id
         """),
-        {"user_id": user_id},
+        {"user_id": user_id, "sources": list(era_sources)},
     ).fetchall()
 
     global_artist_map = {r.artist_name: r.cnt for r in global_artist_rows}
@@ -298,11 +310,17 @@ async def get_era_depth(
         artist_distinct.append((name, score, era_freq))
     artist_distinct.sort(key=lambda x: (-x[1], -x[2], x[0]))
 
+    # Discovery-source events (saved_tracks) are one-time per track, so era_freq
+    # is almost always 1 — a >=2 threshold would filter out every representative
+    # track. Listening-source events (extended_history) are real repeat plays,
+    # so >=2 still means something there.
+    min_era_frequency = 1 if era.era_type == "discovery" else 2
+
     track_distinct = []
     for track_id, era_freq in track_counts.items():
-        global_freq = global_track_map.get(track_id, 0)
-        if global_freq <= era_freq:
+        if era_freq < min_era_frequency:
             continue
+        global_freq = global_track_map.get(track_id, 0)
         name, artist = track_meta[track_id]
         score = _distinctiveness_score(era_freq, era_total, global_freq, global_total)
         track_distinct.append((name, artist, score))
@@ -319,13 +337,14 @@ async def get_era_depth(
               ON cl.cluster_id = {EFFECTIVE_VIBE_CLUSTER}
              AND cl.cluster_layer = 'vibe'
             WHERE le.user_id = :user_id
-              AND le.source IN ('saved_tracks', 'recently_played')
+              AND le.source = ANY(:sources)
               AND le.played_at BETWEEN :start_date AND :end_date
             GROUP BY cl.cluster_archetype
         """),
         {
             "run_id": VIBE_RUN_ID,
             "user_id": user_id,
+            "sources": list(era_sources),
             "start_date": era.start_date,
             "end_date": era.end_date,
         },

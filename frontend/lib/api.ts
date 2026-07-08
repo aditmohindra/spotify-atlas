@@ -14,6 +14,7 @@ import type {
   EraDepth,
   EraLabelUpdate,
   EraPatchResponse,
+  EraTimelineType,
   LabelsResponse,
   MapClustersResponse,
   MapData,
@@ -218,10 +219,14 @@ export function getMapClusters(
 
 /**
  * Fetch all listening eras for a user, oldest first.
- * GET /eras?user_id={userId}
+ * GET /eras?user_id={userId}&type={type}
  */
-export function getEras(userId = 1, init?: RequestInit): Promise<Era[]> {
-  const params = new URLSearchParams({ user_id: String(userId) });
+export function getEras(
+  userId = 1,
+  type: EraTimelineType = "discovery",
+  init?: RequestInit,
+): Promise<Era[]> {
+  const params = new URLSearchParams({ user_id: String(userId), type });
   return getJson<Era[]>(`/eras?${params.toString()}`, init);
 }
 

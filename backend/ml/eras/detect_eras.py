@@ -1,8 +1,11 @@
 """
 Life era detection from dated listening events + vibe embeddings.
 
-Uses only reliable sources (saved_tracks, recently_played) — excludes
-top_long_term / top_medium_term / top_short_term fake timestamps.
+Two source presets, selected via --source:
+    discovery (default) - saved_tracks + recently_played. Excludes
+        top_long_term / top_medium_term / top_short_term fake timestamps.
+    listening - extended_history only (Spotify's official streaming
+        history export; real played_at + ms_played per play).
 
 Boundary detection uses relative statistics: a month-pair is a boundary when
 its cosine similarity falls below (mean - std_multiplier * std_dev) across
@@ -12,6 +15,7 @@ Usage:
     uv run python ml/eras/detect_eras.py --dry-run
     uv run python ml/eras/detect_eras.py --dry-run --std-multiplier 1.5
     uv run python ml/eras/detect_eras.py --dry-run --recursive-split
+    uv run python ml/eras/detect_eras.py --dry-run --source listening
     uv run python ml/eras/detect_eras.py --user-id 1
 """
 import argparse
@@ -32,6 +36,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from app.models.models import (
     ClusterLabel,
     ClusteringAssignment,
+    EraLabel,
     ListeningEvent,
     TrackEmbedding,
     UserEra,
@@ -41,7 +46,11 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
-RELIABLE_SOURCES = ('saved_tracks', 'recently_played')
+SOURCE_PRESETS = {
+    'discovery': ('saved_tracks', 'recently_played'),
+    'listening': ('extended_history',),
+}
+DEFAULT_SOURCE = 'discovery'
 VIBE_RUN_ID = 29
 DEFAULT_STD_MULTIPLIER = 1.0
 DEFAULT_MIN_EVENTS_PER_MONTH = 3
@@ -50,6 +59,20 @@ DEFAULT_MAX_ERA_MONTHS = 24
 DEFAULT_MAX_ERA_EVENTS = 1000
 MAX_RECURSIVE_SPLIT_PASSES = 3
 DEFAULT_USER_ID = 1
+
+
+def _int_to_roman(n: int) -> str:
+    vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    syms = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+    result = ""
+    for val, sym in zip(vals, syms):
+        count, n = divmod(n, val)
+        result += sym * count
+    return result
+
+
+def _default_era_title(era_number: int) -> str:
+    return f"Era {_int_to_roman(era_number)}"
 
 
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
@@ -77,12 +100,12 @@ def last_day(year: int, month: int) -> datetime:
     return datetime(year, month, last, 23, 59, 59)
 
 
-def load_reliable_events(db, user_id: int) -> list[tuple[int, datetime]]:
+def load_reliable_events(db, user_id: int, sources: tuple[str, ...]) -> list[tuple[int, datetime]]:
     rows = (
         db.query(ListeningEvent.track_id, ListeningEvent.played_at)
         .filter(
             ListeningEvent.user_id == user_id,
-            ListeningEvent.source.in_(RELIABLE_SOURCES),
+            ListeningEvent.source.in_(sources),
             ListeningEvent.played_at.isnot(None),
         )
         .all()
@@ -565,12 +588,14 @@ def detect_eras(
     max_era_months: int,
     max_era_events: int,
     dry_run: bool,
+    source: str = DEFAULT_SOURCE,
 ) -> list[dict]:
+    sources = SOURCE_PRESETS[source]
     db = SessionLocal()
     try:
-        events = load_reliable_events(db, user_id)
+        events = load_reliable_events(db, user_id, sources)
         print(f"Loaded {len(events)} reliable dated events "
-              f"(sources: {', '.join(RELIABLE_SOURCES)})")
+              f"(source preset: {source}, sources: {', '.join(sources)})")
 
         months, centroids, month_events = compute_month_centroids(
             db, events, min_events_per_month
@@ -628,19 +653,48 @@ def detect_eras(
             )
 
         if not dry_run:
-            db.query(UserEra).filter(UserEra.user_id == user_id).delete()
+            old_era_ids = [
+                row[0] for row in db.query(UserEra.id).filter(
+                    UserEra.user_id == user_id,
+                    UserEra.era_type == source,
+                ).all()
+            ]
+            if old_era_ids:
+                db.query(EraLabel).filter(
+                    EraLabel.era_id.in_(old_era_ids)
+                ).delete(synchronize_session=False)
+                db.query(UserEra).filter(
+                    UserEra.id.in_(old_era_ids)
+                ).delete(synchronize_session=False)
+
             for era in final_eras:
-                db.add(UserEra(
+                user_era = UserEra(
                     user_id=user_id,
+                    era_type=source,
                     era_number=era['era_number'],
                     start_date=era['start_date'],
                     end_date=era['end_date'],
                     event_count=era['event_count'],
                     dominant_cluster_ids=era['dominant_cluster_ids'],
                     centroid_vector=era['centroid_vector'],
+                )
+                db.add(user_era)
+                db.flush()
+
+                db.add(EraLabel(
+                    era_id=user_era.id,
+                    title=_default_era_title(era['era_number']),
+                    description=None,
+                    mood=None,
+                    era_type=source,
                 ))
+
             db.commit()
-            print(f"\nWrote {len(final_eras)} eras to user_eras.")
+            print(
+                f"\nWrote {len(final_eras)} eras (era_type={source}) to user_eras, "
+                f"seeded {len(final_eras)} default era_labels "
+                f"(replaced {len(old_era_ids)} prior {source} rows; other era_type rows untouched)."
+            )
 
         return final_eras
 
@@ -667,6 +721,10 @@ def main():
     parser.add_argument('--max-era-events', type=int, default=DEFAULT_MAX_ERA_EVENTS,
                         help='Split eras exceeding this many events (default 1000)')
     parser.add_argument('--user-id', type=int, default=DEFAULT_USER_ID)
+    parser.add_argument('--source', choices=sorted(SOURCE_PRESETS.keys()),
+                        default=DEFAULT_SOURCE,
+                        help='discovery = saved_tracks + recently_played (default); '
+                             'listening = extended_history only')
     args = parser.parse_args()
 
     detect_eras(
@@ -678,6 +736,7 @@ def main():
         max_era_months=args.max_era_months,
         max_era_events=args.max_era_events,
         dry_run=args.dry_run,
+        source=args.source,
     )
 
 

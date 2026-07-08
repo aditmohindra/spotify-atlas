@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getEras, getEraDepth, ApiError } from "@/lib/api";
-import type { Era, EraDepth } from "@/lib/types";
+import type { Era, EraDepth, EraTimelineType } from "@/lib/types";
 import { HorizontalTimeline } from "@/components/timeline/HorizontalTimeline";
 import { EraDetailModal } from "@/components/timeline/EraDetailModal";
 
@@ -10,6 +10,7 @@ const HEADER_HEIGHT = 88;
 const SIDEBAR_WIDTH = 220;
 
 export default function TimelinePage() {
+  const [eraType, setEraType] = useState<EraTimelineType>("discovery");
   const [eras, setEras] = useState<Era[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +27,15 @@ export default function TimelinePage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    getEras(1, { signal: controller.signal })
+    setLoading(true);
+    setError(null);
+    // Switching timelines invalidates any open era detail — clear it directly
+    // rather than relying on the selectedEraId-driven effect below to cascade.
+    setSelectedEraId(null);
+    setDepth(null);
+    setDepthLoading(false);
+    setDepthError(null);
+    getEras(1, eraType, { signal: controller.signal })
       .then(setEras)
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
@@ -40,7 +49,7 @@ export default function TimelinePage() {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, []);
+  }, [eraType]);
 
   useEffect(() => {
     if (selectedEraId === null) {
@@ -132,17 +141,62 @@ export default function TimelinePage() {
             >
               Timeline
             </h1>
-            {!loading && eras.length > 0 && (
-              <p className="font-ui text-xs" style={{ color: "rgba(255,255,255,0.58)" }}>
-                {namedCount} of {eras.length} eras named
-              </p>
-            )}
+            <div className="flex items-center gap-3">
+              {!loading && eras.length > 0 && (
+                <p className="font-ui text-xs" style={{ color: "rgba(255,255,255,0.58)" }}>
+                  {namedCount} of {eras.length} eras named
+                </p>
+              )}
+              <div
+                className="flex items-center"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 20,
+                  overflow: "hidden",
+                }}
+              >
+                <button
+                  onClick={() => setEraType("discovery")}
+                  style={{
+                    padding: "5px 12px",
+                    background: eraType === "discovery" ? "rgba(29,185,84,0.16)" : "none",
+                    border: "none",
+                    borderRight: "1px solid rgba(255,255,255,0.1)",
+                    cursor: "pointer",
+                    color: eraType === "discovery" ? "#1db954" : "rgba(255,255,255,0.5)",
+                    fontFamily: "inherit",
+                    fontSize: 12,
+                    fontWeight: eraType === "discovery" ? 600 : 400,
+                  }}
+                >
+                  Discovery
+                </button>
+                <button
+                  onClick={() => setEraType("listening")}
+                  style={{
+                    padding: "5px 12px",
+                    background: eraType === "listening" ? "rgba(29,185,84,0.16)" : "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: eraType === "listening" ? "#1db954" : "rgba(255,255,255,0.5)",
+                    fontFamily: "inherit",
+                    fontSize: 12,
+                    fontWeight: eraType === "listening" ? 600 : 400,
+                  }}
+                >
+                  Listening
+                </button>
+              </div>
+            </div>
           </div>
           <p
             className="font-ui text-xs mt-1 hidden sm:block"
             style={{ color: "rgba(255,255,255,0.52)" }}
           >
-            Drag through nine years of listening — click a planet to explore an era.
+            {eraType === "discovery"
+              ? "Drag through nine years of listening — click a planet to explore an era."
+              : "Real play-volume eras from your extended streaming history — click a planet to explore an era."}
           </p>
         </div>
       </header>

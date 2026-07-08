@@ -178,7 +178,7 @@ class ClusterLabel(Base):
 
 class UserEra(Base):
     __tablename__ = "user_eras"
-    __table_args__ = (UniqueConstraint('user_id', 'era_number', name='uq_user_eras_user_era_number'),)
+    __table_args__ = (UniqueConstraint('user_id', 'era_type', 'era_number', name='uq_user_eras_user_era_type_number'),)
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -188,6 +188,7 @@ class UserEra(Base):
     event_count = Column(Integer, nullable=False)
     dominant_cluster_ids = Column(ARRAY(Integer), nullable=True)
     centroid_vector = Column(ARRAY(Float), nullable=True)
+    era_type = Column(String, nullable=True, server_default='discovery')
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="eras")
@@ -204,6 +205,7 @@ class EraLabel(Base):
     description = Column(String, nullable=True)
     mood = Column(String, nullable=True)
     key_tracks = Column(ARRAY(String), nullable=True)
+    era_type = Column(String, nullable=True, server_default='discovery')
     created_at = Column(DateTime, server_default=func.now())
     edited_at = Column(DateTime, nullable=True)
 

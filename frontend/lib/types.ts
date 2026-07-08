@@ -243,10 +243,14 @@ export interface EraLabel {
   is_named: boolean;
 }
 
+/** Which timeline an era belongs to: curated saves/API snapshots, or real play history. */
+export type EraTimelineType = "discovery" | "listening";
+
 /** A single listening era in chronological order. */
 export interface Era extends EraLabel {
   era_id: number;
   era_number: number;
+  era_type: EraTimelineType;
   start_date: string;
   end_date: string;
   event_count: number;

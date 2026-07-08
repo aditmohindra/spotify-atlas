@@ -48,9 +48,13 @@ export default function EraDetailPage() {
     const controller = new AbortController();
     const { signal } = controller;
 
-    Promise.all([getEras(1, { signal }), getEraDepth(eraId, 10, 10, { signal })])
-      .then(async ([eras, depthData]) => {
-        const match = eras.find((e) => e.era_id === eraId);
+    Promise.all([
+      getEras(1, "discovery", { signal }),
+      getEras(1, "listening", { signal }),
+      getEraDepth(eraId, 10, 10, { signal }),
+    ])
+      .then(async ([discoveryEras, listeningEras, depthData]) => {
+        const match = [...discoveryEras, ...listeningEras].find((e) => e.era_id === eraId);
         if (!match) {
           setNotFound(true);
           return;

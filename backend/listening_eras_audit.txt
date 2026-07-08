@@ -1,0 +1,466 @@
+﻿Loaded 171213 reliable dated events (source preset: listening, sources: extended_history)
+Qualifying months (>=3 events): 114
+Before merge (11 eras):
+  Era 1: 2016-09 to 2016-09 (1 months, 23 events)
+    Dominant clusters: [101, 808 Mafia Session], [1, Magic City Mondays], [4, OVOXO]
+  Era 2: 2016-10 to 2016-10 (1 months, 57 events)
+    Dominant clusters: [4, OVOXO], [101, 808 Mafia Session], [1, Magic City Mondays]
+  Era 3: 2016-11 to 2016-11 (1 months, 79 events)
+    Dominant clusters: [4, OVOXO], [101, 808 Mafia Session], [89, Velvet Room Visitor]
+  Era 4: 2016-12 to 2017-01 (2 months, 183 events)
+    Dominant clusters: [4, OVOXO], [2, YSL Chain], [0, Cactus Jack Society]
+  Era 5: 2017-02 to 2017-02 (1 months, 67 events)
+    Dominant clusters: [2, YSL Chain], [99, Glock 19], [0, Cactus Jack Society]
+  Era 6: 2017-03 to 2017-04 (2 months, 254 events)
+    Dominant clusters: [4, OVOXO], [99, Glock 19], [94, Culture Tape]
+  Era 7: 2017-05 to 2017-05 (1 months, 15 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [51, Shady 2.0]
+  Era 8: 2017-10 to 2017-10 (1 months, 80 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [1, Magic City Mondays]
+  Era 9: 2017-11 to 2017-11 (1 months, 513 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [1, Magic City Mondays]
+  Era 10: 2017-12 to 2025-02 (87 months, 137658 events)
+    Dominant clusters: [27, Opium Collective], [0, Cactus Jack Society], [4, OVOXO]
+  Era 11: 2025-03 to 2026-06 (16 months, 32283 events)
+    Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [27, Opium Collective]
+
+Merge actions:
+  Pass 1: Era 1 (23 events, 2016-09 to 2016-09) merged into next Era 2 (57 events, 2016-10 to 2016-10) (centroid similarity=0.9763)
+  Pass 1: Era 6 (15 events, 2017-05 to 2017-05) merged into next Era 7 (80 events, 2017-10 to 2017-10) (centroid similarity=0.9823)
+
+After merge (9 eras):
+  Era 1: 2016-09 to 2016-10 (2 months, 80 events)
+    Dominant clusters: [4, OVOXO], [101, 808 Mafia Session], [1, Magic City Mondays]
+  Era 2: 2016-11 to 2016-11 (1 months, 79 events)
+    Dominant clusters: [4, OVOXO], [101, 808 Mafia Session], [89, Velvet Room Visitor]
+  Era 3: 2016-12 to 2017-01 (2 months, 183 events)
+    Dominant clusters: [4, OVOXO], [2, YSL Chain], [0, Cactus Jack Society]
+  Era 4: 2017-02 to 2017-02 (1 months, 67 events)
+    Dominant clusters: [2, YSL Chain], [99, Glock 19], [0, Cactus Jack Society]
+  Era 5: 2017-03 to 2017-04 (2 months, 254 events)
+    Dominant clusters: [4, OVOXO], [99, Glock 19], [94, Culture Tape]
+  Era 6: 2017-05 to 2017-10 (2 months, 95 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [26, Black Panther Tribute]
+  Era 7: 2017-11 to 2017-11 (1 months, 513 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [1, Magic City Mondays]
+  Era 8: 2017-12 to 2025-02 (87 months, 137658 events)
+    Dominant clusters: [27, Opium Collective], [0, Cactus Jack Society], [4, OVOXO]
+  Era 9: 2025-03 to 2026-06 (16 months, 32283 events)
+    Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [27, Opium Collective]
+
+Total eras detected: 9 (was 11 before merge)
+Min era events: 50
+Std multiplier: 1.0
+Mean similarity: 0.9967
+Std dev: 0.0053
+Cutoff (mean - 1.0 * std_dev): 0.9915
+
+Month-pairs below cutoff:
+  2016-09 -> 2016-10: 0.9763
+  2016-10 -> 2016-11: 0.9850
+  2016-11 -> 2016-12: 0.9911
+  2017-01 -> 2017-02: 0.9884
+  2017-02 -> 2017-03: 0.9624
+  2017-04 -> 2017-05: 0.9734
+  2017-05 -> 2017-10: 0.9823
+  2017-10 -> 2017-11: 0.9911
+  2017-11 -> 2017-12: 0.9908
+  2025-02 -> 2025-03: 0.9914
+
+Boundary similarity scores: [0.9763, 0.985, 0.9911, 0.9884, 0.9624, 0.9734, 0.9823, 0.9911, 0.9908, 0.9914]
+
+Month-by-month similarity scores:
+  2016-09 -> 2016-10: 0.9763  <- BOUNDARY
+  2016-10 -> 2016-11: 0.9850  <- BOUNDARY
+  2016-11 -> 2016-12: 0.9911  <- BOUNDARY
+  2016-12 -> 2017-01: 0.9917
+  2017-01 -> 2017-02: 0.9884  <- BOUNDARY
+  2017-02 -> 2017-03: 0.9624  <- BOUNDARY
+  2017-03 -> 2017-04: 0.9966
+  2017-04 -> 2017-05: 0.9734  <- BOUNDARY
+  2017-05 -> 2017-10: 0.9823  <- BOUNDARY
+  2017-10 -> 2017-11: 0.9911  <- BOUNDARY
+  2017-11 -> 2017-12: 0.9908  <- BOUNDARY
+  2017-12 -> 2018-01: 0.9979
+  2018-01 -> 2018-02: 0.9993
+  2018-02 -> 2018-03: 0.9945
+  2018-03 -> 2018-04: 0.9940
+  2018-04 -> 2018-05: 0.9941
+  2018-05 -> 2018-06: 0.9994
+  2018-06 -> 2018-07: 0.9996
+  2018-07 -> 2018-08: 0.9986
+  2018-08 -> 2018-09: 0.9976
+  2018-09 -> 2018-10: 0.9989
+  2018-10 -> 2018-11: 0.9987
+  2018-11 -> 2018-12: 0.9993
+  2018-12 -> 2019-01: 0.9999
+  2019-01 -> 2019-02: 0.9981
+  2019-02 -> 2019-03: 0.9983
+  2019-03 -> 2019-04: 0.9993
+  2019-04 -> 2019-05: 0.9997
+  2019-05 -> 2019-06: 0.9995
+  2019-06 -> 2019-07: 0.9995
+  2019-07 -> 2019-08: 0.9993
+  2019-08 -> 2019-09: 0.9998
+  2019-09 -> 2019-10: 0.9994
+  2019-10 -> 2019-11: 0.9987
+  2019-11 -> 2019-12: 0.9988
+  2019-12 -> 2020-01: 0.9985
+  2020-01 -> 2020-02: 0.9987
+  2020-02 -> 2020-03: 0.9919
+  2020-03 -> 2020-04: 0.9977
+  2020-04 -> 2020-05: 0.9986
+  2020-05 -> 2020-06: 0.9987
+  2020-06 -> 2020-07: 0.9991
+  2020-07 -> 2020-08: 0.9994
+  2020-08 -> 2020-09: 0.9988
+  2020-09 -> 2020-10: 0.9992
+  2020-10 -> 2020-11: 0.9991
+  2020-11 -> 2020-12: 0.9986
+  2020-12 -> 2021-01: 0.9993
+  2021-01 -> 2021-02: 0.9995
+  2021-02 -> 2021-03: 0.9994
+  2021-03 -> 2021-04: 0.9992
+  2021-04 -> 2021-05: 0.9992
+  2021-05 -> 2021-06: 0.9989
+  2021-06 -> 2021-07: 0.9988
+  2021-07 -> 2021-08: 0.9959
+  2021-08 -> 2021-09: 0.9947
+  2021-09 -> 2021-10: 0.9965
+  2021-10 -> 2021-11: 0.9980
+  2021-11 -> 2021-12: 0.9980
+  2021-12 -> 2022-01: 0.9973
+  2022-01 -> 2022-02: 0.9986
+  2022-02 -> 2022-03: 0.9993
+  2022-03 -> 2022-04: 0.9992
+  2022-04 -> 2022-05: 0.9992
+  2022-05 -> 2022-06: 0.9960
+  2022-06 -> 2022-07: 0.9976
+  2022-07 -> 2022-08: 0.9965
+  2022-08 -> 2022-09: 0.9987
+  2022-09 -> 2022-10: 0.9992
+  2022-10 -> 2022-11: 0.9991
+  2022-11 -> 2022-12: 0.9979
+  2022-12 -> 2023-01: 0.9992
+  2023-01 -> 2023-02: 0.9987
+  2023-02 -> 2023-03: 0.9986
+  2023-03 -> 2023-04: 0.9986
+  2023-04 -> 2023-05: 0.9983
+  2023-05 -> 2023-06: 0.9986
+  2023-06 -> 2023-07: 0.9979
+  2023-07 -> 2023-08: 0.9984
+  2023-08 -> 2023-09: 0.9986
+  2023-09 -> 2023-10: 0.9982
+  2023-10 -> 2023-11: 0.9989
+  2023-11 -> 2023-12: 0.9964
+  2023-12 -> 2024-01: 0.9981
+  2024-01 -> 2024-02: 0.9970
+  2024-02 -> 2024-03: 0.9949
+  2024-03 -> 2024-04: 0.9997
+  2024-04 -> 2024-05: 0.9993
+  2024-05 -> 2024-06: 0.9942
+  2024-06 -> 2024-07: 0.9975
+  2024-07 -> 2024-08: 0.9986
+  2024-08 -> 2024-09: 0.9992
+  2024-09 -> 2024-10: 0.9981
+  2024-10 -> 2024-11: 0.9983
+  2024-11 -> 2024-12: 0.9943
+  2024-12 -> 2025-01: 0.9992
+  2025-01 -> 2025-02: 0.9976
+  2025-02 -> 2025-03: 0.9914  <- BOUNDARY
+  2025-03 -> 2025-04: 0.9967
+  2025-04 -> 2025-05: 0.9963
+  2025-05 -> 2025-06: 0.9989
+  2025-06 -> 2025-07: 0.9979
+  2025-07 -> 2025-08: 0.9981
+  2025-08 -> 2025-09: 0.9960
+  2025-09 -> 2025-10: 0.9931
+  2025-10 -> 2025-11: 0.9986
+  2025-11 -> 2025-12: 0.9992
+  2025-12 -> 2026-01: 0.9990
+  2026-01 -> 2026-02: 0.9989
+  2026-02 -> 2026-03: 0.9992
+  2026-03 -> 2026-04: 0.9990
+  2026-04 -> 2026-05: 0.9988
+  2026-05 -> 2026-06: 0.9989
+
+--- Recursive split: Pass 1: 2017-12 to 2025-02 (87 months, 137658 events) ---
+Before: 2017-12 to 2025-02 (87 months, 137658 events)
+  Dominant clusters: [27, Opium Collective], [0, Cactus Jack Society], [4, OVOXO]
+Local stats: mean=0.9982, std=0.0016, cutoff=0.9966
+Local month-pairs below cutoff:
+  2018-02 -> 2018-03: 0.9945
+  2018-03 -> 2018-04: 0.9940
+  2018-04 -> 2018-05: 0.9941
+  2020-02 -> 2020-03: 0.9919
+  2021-07 -> 2021-08: 0.9959
+  2021-08 -> 2021-09: 0.9947
+  2021-09 -> 2021-10: 0.9965
+  2022-05 -> 2022-06: 0.9960
+  2022-07 -> 2022-08: 0.9965
+  2023-11 -> 2023-12: 0.9964
+  2024-02 -> 2024-03: 0.9949
+  2024-05 -> 2024-06: 0.9942
+  2024-11 -> 2024-12: 0.9943
+After (14 sub-eras):
+  Sub-era 1: 2017-12 to 2018-02 (3 months, 1858 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [99, Glock 19]
+  Sub-era 2: 2018-03 to 2018-03 (1 months, 805 events)
+    Dominant clusters: [7, Secure The Bag], [80, Nawfside Tunnel], [0, Cactus Jack Society]
+  Sub-era 3: 2018-04 to 2018-04 (1 months, 844 events)
+    Dominant clusters: [7, Secure The Bag], [4, OVOXO], [0, Cactus Jack Society]
+  Sub-era 4: 2018-05 to 2020-02 (22 months, 41273 events)
+    Dominant clusters: [0, Cactus Jack Society], [27, Opium Collective], [4, OVOXO]
+  Sub-era 5: 2020-03 to 2021-07 (17 months, 21819 events)
+    Dominant clusters: [7, Secure The Bag], [1, Magic City Mondays], [2, YSL Chain]
+  Sub-era 6: 2021-08 to 2021-08 (1 months, 708 events)
+    Dominant clusters: [60, Shingeki Academy], [21, Desi Swag], [56, Pluggnb Dropbox]
+  Sub-era 7: 2021-09 to 2021-09 (1 months, 563 events)
+    Dominant clusters: [60, Shingeki Academy], [20, AP Dhillon Aesthetic], [27, Opium Collective]
+  Sub-era 8: 2021-10 to 2022-05 (8 months, 11015 events)
+    Dominant clusters: [60, Shingeki Academy], [20, AP Dhillon Aesthetic], [27, Opium Collective]
+  Sub-era 9: 2022-06 to 2022-07 (2 months, 2346 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [60, Shingeki Academy], [4, OVOXO]
+  Sub-era 10: 2022-08 to 2023-11 (16 months, 31225 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [27, Opium Collective], [0, Cactus Jack Society]
+  Sub-era 11: 2023-12 to 2024-02 (3 months, 4239 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [6, Boiler Room], [44, Output Brooklyn]
+  Sub-era 12: 2024-03 to 2024-05 (3 months, 6445 events)
+    Dominant clusters: [44, Output Brooklyn], [3, BLACKPINK Lightstick], [4, OVOXO]
+  Sub-era 13: 2024-06 to 2024-11 (6 months, 9484 events)
+    Dominant clusters: [44, Output Brooklyn], [60, Shingeki Academy], [3, BLACKPINK Lightstick]
+  Sub-era 14: 2024-12 to 2025-02 (3 months, 5034 events)
+    Dominant clusters: [60, Shingeki Academy], [3, BLACKPINK Lightstick], [44, Output Brooklyn]
+
+--- Recursive split: Pass 1: 2025-03 to 2026-06 (16 months, 32283 events) ---
+Before: 2025-03 to 2026-06 (16 months, 32283 events)
+  Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [27, Opium Collective]
+Local stats: mean=0.9979, std=0.0017, cutoff=0.9962
+Local month-pairs below cutoff:
+  2025-08 -> 2025-09: 0.9960
+  2025-09 -> 2025-10: 0.9931
+After (3 sub-eras):
+  Sub-era 1: 2025-03 to 2025-08 (6 months, 9144 events)
+    Dominant clusters: [27, Opium Collective], [60, Shingeki Academy], [89, Velvet Room Visitor]
+  Sub-era 2: 2025-09 to 2025-09 (1 months, 2543 events)
+    Dominant clusters: [32, De School Amsterdam], [89, Velvet Room Visitor], [41, Tresor Berlin]
+  Sub-era 3: 2025-10 to 2026-06 (9 months, 20596 events)
+    Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [4, OVOXO]
+
+--- Recursive split: Pass 2: 2018-05 to 2020-02 (22 months, 41273 events) ---
+Before: 2018-05 to 2020-02 (22 months, 41273 events)
+  Dominant clusters: [0, Cactus Jack Society], [27, Opium Collective], [4, OVOXO]
+Local stats: mean=0.9990, std=0.0006, cutoff=0.9984
+Local month-pairs below cutoff:
+  2018-08 -> 2018-09: 0.9976
+  2019-01 -> 2019-02: 0.9981
+  2019-02 -> 2019-03: 0.9983
+After (4 sub-eras):
+  Sub-era 1: 2018-05 to 2018-08 (4 months, 5018 events)
+    Dominant clusters: [4, OVOXO], [0, Cactus Jack Society], [27, Opium Collective]
+  Sub-era 2: 2018-09 to 2019-01 (5 months, 9337 events)
+    Dominant clusters: [0, Cactus Jack Society], [27, Opium Collective], [4, OVOXO]
+  Sub-era 3: 2019-02 to 2019-02 (1 months, 1090 events)
+    Dominant clusters: [0, Cactus Jack Society], [2, YSL Chain], [1, Magic City Mondays]
+  Sub-era 4: 2019-03 to 2020-02 (12 months, 25828 events)
+    Dominant clusters: [0, Cactus Jack Society], [26, Black Panther Tribute], [27, Opium Collective]
+
+--- Recursive split: Pass 2: 2020-03 to 2021-07 (17 months, 21819 events) ---
+Before: 2020-03 to 2021-07 (17 months, 21819 events)
+  Dominant clusters: [7, Secure The Bag], [1, Magic City Mondays], [2, YSL Chain]
+Local stats: mean=0.9990, std=0.0004, cutoff=0.9985
+Local month-pairs below cutoff:
+  2020-03 -> 2020-04: 0.9977
+After (2 sub-eras):
+  Sub-era 1: 2020-03 to 2020-03 (1 months, 1602 events)
+    Dominant clusters: [7, Secure The Bag], [47, Rapp Snitch Knishes], [26, Black Panther Tribute]
+  Sub-era 2: 2020-04 to 2021-07 (16 months, 20217 events)
+    Dominant clusters: [1, Magic City Mondays], [2, YSL Chain], [56, Pluggnb Dropbox]
+
+--- Recursive split: Pass 2: 2021-10 to 2022-05 (8 months, 11015 events) ---
+Before: 2021-10 to 2022-05 (8 months, 11015 events)
+  Dominant clusters: [60, Shingeki Academy], [20, AP Dhillon Aesthetic], [27, Opium Collective]
+Local stats: mean=0.9985, std=0.0007, cutoff=0.9978
+Local month-pairs below cutoff:
+  2021-12 -> 2022-01: 0.9973
+After (2 sub-eras):
+  Sub-era 1: 2021-10 to 2021-12 (3 months, 3297 events)
+    Dominant clusters: [60, Shingeki Academy], [56, Pluggnb Dropbox], [59, Shinigami Eyes]
+  Sub-era 2: 2022-01 to 2022-05 (5 months, 7718 events)
+    Dominant clusters: [60, Shingeki Academy], [20, AP Dhillon Aesthetic], [27, Opium Collective]
+
+--- Recursive split: Pass 2: 2022-08 to 2023-11 (16 months, 31225 events) ---
+Before: 2022-08 to 2023-11 (16 months, 31225 events)
+  Dominant clusters: [3, BLACKPINK Lightstick], [27, Opium Collective], [0, Cactus Jack Society]
+Local stats: mean=0.9986, std=0.0004, cutoff=0.9982
+Local month-pairs below cutoff:
+  2022-11 -> 2022-12: 0.9979
+  2023-06 -> 2023-07: 0.9979
+After (3 sub-eras):
+  Sub-era 1: 2022-08 to 2022-11 (4 months, 7784 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [27, Opium Collective], [4, OVOXO]
+  Sub-era 2: 2022-12 to 2023-06 (7 months, 14977 events)
+    Dominant clusters: [27, Opium Collective], [3, BLACKPINK Lightstick], [4, OVOXO]
+  Sub-era 3: 2023-07 to 2023-11 (5 months, 8464 events)
+    Dominant clusters: [0, Cactus Jack Society], [3, BLACKPINK Lightstick], [60, Shingeki Academy]
+
+--- Recursive split: Pass 2: 2025-10 to 2026-06 (9 months, 20596 events) ---
+Before: 2025-10 to 2026-06 (9 months, 20596 events)
+  Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [4, OVOXO]
+Local stats: mean=0.9990, std=0.0002, cutoff=0.9988
+Local month-pairs below cutoff:
+  2025-10 -> 2025-11: 0.9986
+After (2 sub-eras):
+  Sub-era 1: 2025-10 to 2025-10 (1 months, 2173 events)
+    Dominant clusters: [42, Printworks Main Room], [89, Velvet Room Visitor], [59, Shinigami Eyes]
+  Sub-era 2: 2025-11 to 2026-06 (8 months, 18423 events)
+    Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [4, OVOXO]
+
+--- Recursive split: Pass 3: 2019-03 to 2020-02 (12 months, 25828 events) ---
+Before: 2019-03 to 2020-02 (12 months, 25828 events)
+  Dominant clusters: [0, Cactus Jack Society], [26, Black Panther Tribute], [27, Opium Collective]
+Local stats: mean=0.9992, std=0.0004, cutoff=0.9988
+Local month-pairs below cutoff:
+  2019-10 -> 2019-11: 0.9987
+  2019-11 -> 2019-12: 0.9988
+  2019-12 -> 2020-01: 0.9985
+  2020-01 -> 2020-02: 0.9987
+After (5 sub-eras):
+  Sub-era 1: 2019-03 to 2019-10 (8 months, 17282 events)
+    Dominant clusters: [0, Cactus Jack Society], [27, Opium Collective], [2, YSL Chain]
+  Sub-era 2: 2019-11 to 2019-11 (1 months, 2775 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [0, Cactus Jack Society]
+  Sub-era 3: 2019-12 to 2019-12 (1 months, 2200 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [1, Magic City Mondays]
+  Sub-era 4: 2020-01 to 2020-01 (1 months, 2213 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [51, Shady 2.0]
+  Sub-era 5: 2020-02 to 2020-02 (1 months, 1358 events)
+    Dominant clusters: [26, Black Panther Tribute], [47, Rapp Snitch Knishes], [4, OVOXO]
+
+--- Recursive split: Pass 3: 2020-04 to 2021-07 (16 months, 20217 events) ---
+Before: 2020-04 to 2021-07 (16 months, 20217 events)
+  Dominant clusters: [1, Magic City Mondays], [2, YSL Chain], [56, Pluggnb Dropbox]
+Local stats: mean=0.9990, std=0.0003, cutoff=0.9988
+Local month-pairs below cutoff:
+  2020-04 -> 2020-05: 0.9986
+  2020-05 -> 2020-06: 0.9987
+  2020-11 -> 2020-12: 0.9986
+After (4 sub-eras):
+  Sub-era 1: 2020-04 to 2020-04 (1 months, 1249 events)
+    Dominant clusters: [7, Secure The Bag], [2, YSL Chain], [1, Magic City Mondays]
+  Sub-era 2: 2020-05 to 2020-05 (1 months, 1502 events)
+    Dominant clusters: [4, OVOXO], [2, YSL Chain], [1, Magic City Mondays]
+  Sub-era 3: 2020-06 to 2020-11 (6 months, 9181 events)
+    Dominant clusters: [1, Magic City Mondays], [2, YSL Chain], [4, OVOXO]
+  Sub-era 4: 2020-12 to 2021-07 (8 months, 8285 events)
+    Dominant clusters: [56, Pluggnb Dropbox], [60, Shingeki Academy], [27, Opium Collective]
+
+--- Recursive split: Pass 3: 2022-12 to 2023-06 (7 months, 14977 events) ---
+Before: 2022-12 to 2023-06 (7 months, 14977 events)
+  Dominant clusters: [27, Opium Collective], [3, BLACKPINK Lightstick], [4, OVOXO]
+Local stats: mean=0.9987, std=0.0003, cutoff=0.9984
+Local month-pairs below cutoff:
+  2023-04 -> 2023-05: 0.9983
+After (2 sub-eras):
+  Sub-era 1: 2022-12 to 2023-04 (5 months, 11437 events)
+    Dominant clusters: [27, Opium Collective], [4, OVOXO], [2, YSL Chain]
+  Sub-era 2: 2023-05 to 2023-06 (2 months, 3540 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [27, Opium Collective], [56, Pluggnb Dropbox]
+
+--- Recursive split: Pass 3: 2025-11 to 2026-06 (8 months, 18423 events) ---
+Before: 2025-11 to 2026-06 (8 months, 18423 events)
+  Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [4, OVOXO]
+Local stats: mean=0.9990, std=0.0001, cutoff=0.9989
+Local month-pairs below cutoff:
+  2026-04 -> 2026-05: 0.9988
+After (2 sub-eras):
+  Sub-era 1: 2025-11 to 2026-04 (6 months, 13532 events)
+    Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [42, Printworks Main Room]
+  Sub-era 2: 2026-05 to 2026-06 (2 months, 4891 events)
+    Dominant clusters: [60, Shingeki Academy], [4, OVOXO], [71, Dearly Beloved]
+
+After recursive split: 41 eras (was 9 before split)
+Final era list (41 eras):
+  Era 1: 2016-09 to 2016-10 (2 months, 80 events)
+    Dominant clusters: [4, OVOXO], [101, 808 Mafia Session], [1, Magic City Mondays]
+  Era 2: 2016-11 to 2016-11 (1 months, 79 events)
+    Dominant clusters: [4, OVOXO], [101, 808 Mafia Session], [89, Velvet Room Visitor]
+  Era 3: 2016-12 to 2017-01 (2 months, 183 events)
+    Dominant clusters: [4, OVOXO], [2, YSL Chain], [0, Cactus Jack Society]
+  Era 4: 2017-02 to 2017-02 (1 months, 67 events)
+    Dominant clusters: [2, YSL Chain], [99, Glock 19], [0, Cactus Jack Society]
+  Era 5: 2017-03 to 2017-04 (2 months, 254 events)
+    Dominant clusters: [4, OVOXO], [99, Glock 19], [94, Culture Tape]
+  Era 6: 2017-05 to 2017-10 (2 months, 95 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [26, Black Panther Tribute]
+  Era 7: 2017-11 to 2017-11 (1 months, 513 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [1, Magic City Mondays]
+  Era 8: 2017-12 to 2018-02 (3 months, 1858 events)
+    Dominant clusters: [4, OVOXO], [7, Secure The Bag], [99, Glock 19]
+  Era 9: 2018-03 to 2018-03 (1 months, 805 events)
+    Dominant clusters: [7, Secure The Bag], [80, Nawfside Tunnel], [0, Cactus Jack Society]
+  Era 10: 2018-04 to 2018-04 (1 months, 844 events)
+    Dominant clusters: [7, Secure The Bag], [4, OVOXO], [0, Cactus Jack Society]
+  Era 11: 2018-05 to 2018-08 (4 months, 5018 events)
+    Dominant clusters: [4, OVOXO], [0, Cactus Jack Society], [27, Opium Collective]
+  Era 12: 2018-09 to 2019-01 (5 months, 9337 events)
+    Dominant clusters: [0, Cactus Jack Society], [27, Opium Collective], [4, OVOXO]
+  Era 13: 2019-02 to 2019-02 (1 months, 1090 events)
+    Dominant clusters: [0, Cactus Jack Society], [2, YSL Chain], [1, Magic City Mondays]
+  Era 14: 2019-03 to 2019-10 (8 months, 17282 events)
+    Dominant clusters: [0, Cactus Jack Society], [27, Opium Collective], [2, YSL Chain]
+  Era 15: 2019-11 to 2019-11 (1 months, 2775 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [0, Cactus Jack Society]
+  Era 16: 2019-12 to 2019-12 (1 months, 2200 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [1, Magic City Mondays]
+  Era 17: 2020-01 to 2020-01 (1 months, 2213 events)
+    Dominant clusters: [26, Black Panther Tribute], [4, OVOXO], [51, Shady 2.0]
+  Era 18: 2020-02 to 2020-02 (1 months, 1358 events)
+    Dominant clusters: [26, Black Panther Tribute], [47, Rapp Snitch Knishes], [4, OVOXO]
+  Era 19: 2020-03 to 2020-03 (1 months, 1602 events)
+    Dominant clusters: [7, Secure The Bag], [47, Rapp Snitch Knishes], [26, Black Panther Tribute]
+  Era 20: 2020-04 to 2020-04 (1 months, 1249 events)
+    Dominant clusters: [7, Secure The Bag], [2, YSL Chain], [1, Magic City Mondays]
+  Era 21: 2020-05 to 2020-05 (1 months, 1502 events)
+    Dominant clusters: [4, OVOXO], [2, YSL Chain], [1, Magic City Mondays]
+  Era 22: 2020-06 to 2020-11 (6 months, 9181 events)
+    Dominant clusters: [1, Magic City Mondays], [2, YSL Chain], [4, OVOXO]
+  Era 23: 2020-12 to 2021-07 (8 months, 8285 events)
+    Dominant clusters: [56, Pluggnb Dropbox], [60, Shingeki Academy], [27, Opium Collective]
+  Era 24: 2021-08 to 2021-08 (1 months, 708 events)
+    Dominant clusters: [60, Shingeki Academy], [21, Desi Swag], [56, Pluggnb Dropbox]
+  Era 25: 2021-09 to 2021-09 (1 months, 563 events)
+    Dominant clusters: [60, Shingeki Academy], [20, AP Dhillon Aesthetic], [27, Opium Collective]
+  Era 26: 2021-10 to 2021-12 (3 months, 3297 events)
+    Dominant clusters: [60, Shingeki Academy], [56, Pluggnb Dropbox], [59, Shinigami Eyes]
+  Era 27: 2022-01 to 2022-05 (5 months, 7718 events)
+    Dominant clusters: [60, Shingeki Academy], [20, AP Dhillon Aesthetic], [27, Opium Collective]
+  Era 28: 2022-06 to 2022-07 (2 months, 2346 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [60, Shingeki Academy], [4, OVOXO]
+  Era 29: 2022-08 to 2022-11 (4 months, 7784 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [27, Opium Collective], [4, OVOXO]
+  Era 30: 2022-12 to 2023-04 (5 months, 11437 events)
+    Dominant clusters: [27, Opium Collective], [4, OVOXO], [2, YSL Chain]
+  Era 31: 2023-05 to 2023-06 (2 months, 3540 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [27, Opium Collective], [56, Pluggnb Dropbox]
+  Era 32: 2023-07 to 2023-11 (5 months, 8464 events)
+    Dominant clusters: [0, Cactus Jack Society], [3, BLACKPINK Lightstick], [60, Shingeki Academy]
+  Era 33: 2023-12 to 2024-02 (3 months, 4239 events)
+    Dominant clusters: [3, BLACKPINK Lightstick], [6, Boiler Room], [44, Output Brooklyn]
+  Era 34: 2024-03 to 2024-05 (3 months, 6445 events)
+    Dominant clusters: [44, Output Brooklyn], [3, BLACKPINK Lightstick], [4, OVOXO]
+  Era 35: 2024-06 to 2024-11 (6 months, 9484 events)
+    Dominant clusters: [44, Output Brooklyn], [60, Shingeki Academy], [3, BLACKPINK Lightstick]
+  Era 36: 2024-12 to 2025-02 (3 months, 5034 events)
+    Dominant clusters: [60, Shingeki Academy], [3, BLACKPINK Lightstick], [44, Output Brooklyn]
+  Era 37: 2025-03 to 2025-08 (6 months, 9144 events)
+    Dominant clusters: [27, Opium Collective], [60, Shingeki Academy], [89, Velvet Room Visitor]
+  Era 38: 2025-09 to 2025-09 (1 months, 2543 events)
+    Dominant clusters: [32, De School Amsterdam], [89, Velvet Room Visitor], [41, Tresor Berlin]
+  Era 39: 2025-10 to 2025-10 (1 months, 2173 events)
+    Dominant clusters: [42, Printworks Main Room], [89, Velvet Room Visitor], [59, Shinigami Eyes]
+  Era 40: 2025-11 to 2026-04 (6 months, 13532 events)
+    Dominant clusters: [60, Shingeki Academy], [89, Velvet Room Visitor], [42, Printworks Main Room]
+  Era 41: 2026-05 to 2026-06 (2 months, 4891 events)
+    Dominant clusters: [60, Shingeki Academy], [4, OVOXO], [71, Dearly Beloved]
+
