@@ -102,6 +102,8 @@ class ListeningEvent(Base):
     track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
     played_at = Column(DateTime, nullable=True)
     source = Column(String, nullable=True)
+    ms_played = Column(Integer, nullable=True)
+    spotify_track_uri = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="listening_events")
