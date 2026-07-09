@@ -245,3 +245,32 @@ async def get_cluster_detail(
         ],
         "user_weight": round(user_community[0] or 0, 1)
     }
+
+
+@router.get("/communities/meta")
+async def get_communities_meta(db: Session = Depends(get_db)):
+    from datetime import datetime
+
+    year = datetime.utcnow().year
+
+    new_this_year = db.execute(text("""
+        SELECT COUNT(DISTINCT cluster_id) FROM clustering_assignments
+        WHERE run_id = :run_id AND assignment_type = 'hard' AND cluster_id IN (
+            SELECT DISTINCT ca.cluster_id
+            FROM clustering_assignments ca
+            JOIN listening_events le ON le.track_id = ca.track_id
+            WHERE ca.run_id = :run_id
+              AND le.source = 'extended_history'
+              AND EXTRACT(YEAR FROM le.played_at) = :year
+        )
+        AND cluster_id NOT IN (
+            SELECT DISTINCT ca2.cluster_id
+            FROM clustering_assignments ca2
+            JOIN listening_events le2 ON le2.track_id = ca2.track_id
+            WHERE ca2.run_id = :run_id
+              AND le2.source = 'extended_history'
+              AND EXTRACT(YEAR FROM le2.played_at) < :year
+        )
+    """), {"run_id": VIBE_RUN_ID, "year": year}).scalar() or 0
+
+    return {"year": year, "new_communities_this_year": new_this_year}

@@ -9,6 +9,7 @@
 
 import type {
   ArchetypesResponse,
+  CommunitiesMeta,
   CommunityDetail,
   Era,
   EraDepth,
@@ -189,6 +190,14 @@ export function getRelatedCommunities(
  */
 export function getClusterLabels(init?: RequestInit): Promise<LabelsResponse> {
   return getJson<LabelsResponse>("/clusters/labels", init);
+}
+
+/**
+ * Fetch community list metadata (e.g. how many new communities were entered this year).
+ * GET /communities/meta
+ */
+export function getCommunitiesMeta(init?: RequestInit): Promise<CommunitiesMeta> {
+  return getJson<CommunitiesMeta>("/communities/meta", init);
 }
 
 // ---------------------------------------------------------------------------

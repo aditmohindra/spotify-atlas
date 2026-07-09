@@ -6,10 +6,10 @@ import {
   Flame, Music, Wifi, Moon, Headphones, Mic, Star, Gamepad, Coffee, Music2, Sparkles, Zap,
   type LucideIcon,
 } from "lucide-react";
-import { getTasteProfile, getCommunityDetail } from "@/lib/api";
+import { getTasteProfile, getCommunityDetail, getCommunitiesMeta } from "@/lib/api";
 import { getArchetypeColor } from "@/hooks/useMapData";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import type { TasteProfile, Community, CommunityDetail } from "@/lib/types";
+import type { TasteProfile, Community, CommunityDetail, CommunitiesMeta } from "@/lib/types";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -109,6 +109,32 @@ function computeArchetypeBreakdown(communities: Community[]): ArchetypeShare[] {
   return [...map.entries()]
     .map(([name, percentage]) => ({ name, percentage: Math.round(percentage * 10) / 10 }))
     .sort((a, b) => b.percentage - a.percentage);
+}
+
+// ── Name chip (community/"Atlas" name, shown as quiet metadata) ──────────────
+
+function NameChip({ label, dark = false }: { label: string; dark?: boolean }) {
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+        fontSize: 11,
+        fontWeight: 500,
+        color: dark ? "rgba(255,255,255,0.5)" : "#6b7280",
+        background: dark ? "rgba(255,255,255,0.08)" : "#f3f4f6",
+        border: `1px solid ${dark ? "rgba(255,255,255,0.14)" : "#e5e7eb"}`,
+        borderRadius: 20,
+        padding: "3px 10px",
+        whiteSpace: "nowrap",
+        maxWidth: "100%",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      }}
+    >
+      {label}
+    </span>
+  );
 }
 
 // ── Archetype badge ───────────────────────────────────────────────────────────
@@ -267,18 +293,7 @@ function FeaturedCard({
           style={{ padding: large ? "28px 28px" : "20px 22px", gap: 16 }}
         >
           <div>
-            {/* Line 1: canonical name (plain genre description) — primary label */}
-            <p
-              style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                fontSize: large ? 13.5 : 12,
-                color: "rgba(255,255,255,0.55)",
-                margin: 0,
-              }}
-            >
-              {community.canonical_name}
-            </p>
-            {/* Line 2: community name — nickname, DM Sans bold, not Playfair */}
+            {/* Line 1: canonical name — primary label, large bold DM Sans (not Playfair) */}
             <h3
               style={{
                 fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
@@ -287,13 +302,13 @@ function FeaturedCard({
                 lineHeight: 1.15,
                 letterSpacing: "-0.01em",
                 color: "#ffffff",
-                margin: "4px 0 0",
+                margin: 0,
               }}
             >
-              {community.name}
+              {community.canonical_name}
             </h3>
 
-            {/* Line 3: top artists */}
+            {/* Line 2: top artists */}
             {topArtists.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", marginTop: 12 }}>
                 {topArtists.map((a, i) => (
@@ -309,6 +324,11 @@ function FeaturedCard({
                 ))}
               </div>
             )}
+
+            {/* Line 3: community name — quiet metadata chip, not the headline */}
+            <div style={{ marginTop: 10 }}>
+              <NameChip label={community.name} dark />
+            </div>
           </div>
 
           {/* Line 4: archetype badge + track count + share % */}
@@ -449,12 +469,12 @@ function CommunityCard({ community }: { community: Community }) {
         <GradientOrb color={orbColor} letter={firstLetter} />
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          {/* Top line: canonical name (plain genre description) — primary label */}
+          {/* Top line: canonical name — primary label, bold */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
             <span
               style={{
                 fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                fontSize: 11, color: "#6b7280",
+                fontWeight: 700, fontSize: 13.5, color: "#111827",
                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 flex: 1,
               }}
@@ -472,18 +492,11 @@ function CommunityCard({ community }: { community: Community }) {
             </span>
           </div>
 
-          {/* Second line: community name — nickname, bold DM Sans */}
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, marginTop: 2 }}>
-            <span
-              style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                fontWeight: 700, fontSize: 13.5, color: "#111827",
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                flex: 1,
-              }}
-            >
-              {community.name}
-            </span>
+          {/* Second line: community name — quiet metadata chip, not the headline */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 4 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <NameChip label={community.name} />
+            </div>
             <span
               style={{
                 fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
@@ -658,6 +671,7 @@ export default function CommunitiesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [featuredDetails, setFeaturedDetails] = useState<Record<number, CommunityDetail | null>>({});
+  const [communitiesMeta, setCommunitiesMeta] = useState<CommunitiesMeta | null>(null);
 
   useEffect(() => {
     document.title = "Worlds · Spotify Atlas";
@@ -668,6 +682,12 @@ export default function CommunitiesPage() {
       .then(setTasteData)
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    getCommunitiesMeta()
+      .then(setCommunitiesMeta)
+      .catch(() => {});
   }, []);
 
   const allCommunities = useMemo<Community[]>(
@@ -728,10 +748,14 @@ export default function CommunitiesPage() {
 
   const tasteSummaryText = useMemo(() => {
     const topGenrePhrases = archetypeBreakdown.slice(0, 3).map((a) => genrePhrase(a.name));
-    const topCommunityNames = allCommunities.slice(0, 3).map((c) => c.name);
-    if (topGenrePhrases.length === 0 || topCommunityNames.length === 0) return null;
-    return `Your library leans heavily toward ${formatList(topGenrePhrases)}. The largest communities are ${formatList(topCommunityNames)}.`;
-  }, [archetypeBreakdown, allCommunities]);
+    const topCanonicalNames = allCommunities.slice(0, 3).map((c) => c.canonical_name);
+    if (topGenrePhrases.length === 0 || topCanonicalNames.length === 0) return null;
+    let text = `Your library leans heavily toward ${formatList(topGenrePhrases)}. The largest communities are ${formatList(topCanonicalNames)}.`;
+    if (communitiesMeta) {
+      text += ` You've entered ${communitiesMeta.new_communities_this_year} new communities so far in ${communitiesMeta.year}.`;
+    }
+    return text;
+  }, [archetypeBreakdown, allCommunities, communitiesMeta]);
 
   return (
     <div style={{ minHeight: "100vh", background: "#f7f8f5" }}>

@@ -130,6 +130,12 @@ export interface LabelsResponse {
   labels: ClusterLabel[];
 }
 
+/** Response for GET /communities/meta. */
+export interface CommunitiesMeta {
+  year: number;
+  new_communities_this_year: number;
+}
+
 // ---------------------------------------------------------------------------
 // GET /clusters/{id}/detail?user_id={id}
 // ---------------------------------------------------------------------------
