@@ -11,6 +11,7 @@ import {
 } from "@/lib/api";
 import type { CommunityDetail, RelatedCommunity, Rarity } from "@/lib/types";
 import { PageShell } from "@/components/atlas/PageShell";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -371,7 +372,7 @@ export default function CommunityDetailPage() {
                   <div className="space-y-2">
                     {detail.top_artists.slice(0, 5).map((artist, idx) => (
                       <div
-                        key={artist}
+                        key={artist.name}
                         className="flex items-center gap-4 px-4 py-3 rounded-xl transition-shadow hover:shadow-sm"
                         style={{ background: "#ffffff", border: "1px solid #dde6dd" }}
                       >
@@ -381,11 +382,18 @@ export default function CommunityDetailPage() {
                         >
                           {idx + 1}
                         </span>
+                        <ImageWithFallback
+                          src={artist.artist_image_url}
+                          alt={artist.name}
+                          size={40}
+                          shape="circle"
+                          fallbackText={artist.name}
+                        />
                         <span
                           className="font-ui font-medium text-sm"
                           style={{ color: "#1a2b1a" }}
                         >
-                          {artist}
+                          {artist.name}
                         </span>
                       </div>
                     ))}
@@ -410,6 +418,13 @@ export default function CommunityDetailPage() {
                         >
                           {idx + 1}
                         </span>
+
+                        <ImageWithFallback
+                          src={track.album_image_url}
+                          alt={track.name}
+                          size={40}
+                          shape="square"
+                        />
 
                         <div className="flex-1 min-w-0">
                           <p

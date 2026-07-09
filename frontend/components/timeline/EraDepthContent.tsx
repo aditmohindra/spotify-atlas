@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { getArchetypeColor } from "@/hooks/useMapData";
 import type { Era, EraDepth } from "@/lib/types";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import { displayTitle, formatDateRange } from "./timelineUtils";
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -147,6 +148,13 @@ export function EraDepthContent({
                   <span className="font-stat text-xs tabular-nums w-4" style={{ color: "#4ade80" }}>
                     {i + 1}
                   </span>
+                  <ImageWithFallback
+                    src={a.artist_image_url}
+                    alt={a.name}
+                    size={36}
+                    shape="circle"
+                    fallbackText={a.name}
+                  />
                   <span className="font-ui text-sm truncate" style={{ color: "#ffffff" }}>
                     {a.name}
                   </span>
@@ -176,6 +184,13 @@ export function EraDepthContent({
                   <span className="font-stat text-xs tabular-nums w-4" style={{ color: "#a78bfa" }}>
                     {i + 1}
                   </span>
+                  <ImageWithFallback
+                    src={a.artist_image_url}
+                    alt={a.name}
+                    size={36}
+                    shape="circle"
+                    fallbackText={a.name}
+                  />
                   <span className="font-ui text-sm truncate" style={{ color: "#ffffff" }}>
                     {a.name}
                   </span>
@@ -204,6 +219,12 @@ export function EraDepthContent({
                   <span className="font-stat text-xs tabular-nums w-4 shrink-0" style={{ color: "#60a5fa" }}>
                     {i + 1}
                   </span>
+                  <ImageWithFallback
+                    src={t.album_image_url}
+                    alt={t.name}
+                    size={36}
+                    shape="square"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="font-ui text-sm truncate" style={{ color: "#ffffff" }}>
                       {t.name}

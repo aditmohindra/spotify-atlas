@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { PageShell } from "@/components/atlas/PageShell";
 import { SectionHeader } from "@/components/atlas/SectionHeader";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import {
   getWrappedMeta,
   getWrappedTopAlbums,
@@ -66,11 +67,13 @@ function EmptyState({ message }: { message: string }) {
 
 function RankedList<T>({
   items,
+  renderImage,
   renderPrimary,
   renderSecondary,
   renderTrailing,
 }: {
   items: T[];
+  renderImage?: (item: T) => React.ReactNode;
   renderPrimary: (item: T) => string;
   renderSecondary?: (item: T) => string | null;
   renderTrailing?: (item: T) => string | null;
@@ -92,6 +95,7 @@ function RankedList<T>({
           >
             {index + 1}
           </span>
+          {renderImage && renderImage(item)}
           <div className="min-w-0 flex-1">
             <p className="font-ui text-sm truncate" style={{ color: "#101828" }}>
               {renderPrimary(item)}
@@ -286,6 +290,14 @@ export default function WrappedPage() {
               ) : (
                 <RankedList
                   items={tracks}
+                  renderImage={(item) => (
+                    <ImageWithFallback
+                      src={item.album_image_url}
+                      alt={item.album_name ?? item.track_name}
+                      size={40}
+                      shape="square"
+                    />
+                  )}
                   renderPrimary={(item) => item.track_name}
                   renderSecondary={(item) =>
                     item.album_name
@@ -311,6 +323,15 @@ export default function WrappedPage() {
               ) : (
                 <RankedList
                   items={artists}
+                  renderImage={(item) => (
+                    <ImageWithFallback
+                      src={item.artist_image_url}
+                      alt={item.artist_name}
+                      size={40}
+                      shape="circle"
+                      fallbackText={item.artist_name}
+                    />
+                  )}
                   renderPrimary={(item) => item.artist_name}
                 />
               )}
@@ -331,6 +352,14 @@ export default function WrappedPage() {
               ) : (
                 <RankedList
                   items={albums}
+                  renderImage={(item) => (
+                    <ImageWithFallback
+                      src={item.album_image_url}
+                      alt={item.album_name}
+                      size={40}
+                      shape="square"
+                    />
+                  )}
                   renderPrimary={(item) => item.album_name}
                   renderSecondary={(item) => item.artist_name}
                   renderTrailing={(item) => `${item.track_count} tracks`}

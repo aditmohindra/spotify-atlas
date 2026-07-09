@@ -142,6 +142,13 @@ export interface SampleTrackDetail {
   name: string;
   artist: string;
   spotify_id: string;
+  album_image_url: string | null;
+}
+
+/** A top artist entry within CommunityDetail, with an optional image for display. */
+export interface CommunityTopArtist {
+  name: string;
+  artist_image_url: string | null;
 }
 
 /**
@@ -160,7 +167,7 @@ export interface CommunityDetail {
   archetype: string | null;
   track_count: number;
   /** Up to 5 top artists by listening weight for this user. */
-  top_artists: string[];
+  top_artists: CommunityTopArtist[];
   /** Representative track samples with Spotify IDs. */
   sample_tracks: SampleTrackDetail[];
   /** Raw weighted listening score for the requesting user. */
@@ -279,6 +286,7 @@ export interface EraPatchResponse {
 export interface EraArtistVolume {
   name: string;
   event_count: number;
+  artist_image_url: string | null;
 }
 
 /** Ranked artist by TF-IDF-style distinctiveness within an era. */
@@ -286,6 +294,7 @@ export interface EraArtistDistinctiveness {
   name: string;
   distinctiveness_score: number;
   era_frequency: number;
+  artist_image_url: string | null;
 }
 
 /** Representative track ranked by era distinctiveness. */
@@ -293,6 +302,7 @@ export interface EraRepresentativeTrack {
   name: string;
   artist: string;
   distinctiveness_score: number;
+  album_image_url: string | null;
 }
 
 /** Aggregated genre/mood tag from track feature documents. */
@@ -337,6 +347,7 @@ export interface WrappedTopTrack {
   artist_name: string;
   spotify_track_id: string;
   album_name: string | null;
+  album_image_url: string | null;
 }
 
 /** A ranked top-artist entry from GET /wrapped/top-artists. */
@@ -344,6 +355,7 @@ export interface WrappedTopArtist {
   rank: number;
   artist_name: string;
   spotify_artist_id: string | null;
+  artist_image_url: string | null;
 }
 
 /** A derived ranked top-album entry from GET /wrapped/top-albums. */
@@ -351,6 +363,7 @@ export interface WrappedTopAlbum {
   rank: number;
   album_name: string;
   artist_name: string;
+  album_image_url: string | null;
   track_count: number;
 }
 
