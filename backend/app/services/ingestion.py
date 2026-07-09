@@ -18,18 +18,24 @@ def upsert_artist(db: Session, artist_data: dict) -> Artist:
         Artist.spotify_artist_id == artist_data["id"]
     ).first()
 
+    images = artist_data.get("images")
+    image_url = images[0].get("url") if images else None
+
     if not artist:
         artist = Artist(
             spotify_artist_id=artist_data["id"],
             name=artist_data["name"],
             genres=artist_data.get("genres", []),
-            popularity=artist_data.get("popularity")
+            popularity=artist_data.get("popularity"),
+            image_url=image_url
         )
         db.add(artist)
         db.flush()
     else:
         artist.genres = artist_data.get("genres", artist.genres)
         artist.popularity = artist_data.get("popularity", artist.popularity)
+        if not artist.image_url and image_url:
+            artist.image_url = image_url
 
     return artist
 
@@ -39,14 +45,20 @@ def upsert_album(db: Session, album_data: dict) -> Album:
         Album.spotify_album_id == album_data["id"]
     ).first()
 
+    images = album_data.get("images")
+    image_url = images[0].get("url") if images else None
+
     if not album:
         album = Album(
             spotify_album_id=album_data["id"],
             name=album_data["name"],
-            release_date=album_data.get("release_date")
+            release_date=album_data.get("release_date"),
+            image_url=image_url
         )
         db.add(album)
         db.flush()
+    elif not album.image_url and image_url:
+        album.image_url = image_url
 
     return album
 

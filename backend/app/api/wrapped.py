@@ -35,7 +35,8 @@ async def get_wrapped_top_tracks(
                 t.name AS track_name,
                 COALESCE(ar.name, 'Unknown Artist') AS artist_name,
                 t.spotify_track_id,
-                al.name AS album_name
+                al.name AS album_name,
+                al.image_url AS album_image_url
             FROM listening_events le
             JOIN tracks t ON t.id = le.track_id
             LEFT JOIN artists ar ON ar.id = t.artist_id
@@ -56,6 +57,7 @@ async def get_wrapped_top_tracks(
             "artist_name": row.artist_name,
             "spotify_track_id": row.spotify_track_id,
             "album_name": row.album_name,
+            "album_image_url": row.album_image_url,
         }
         for idx, row in enumerate(rows, start=1)
     ]
@@ -76,13 +78,14 @@ async def get_wrapped_top_artists(
             SELECT
                 COALESCE(ar.name, 'Unknown Artist') AS artist_name,
                 ar.spotify_artist_id,
+                ar.image_url AS artist_image_url,
                 MIN(le.id) AS first_rank_signal
             FROM listening_events le
             JOIN tracks t ON t.id = le.track_id
             LEFT JOIN artists ar ON ar.id = t.artist_id
             WHERE le.user_id = :user_id
               AND le.source = :source
-            GROUP BY COALESCE(ar.name, 'Unknown Artist'), ar.spotify_artist_id
+            GROUP BY COALESCE(ar.name, 'Unknown Artist'), ar.spotify_artist_id, ar.image_url
             ORDER BY first_rank_signal ASC
             LIMIT :limit
             """
@@ -95,6 +98,7 @@ async def get_wrapped_top_artists(
             "rank": idx,
             "artist_name": row.artist_name,
             "spotify_artist_id": row.spotify_artist_id,
+            "artist_image_url": row.artist_image_url,
         }
         for idx, row in enumerate(rows, start=1)
     ]
@@ -115,6 +119,7 @@ async def get_wrapped_top_albums(
             SELECT
                 COALESCE(al.name, 'Unknown Album') AS album_name,
                 COALESCE(ar.name, 'Unknown Artist') AS artist_name,
+                al.image_url AS album_image_url,
                 COUNT(*) AS track_count,
                 MIN(le.id) AS first_rank_signal
             FROM listening_events le
@@ -123,7 +128,7 @@ async def get_wrapped_top_albums(
             LEFT JOIN artists ar ON ar.id = t.artist_id
             WHERE le.user_id = :user_id
               AND le.source = :source
-            GROUP BY COALESCE(al.name, 'Unknown Album'), COALESCE(ar.name, 'Unknown Artist')
+            GROUP BY COALESCE(al.name, 'Unknown Album'), COALESCE(ar.name, 'Unknown Artist'), al.image_url
             ORDER BY track_count DESC, first_rank_signal ASC, album_name ASC
             LIMIT :limit
             """
@@ -136,6 +141,7 @@ async def get_wrapped_top_albums(
             "rank": idx,
             "album_name": row.album_name,
             "artist_name": row.artist_name,
+            "album_image_url": row.album_image_url,
             "track_count": row.track_count,
         }
         for idx, row in enumerate(rows, start=1)

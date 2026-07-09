@@ -141,22 +141,23 @@ async def get_cluster_detail(
 
     if layer == "vibe":
         artists = db.execute(text(f"""
-            SELECT a.name, COUNT(*) as cnt
+            SELECT a.name, a.image_url, COUNT(*) as cnt
             FROM clustering_assignments ca
             JOIN tracks t ON t.id = ca.track_id
             JOIN artists a ON a.id = t.artist_id
             WHERE ca.run_id = :run_id
               AND {EFFECTIVE_VIBE_CLUSTER} = :id
-            GROUP BY a.name
+            GROUP BY a.name, a.image_url
             ORDER BY cnt DESC
             LIMIT 5
         """), {"run_id": VIBE_RUN_ID, "id": cluster_id}).fetchall()
 
         tracks = db.execute(text(f"""
-            SELECT t.name, a.name as artist, t.spotify_track_id
+            SELECT t.name, a.name as artist, t.spotify_track_id, al.image_url as album_image_url
             FROM clustering_assignments ca
             JOIN tracks t ON t.id = ca.track_id
             JOIN artists a ON a.id = t.artist_id
+            LEFT JOIN albums al ON al.id = t.album_id
             WHERE ca.run_id = :run_id
               AND {EFFECTIVE_VIBE_CLUSTER} = :id
             ORDER BY RANDOM()
@@ -188,21 +189,22 @@ async def get_cluster_detail(
         """), {"run_id": VIBE_RUN_ID, "uid": user_id, "id": cluster_id}).fetchone()
     else:
         artists = db.execute(text("""
-            SELECT a.name, COUNT(*) as cnt
+            SELECT a.name, a.image_url, COUNT(*) as cnt
             FROM track_clusters tc
             JOIN tracks t ON t.id = tc.track_id
             JOIN artists a ON a.id = t.artist_id
             WHERE tc.cluster_id = :id
-            GROUP BY a.name
+            GROUP BY a.name, a.image_url
             ORDER BY cnt DESC
             LIMIT 5
         """), {"id": cluster_id}).fetchall()
 
         tracks = db.execute(text("""
-            SELECT t.name, a.name as artist, t.spotify_track_id
+            SELECT t.name, a.name as artist, t.spotify_track_id, al.image_url as album_image_url
             FROM track_clusters tc
             JOIN tracks t ON t.id = tc.track_id
             JOIN artists a ON a.id = t.artist_id
+            LEFT JOIN albums al ON al.id = t.album_id
             WHERE tc.cluster_id = :id
             ORDER BY RANDOM()
             LIMIT 8
@@ -236,7 +238,10 @@ async def get_cluster_detail(
         "archetype": label[5],
         "layer": layer,
         "track_count": track_count,
-        "top_artists": [r[0] for r in artists],
-        "sample_tracks": [{"name": r[0], "artist": r[1], "spotify_id": r[2]} for r in tracks],
+        "top_artists": [{"name": r[0], "artist_image_url": r[1]} for r in artists],
+        "sample_tracks": [
+            {"name": r[0], "artist": r[1], "spotify_id": r[2], "album_image_url": r[3]}
+            for r in tracks
+        ],
         "user_weight": round(user_community[0] or 0, 1)
     }

@@ -51,6 +51,7 @@ def _build_vibe_payload(db: Session) -> dict:
             t.spotify_track_id,
             t.name,
             a.name                        AS artist,
+            al.image_url                  AS album_image_url,
             tvc.x,
             tvc.y,
             CASE
@@ -65,6 +66,7 @@ def _build_vibe_payload(db: Session) -> dict:
             END                           AS community_name
         FROM tracks t
         JOIN artists a               ON t.artist_id      = a.id
+        LEFT JOIN albums al          ON t.album_id        = al.id
         JOIN track_vibe_coordinates tvc ON t.id          = tvc.track_id
         JOIN clustering_assignments ca  ON t.id          = ca.track_id
                                        AND ca.run_id     = :run_id
@@ -93,6 +95,7 @@ def _build_scene_payload(db: Session) -> dict:
             t.spotify_track_id,
             t.name,
             a.name                  AS artist,
+            al.image_url            AS album_image_url,
             tc_coord.x,
             tc_coord.y,
             tc.cluster_id,
@@ -103,6 +106,7 @@ def _build_scene_payload(db: Session) -> dict:
             END                     AS community_name
         FROM tracks t
         JOIN artists a              ON t.artist_id     = a.id
+        LEFT JOIN albums al         ON t.album_id       = al.id
         JOIN track_coordinates tc_coord ON t.id        = tc_coord.track_id
         JOIN track_clusters tc      ON t.id            = tc.track_id
         LEFT JOIN cluster_labels cl ON cl.cluster_id   = tc.cluster_id
@@ -133,6 +137,7 @@ def _assemble_payload(layer: str, rows, labels: dict, noise_name: str) -> dict:
             "spotify_track_id": r["spotify_track_id"],
             "name":            r["name"],
             "artist":          r["artist"],
+            "album_image_url": r["album_image_url"],
             "x":               r["x"],
             "y":               r["y"],
             "cluster_id":      cid if cid is not None else -1,

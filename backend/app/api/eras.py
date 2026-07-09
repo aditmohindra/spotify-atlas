@@ -212,10 +212,13 @@ async def get_era_depth(
                 le.track_id,
                 t.name AS track_name,
                 COALESCE(a.name, 'Unknown Artist') AS artist_name,
+                a.image_url AS artist_image_url,
+                al.image_url AS album_image_url,
                 t.feature_document
             FROM listening_events le
             JOIN tracks t ON t.id = le.track_id
             LEFT JOIN artists a ON a.id = t.artist_id
+            LEFT JOIN albums al ON al.id = t.album_id
             WHERE le.user_id = :user_id
               AND le.source = ANY(:sources)
               AND le.played_at BETWEEN :start_date AND :end_date
@@ -249,13 +252,16 @@ async def get_era_depth(
 
     artist_counts: Counter[str] = Counter()
     track_counts: Counter[int] = Counter()
-    track_meta: dict[int, tuple[str, str]] = {}
+    track_meta: dict[int, tuple[str, str, str | None]] = {}
+    artist_image_map: dict[str, str | None] = {}
     tag_counts: Counter[str] = Counter()
 
     for row in era_rows:
         artist_counts[row.artist_name] += 1
         track_counts[row.track_id] += 1
-        track_meta[row.track_id] = (row.track_name, row.artist_name)
+        track_meta[row.track_id] = (row.track_name, row.artist_name, row.album_image_url)
+        if row.artist_name not in artist_image_map or not artist_image_map[row.artist_name]:
+            artist_image_map[row.artist_name] = row.artist_image_url
         genres, moods = parse_tags_from_feature_document(row.feature_document or "")
         for tag in genres + moods:
             tag_counts[tag] += 1
@@ -321,9 +327,9 @@ async def get_era_depth(
         if era_freq < min_era_frequency:
             continue
         global_freq = global_track_map.get(track_id, 0)
-        name, artist = track_meta[track_id]
+        name, artist, album_image_url = track_meta[track_id]
         score = _distinctiveness_score(era_freq, era_total, global_freq, global_total)
-        track_distinct.append((name, artist, score))
+        track_distinct.append((name, artist, score, album_image_url))
     track_distinct.sort(key=lambda x: (-x[2], x[0], x[1]))
 
     archetype_rows = db.execute(
@@ -373,15 +379,21 @@ async def get_era_depth(
         "end_date": era.end_date.isoformat(),
         "event_count": era.event_count,
         "top_artists_by_volume": [
-            {"name": name, "event_count": cnt} for name, cnt in top_artists_volume
+            {"name": name, "event_count": cnt, "artist_image_url": artist_image_map.get(name)}
+            for name, cnt in top_artists_volume
         ],
         "top_artists_by_distinctiveness": [
-            {"name": name, "distinctiveness_score": score, "era_frequency": freq}
+            {
+                "name": name,
+                "distinctiveness_score": score,
+                "era_frequency": freq,
+                "artist_image_url": artist_image_map.get(name),
+            }
             for name, score, freq in _take_top_distinct_scores(artist_distinct, limit, 1)
         ],
         "representative_tracks": [
-            {"name": name, "artist": artist, "distinctiveness_score": score}
-            for name, artist, score in _take_top_distinct_scores(track_distinct, track_limit, 2)
+            {"name": name, "artist": artist, "distinctiveness_score": score, "album_image_url": album_image_url}
+            for name, artist, score, album_image_url in _take_top_distinct_scores(track_distinct, track_limit, 2)
         ],
         "top_genres_moods": top_genres_moods,
         "archetype_breakdown": archetype_breakdown,

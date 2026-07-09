@@ -47,6 +47,11 @@ async def spotify_get(endpoint: str, token: str, params: dict = None) -> dict:
             return response.json()
         elif response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", 2 ** attempt))
+            if retry_after > 60:
+                raise Exception(
+                    f"Rate limited on {endpoint} with Retry-After={retry_after}s — "
+                    "aborting instead of blocking (likely a long-duration lockout, not a transient limit)"
+                )
             print(f"Rate limited. Waiting {retry_after}s...")
             await asyncio.sleep(retry_after)
         elif response.status_code == 401:

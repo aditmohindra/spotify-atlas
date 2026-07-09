@@ -29,6 +29,7 @@ class Artist(Base):
     name = Column(String, nullable=False)
     genres = Column(ARRAY(String), nullable=True)
     popularity = Column(Integer, nullable=True)
+    image_url = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     tracks = relationship("Track", back_populates="artist")
@@ -41,6 +42,7 @@ class Album(Base):
     spotify_album_id = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     release_date = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     tracks = relationship("Track", back_populates="album")
