@@ -157,6 +157,21 @@ export interface CommunityTopArtist {
   artist_image_url: string | null;
 }
 
+/** An artist entry in the full ranked `all_artists` list — adds track_count over CommunityTopArtist. */
+export interface CommunityAllArtist {
+  name: string;
+  artist_image_url: string | null;
+  track_count: number;
+}
+
+/** A track entry in the full ranked `all_tracks` list. */
+export interface CommunityAllTrack {
+  name: string;
+  artist: string;
+  album_image_url: string | null;
+  spotify_id: string;
+}
+
 /**
  * Full community detail for a single community, hydrated with the requesting
  * user's listening weight. Returned by GET /clusters/{id}/detail?user_id={id}.
@@ -176,6 +191,10 @@ export interface CommunityDetail {
   top_artists: CommunityTopArtist[];
   /** Representative track samples with Spotify IDs. */
   sample_tracks: SampleTrackDetail[];
+  /** Full ranked artist list (by track count) for this community — used by the "View all artists" modal. */
+  all_artists: CommunityAllArtist[];
+  /** Full track list for this community, ordered by name — used by the "View all tracks" modal. */
+  all_tracks: CommunityAllTrack[];
   /** Raw weighted listening score for the requesting user. */
   user_weight: number;
 }

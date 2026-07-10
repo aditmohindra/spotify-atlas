@@ -12,6 +12,7 @@ import {
 import type { CommunityDetail, RelatedCommunity, Rarity } from "@/lib/types";
 import { PageShell } from "@/components/atlas/PageShell";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { CommunityListModal } from "@/components/community/CommunityListModal";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -164,6 +165,7 @@ export default function CommunityDetailPage() {
   const [rarity, setRarity] = useState<Rarity | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [openModal, setOpenModal] = useState<"artists" | "tracks" | null>(null);
 
   useEffect(() => {
     if (detail?.name) {
@@ -406,6 +408,16 @@ export default function CommunityDetailPage() {
                       </div>
                     ))}
                   </div>
+                  {detail.all_artists.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => setOpenModal("artists")}
+                      className="mt-3 font-ui text-xs font-medium transition-colors hover:underline"
+                      style={{ color: "#98a2b3" }}
+                    >
+                      View all {detail.all_artists.length} artists →
+                    </button>
+                  )}
                 </section>
               )}
 
@@ -463,6 +475,16 @@ export default function CommunityDetailPage() {
                       </div>
                     ))}
                   </div>
+                  {detail.all_tracks.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => setOpenModal("tracks")}
+                      className="mt-3 font-ui text-xs font-medium transition-colors hover:underline"
+                      style={{ color: "#98a2b3" }}
+                    >
+                      View all {detail.all_tracks.length} tracks →
+                    </button>
+                  )}
                 </section>
               )}
             </div>
@@ -616,6 +638,23 @@ export default function CommunityDetailPage() {
 
         </div>
       </PageShell>
+
+      <CommunityListModal
+        isOpen={openModal === "artists"}
+        onClose={() => setOpenModal(null)}
+        title="All Artists"
+        items={detail.all_artists}
+        type="artists"
+        accentColor={color}
+      />
+      <CommunityListModal
+        isOpen={openModal === "tracks"}
+        onClose={() => setOpenModal(null)}
+        title="All Representative Tracks"
+        items={detail.all_tracks}
+        type="tracks"
+        accentColor={color}
+      />
     </div>
   );
 }
