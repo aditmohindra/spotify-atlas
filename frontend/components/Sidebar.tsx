@@ -7,36 +7,6 @@ import { API_BASE_URL } from "@/lib/api";
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
-function IdentityIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" />
-    </svg>
-  );
-}
-
-function ProfileIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="9" r="3" />
-      <path d="M6.168 18.849A4 4 0 0 1 10 17h4a4 4 0 0 1 3.832 1.849" />
-    </svg>
-  );
-}
-
-function TimelineIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 3v18" />
-      <circle cx="12" cy="6" r="2" />
-      <circle cx="12" cy="12" r="2" />
-      <circle cx="12" cy="18" r="2" />
-    </svg>
-  );
-}
-
 function GalaxyIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -58,30 +28,6 @@ function CommunitiesIcon() {
   );
 }
 
-function InsightsIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M3 17l4-6 4 4 4-7 4 3" />
-      <path d="M3 21h18" />
-    </svg>
-  );
-}
-
-function WrappedIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 3v6" />
-      <path d="M12 15v6" />
-      <path d="M4.93 4.93l4.24 4.24" />
-      <path d="M14.83 14.83l4.24 4.24" />
-      <path d="M3 12h6" />
-      <path d="M15 12h6" />
-      <path d="M4.93 19.07l4.24-4.24" />
-      <path d="M14.83 9.17l4.24-4.24" />
-    </svg>
-  );
-}
-
 // ── Nav items ─────────────────────────────────────────────────────────────────
 
 interface NavItem {
@@ -91,13 +37,8 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Identity",    href: "/identity",    icon: <IdentityIcon /> },
-  { label: "Profile",     href: "/profile",     icon: <ProfileIcon /> },
-  { label: "Timeline",    href: "/timeline",    icon: <TimelineIcon /> },
-  { label: "Galaxy",      href: "/map",         icon: <GalaxyIcon /> },
+  { label: "Atlas",       href: "/map",         icon: <GalaxyIcon /> },
   { label: "Communities", href: "/communities", icon: <CommunitiesIcon /> },
-  { label: "Wrapped",     href: "/wrapped",     icon: <WrappedIcon /> },
-  { label: "Insights",    href: "/insights",    icon: <InsightsIcon /> },
 ];
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────

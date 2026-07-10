@@ -1,149 +1,211 @@
+import Link from "next/link";
 import { TrackPoint, ClusterInfo, getArchetypeColor } from "@/hooks/useMapData";
+import type { CommunityDetail } from "@/lib/types";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface Props {
   track: TrackPoint | null;
   cluster?: ClusterInfo;
+  detail?: CommunityDetail | null;
+  detailLoading?: boolean;
+  totalTracks?: number;
   onClose: () => void;
 }
 
-export default function TrackSidebar({ track, cluster, onClose }: Props) {
+const TOP_ARTISTS_VISIBLE = 4;
+
+export default function TrackSidebar({
+  track,
+  cluster,
+  detail,
+  detailLoading = false,
+  totalTracks = 0,
+  onClose,
+}: Props) {
   if (!track) return null;
-  const color = getArchetypeColor(cluster?.cluster_archetype ?? null);
+  const color = getArchetypeColor(detail?.archetype ?? cluster?.cluster_archetype ?? null);
+
+  const primaryTitle =
+    detail?.canonical_name ??
+    cluster?.canonical_name ??
+    cluster?.name ??
+    (track.cluster_id === -1 ? "Unclassified" : `Community ${track.cluster_id}`);
+  const nickname =
+    detail?.name && detail.name !== primaryTitle
+      ? detail.name
+      : cluster?.name && cluster.name !== primaryTitle
+      ? cluster.name
+      : null;
+  const trackCount = detail?.track_count ?? cluster?.track_count;
+  const pct =
+    trackCount != null && totalTracks > 0
+      ? ((trackCount / totalTracks) * 100).toFixed(1)
+      : null;
+  const archetype = detail?.archetype ?? cluster?.cluster_archetype ?? null;
+  const clusterId = detail?.cluster_id ?? cluster?.cluster_id;
+  const communityHref = clusterId != null ? `/community/${clusterId}` : "/communities";
+
+  const topArtists = detail?.top_artists ?? [];
+  const visibleArtists = topArtists.slice(0, TOP_ARTISTS_VISIBLE);
+  const overflowCount = topArtists.length - visibleArtists.length;
 
   return (
     <div
-      className="absolute top-0 right-0 h-full w-72 flex flex-col z-10"
+      className="absolute flex flex-col z-10"
       style={{
-        background: "#ffffff",
-        borderLeft: "1px solid #e5e7eb",
-        boxShadow: "-4px 0 24px rgba(0,0,0,0.06)",
+        top: 132, right: 24,
+        width: 392,
+        maxHeight: "calc(100vh - 172px)",
+        background: "rgba(5, 10, 20, 0.82)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(148, 163, 184, 0.18)",
+        borderRadius: 26,
+        boxShadow: "0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(37, 99, 235, 0.08)",
+        overflow: "hidden",
       }}
     >
       <div
-        className="px-5 pt-5 pb-4"
-        style={{ borderBottom: "1px solid #f3f4f6" }}
+        className="px-6 pt-6 pb-4 flex items-start justify-between gap-3"
+        style={{ borderBottom: "1px solid rgba(148, 163, 184, 0.14)" }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h2
-              className="text-sm font-semibold leading-snug truncate"
-              style={{ color: "#111827" }}
-            >
-              {track.name}
-            </h2>
-            <p className="text-xs mt-1 truncate" style={{ color: "#6b7280" }}>
-              {track.artist}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
-            style={{ color: "#9ca3af" }}
-          >
-            ✕
-          </button>
+        <div
+          className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-widest"
+          style={{ color }}
+        >
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, boxShadow: `0 0 6px ${color}` }} />
+          Selected Region
         </div>
+        <button
+          onClick={onClose}
+          className="transition-colors text-lg leading-none flex-shrink-0"
+          style={{ color: "#64748b" }}
+        >
+          ✕
+        </button>
       </div>
 
-      <div className="px-5 py-4 flex flex-col gap-4 flex-1">
+      <div className="px-6 py-6 flex flex-col gap-6 flex-1 overflow-y-auto">
         <div>
-          <div
-            className="text-xs uppercase tracking-widest mb-2"
-            style={{ color: "#9ca3af" }}
+          <h2
+            className="text-lg font-bold leading-snug"
+            style={{ color: "#f1f5f9" }}
           >
-            Community
-          </div>
-          <div className="flex items-center gap-2 mb-1">
-            <div
-              className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ background: color, boxShadow: `0 0 6px ${color}80` }}
-            />
-            <span className="text-xs font-medium" style={{ color: "#111827" }}>
-              {cluster?.name ??
-                (track.cluster_id === -1
-                  ? "Unclassified"
-                  : `Community ${track.cluster_id}`)}
+            {primaryTitle}
+          </h2>
+          {nickname && (
+            <span
+              className="inline-block mt-2 text-xs px-2.5 py-1 rounded-full font-semibold"
+              style={{ background: `${color}22`, color }}
+            >
+              {nickname}
             </span>
-          </div>
-          {cluster?.canonical_name && (
-            <p className="text-xs pl-4" style={{ color: "#9ca3af" }}>
-              {cluster.canonical_name}
+          )}
+          {trackCount != null && (
+            <p className="text-xs mt-2.5" style={{ color: "#94a3b8" }}>
+              {trackCount.toLocaleString()} tracks
+              {pct !== null && <> · {pct}% of your library</>}
             </p>
           )}
-          {cluster?.cluster_archetype && (
-            <div className="mt-2 pl-4">
+          {archetype && (
+            <div className="mt-2">
               <span
                 className="text-xs px-2 py-0.5 rounded-full font-medium"
                 style={{ background: `${color}18`, color }}
               >
-                {cluster.cluster_archetype}
+                {archetype}
               </span>
             </div>
           )}
-          {cluster?.description && (
-            <p
-              className="text-xs mt-2 leading-relaxed"
-              style={{ color: "#6b7280" }}
-            >
-              {cluster.description}
-            </p>
-          )}
         </div>
 
-        {cluster?.keywords && cluster.keywords.length > 0 && (
+        {(detailLoading || visibleArtists.length > 0) && (
           <div>
             <div
-              className="text-xs uppercase tracking-widest mb-2"
-              style={{ color: "#9ca3af" }}
+              className="text-xs uppercase tracking-widest mb-3 font-semibold"
+              style={{ color: "#64748b" }}
             >
-              Keywords
+              Top Artists
             </div>
-            <div className="flex gap-1.5 flex-wrap">
-              {cluster.keywords.map((kw) => (
-                <span
-                  key={kw}
-                  className="text-xs px-2 py-0.5 rounded-full"
-                  style={{ background: `${color}18`, color }}
-                >
-                  {kw}
-                </span>
-              ))}
-            </div>
+            {detailLoading ? (
+              <div className="flex gap-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: 40, height: 40, borderRadius: "50%",
+                      background: "rgba(148, 163, 184, 0.12)",
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-start gap-3">
+                {visibleArtists.map((artist) => (
+                  <div key={artist.name} className="flex flex-col items-center gap-1.5" style={{ width: 52 }}>
+                    <ImageWithFallback
+                      src={artist.artist_image_url}
+                      alt={artist.name}
+                      size={40}
+                      shape="circle"
+                      fallbackText={artist.name}
+                    />
+                    <span
+                      className="text-[10px] text-center leading-tight truncate w-full"
+                      style={{ color: "#94a3b8" }}
+                    >
+                      {artist.name}
+                    </span>
+                  </div>
+                ))}
+                {overflowCount > 0 && (
+                  <div className="flex flex-col items-center gap-1.5" style={{ width: 52 }}>
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        width: 40, height: 40, borderRadius: "50%",
+                        background: "rgba(148, 163, 184, 0.12)",
+                        color: "#94a3b8",
+                      }}
+                    >
+                      <span className="text-xs font-semibold">+{overflowCount}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
-        <div>
-          <div
-            className="text-xs uppercase tracking-widest mb-2"
-            style={{ color: "#9ca3af" }}
-          >
-            Coordinates
+        {(detailLoading || detail?.description) && (
+          <div>
+            <div
+              className="text-xs uppercase tracking-widest mb-2 font-semibold"
+              style={{ color: "#64748b" }}
+            >
+              About this region
+            </div>
+            {detailLoading ? (
+              <div className="flex flex-col gap-2">
+                <div style={{ height: 10, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "100%" }} />
+                <div style={{ height: 10, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "85%" }} />
+                <div style={{ height: 10, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "60%" }} />
+              </div>
+            ) : (
+              <p className="text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
+                {detail!.description}
+              </p>
+            )}
           </div>
-          <div
-            className="text-xs"
-            style={{
-              color: "#6b7280",
-              fontFamily: "JetBrains Mono, monospace",
-            }}
-          >
-            {track.x.toFixed(1)}, {track.y.toFixed(1)}
-          </div>
-        </div>
-      </div>
+        )}
 
-      <div className="px-5 pb-5">
-        <a
-          href={`https://open.spotify.com/track/${track.spotify_id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-medium transition-all"
-          style={{ background: "#1db954", color: "#000" }}
+        <Link
+          href={communityHref}
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold transition-all"
+          style={{ background: `${color}22`, color, border: `1px solid ${color}40` }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-          </svg>
-          Open in Spotify
-        </a>
+          Explore this community
+          <span style={{ fontSize: 14, lineHeight: 1 }}>→</span>
+        </Link>
       </div>
     </div>
   );

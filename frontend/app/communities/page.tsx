@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Flame, Music, Wifi, Moon, Headphones, Mic, Star, Gamepad, Coffee, Music2, Sparkles, Zap,
   type LucideIcon,
 } from "lucide-react";
-import { getTasteProfile, getCommunityDetail, getCommunitiesMeta } from "@/lib/api";
+import { getTasteProfile } from "@/lib/api";
 import { getArchetypeColor } from "@/hooks/useMapData";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import type { TasteProfile, Community, CommunityDetail, CommunitiesMeta } from "@/lib/types";
+import type { TasteProfile, Community } from "@/lib/types";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -21,7 +21,6 @@ const CLUSTER_COLORS = [
 ];
 
 const PAGE_SIZE = 25;
-const FEATURED_COUNT = 3;
 
 const ARCHETYPE_ICONS: Record<string, LucideIcon> = {
   "Trap Dynasty": Flame,
@@ -38,8 +37,8 @@ const ARCHETYPE_ICONS: Record<string, LucideIcon> = {
   "Club Circuit": Zap,
 };
 
-// Plain genre label shown on badges/pills — the real archetype name (used for
-// color/icon lookup and filter logic) stays as the underlying value everywhere.
+// Plain genre label shown on filter pills — the real archetype name (used for
+// color/icon lookup and filter logic) stays as the underlying value.
 const ARCHETYPE_GENRE_LABEL: Record<string, string> = {
   "Trap Dynasty": "Trap & Rap",
   "Festival Regular": "Electronic",
@@ -55,22 +54,6 @@ const ARCHETYPE_GENRE_LABEL: Record<string, string> = {
   "Club Circuit": "Club & House",
 };
 
-// Lowercase, sentence-friendly genre phrase used only in the taste-summary paragraph.
-const ARCHETYPE_GENRE_PHRASE: Record<string, string> = {
-  "Trap Dynasty": "trap & rap",
-  "Side Quest Soul": "anime, games & J-pop",
-  "Festival Regular": "electronic & festival",
-  "Late Night Romantic": "late-night R&B",
-  "Terminally Online": "internet scenes",
-  "Rap Canon Devotee": "rap essentials",
-  "K-Pop Citizen": "K-pop & pop",
-  "Indie Main Character": "indie & alternative",
-  "Lo-Fi Otaku": "lo-fi & chill",
-  "Desi Household": "South Asian music",
-  "Anime Passport": "anime & J-pop",
-  "Club Circuit": "club & house",
-};
-
 function clusterColor(id: number): string {
   if (id === -1) return "#9ca3af";
   return CLUSTER_COLORS[id % CLUSTER_COLORS.length];
@@ -84,22 +67,12 @@ function genreLabel(archetype: string): string {
   return ARCHETYPE_GENRE_LABEL[archetype] ?? archetype;
 }
 
-function genrePhrase(archetype: string): string {
-  return ARCHETYPE_GENRE_PHRASE[archetype] ?? archetype;
-}
-
-function formatList(items: string[]): string {
-  if (items.length === 0) return "";
-  if (items.length === 1) return items[0];
-  if (items.length === 2) return `${items[0]} and ${items[1]}`;
-  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
-}
-
 interface ArchetypeShare {
   name: string;
   percentage: number;
 }
 
+/** Sums each archetype's share across communities, just to order the filter pills by prevalence. */
 function computeArchetypeBreakdown(communities: Community[]): ArchetypeShare[] {
   const map = new Map<string, number>();
   for (const c of communities) {
@@ -109,296 +82,6 @@ function computeArchetypeBreakdown(communities: Community[]): ArchetypeShare[] {
   return [...map.entries()]
     .map(([name, percentage]) => ({ name, percentage: Math.round(percentage * 10) / 10 }))
     .sort((a, b) => b.percentage - a.percentage);
-}
-
-// ── Name chip (community/"Atlas" name, shown as quiet metadata) ──────────────
-
-function NameChip({ label, dark = false }: { label: string; dark?: boolean }) {
-  return (
-    <span
-      style={{
-        display: "inline-block",
-        fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-        fontSize: 11,
-        fontWeight: 500,
-        color: dark ? "rgba(255,255,255,0.5)" : "#6b7280",
-        background: dark ? "rgba(255,255,255,0.08)" : "#f3f4f6",
-        border: `1px solid ${dark ? "rgba(255,255,255,0.14)" : "#e5e7eb"}`,
-        borderRadius: 20,
-        padding: "3px 10px",
-        whiteSpace: "nowrap",
-        maxWidth: "100%",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
-// ── Archetype badge ───────────────────────────────────────────────────────────
-
-function ArchetypeBadge({ archetype, size = "md" }: { archetype: string | null; size?: "sm" | "md" }) {
-  if (!archetype) return null;
-  const color = archetypeColor(archetype);
-  const Icon = ARCHETYPE_ICONS[archetype];
-  const fontSize = size === "sm" ? 10 : 11;
-  const iconSize = size === "sm" ? 12 : 14;
-
-  return (
-    <span
-      className="inline-flex items-center shrink-0"
-      style={{
-        fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-        fontSize,
-        fontWeight: 600,
-        color,
-        background: `${color}1a`,
-        border: `1px solid ${color}40`,
-        borderRadius: 20,
-        padding: size === "sm" ? "3px 9px" : "4px 11px",
-        gap: 5,
-        whiteSpace: "nowrap",
-        lineHeight: 1.4,
-      }}
-    >
-      {Icon && <Icon size={iconSize} color={color} strokeWidth={2.25} aria-hidden />}
-      {genreLabel(archetype)}
-    </span>
-  );
-}
-
-// ── Archetype breakdown bar ───────────────────────────────────────────────────
-
-function ArchetypeBar({
-  breakdown,
-  selected,
-  onSelect,
-}: {
-  breakdown: ArchetypeShare[];
-  selected: string | null;
-  onSelect: (a: string | null) => void;
-}) {
-  const [hovered, setHovered] = useState<string | null>(null);
-  if (breakdown.length === 0) return null;
-
-  const hoveredShare = breakdown.find((b) => b.name === hovered);
-
-  return (
-    <div style={{ marginBottom: 32 }}>
-      <div
-        style={{
-          display: "flex",
-          height: 14,
-          borderRadius: 999,
-          overflow: "hidden",
-          border: "1px solid #e5e7eb",
-          background: "#eef1ec",
-        }}
-      >
-        {breakdown.map((b) => {
-          const color = archetypeColor(b.name);
-          const active = selected === b.name;
-          const dimmed = selected !== null && !active;
-          return (
-            <button
-              key={b.name}
-              title={`${b.name}: ${b.percentage}%`}
-              onClick={() => onSelect(active ? null : b.name)}
-              onMouseEnter={() => setHovered(b.name)}
-              onMouseLeave={() => setHovered((h) => (h === b.name ? null : h))}
-              style={{
-                width: `${b.percentage}%`,
-                minWidth: b.percentage > 0 ? 3 : 0,
-                background: color,
-                opacity: dimmed ? 0.35 : 1,
-                border: "none",
-                borderRight: "1px solid rgba(255,255,255,0.5)",
-                cursor: "pointer",
-                padding: 0,
-                transition: "opacity 0.15s",
-              }}
-              aria-label={`Filter by ${b.name}, ${b.percentage}% of your taste`}
-            />
-          );
-        })}
-      </div>
-      <div style={{ height: 20, marginTop: 6, display: "flex", alignItems: "center" }}>
-        {hoveredShare ? (
-          <span
-            style={{
-              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: archetypeColor(hoveredShare.name),
-            }}
-          >
-            {hoveredShare.name} · {hoveredShare.percentage}%
-          </span>
-        ) : (
-          <span
-            style={{
-              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-              fontSize: 11.5,
-              color: "#9ca3af",
-            }}
-          >
-            Hover a segment to see its share · click to filter
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Featured world card ───────────────────────────────────────────────────────
-
-function FeaturedCard({
-  community,
-  detail,
-  large = false,
-}: {
-  community: Community;
-  detail: CommunityDetail | null | undefined;
-  large?: boolean;
-}) {
-  const color = archetypeColor(community.archetype ?? "");
-  const topArtists = detail?.top_artists?.slice(0, 3) ?? [];
-
-  return (
-    <Link
-      href={`/community/${community.cluster_id}`}
-      className="group block h-full"
-      style={{ textDecoration: "none" }}
-    >
-      <div
-        className="relative h-full overflow-hidden transition-transform duration-200 group-hover:-translate-y-1"
-        style={{
-          borderRadius: 24,
-          background: `linear-gradient(135deg, ${color}66 0%, #0f172a 60%)`,
-          border: `1px solid ${color}40`,
-          minHeight: large ? 320 : 150,
-        }}
-      >
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse 75% 65% at 88% -10%, ${color}70 0%, transparent 60%)`,
-          }}
-        />
-        <div
-          className="relative h-full flex flex-col justify-between"
-          style={{ padding: large ? "28px 28px" : "20px 22px", gap: 16 }}
-        >
-          <div>
-            {/* Line 1: canonical name — primary label, large bold DM Sans (not Playfair) */}
-            <h3
-              style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                fontWeight: 700,
-                fontSize: large ? "1.625rem" : "1.125rem",
-                lineHeight: 1.15,
-                letterSpacing: "-0.01em",
-                color: "#ffffff",
-                margin: 0,
-              }}
-            >
-              {community.canonical_name}
-            </h3>
-
-            {/* Line 2: top artists */}
-            {topArtists.length > 0 && (
-              <div style={{ display: "flex", alignItems: "center", marginTop: 12 }}>
-                {topArtists.map((a, i) => (
-                  <div key={a.name} style={{ marginLeft: i === 0 ? 0 : -8, position: "relative", zIndex: topArtists.length - i }}>
-                    <ImageWithFallback
-                      src={a.artist_image_url}
-                      alt={a.name}
-                      size={32}
-                      shape="circle"
-                      fallbackText={a.name}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Line 3: community name — quiet metadata chip, not the headline */}
-            <div style={{ marginTop: 10 }}>
-              <NameChip label={community.name} dark />
-            </div>
-          </div>
-
-          {/* Line 4: archetype badge + track count + share % */}
-          <div className="flex items-end justify-between gap-4">
-            <ArchetypeBadge archetype={community.archetype} />
-
-            <div style={{ textAlign: "right", display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
-              <span
-                style={{
-                  fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
-                  fontSize: large ? 20 : 15,
-                  fontWeight: 700,
-                  color: "#ffffff",
-                  lineHeight: 1,
-                }}
-              >
-                {community.percentage.toFixed(1)}%
-                <span
-                  style={{
-                    fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                    fontSize: 10.5,
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.5)",
-                    marginLeft: 5,
-                  }}
-                >
-                  of your taste
-                </span>
-              </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
-                  fontSize: 11,
-                  color: "rgba(255,255,255,0.45)",
-                }}
-              >
-                {community.track_count.toLocaleString()} tracks
-              </span>
-              <span
-                className="transition-opacity group-hover:opacity-100"
-                style={{
-                  fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  color: "#ffffff",
-                  opacity: 0.85,
-                }}
-              >
-                View →
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function FeaturedSkeleton({ large = false }: { large?: boolean }) {
-  return (
-    <div
-      style={{
-        borderRadius: 24,
-        background: "#0f172a",
-        opacity: 0.4,
-        minHeight: large ? 320 : 150,
-        animation: "pulse 1.5s ease-in-out infinite",
-      }}
-    />
-  );
 }
 
 // ── Gradient orb (grid card thumbnail) ────────────────────────────────────────
@@ -437,13 +120,20 @@ function GradientOrb({ color, letter }: { color: string; letter: string }) {
   );
 }
 
-// ── Community grid card ───────────────────────────────────────────────────────
+// ── Community card ────────────────────────────────────────────────────────────
 
 function CommunityCard({ community }: { community: Community }) {
   const [hovered, setHovered] = useState(false);
+  const router = useRouter();
   const orbColor = community.archetype ? archetypeColor(community.archetype) : clusterColor(community.cluster_id);
   const firstLetter = community.name.charAt(0).toUpperCase();
   const topArtists = (community.top_artists ?? []).slice(0, 3);
+
+  const goToMap = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push("/map");
+  };
 
   return (
     <Link
@@ -468,61 +158,62 @@ function CommunityCard({ community }: { community: Community }) {
       >
         <GradientOrb color={orbColor} letter={firstLetter} />
 
-        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          {/* Top line: canonical name — primary label, bold */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <span
-              style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                fontWeight: 700, fontSize: 13.5, color: "#111827",
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                flex: 1,
-              }}
-            >
-              {community.canonical_name}
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
-                fontSize: 10, color: "#9ca3af",
-                flexShrink: 0,
-              }}
-            >
-              {community.track_count.toLocaleString()} tracks
-            </span>
-          </div>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 3 }}>
+          {/* Line 1: canonical name — bold primary */}
+          <span
+            style={{
+              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+              fontWeight: 700, fontSize: 13.5, color: "#111827",
+              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+            }}
+          >
+            {community.canonical_name}
+          </span>
 
-          {/* Second line: community name — quiet metadata chip, not the headline */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 4 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <NameChip label={community.name} />
-            </div>
-            <span
-              style={{
-                fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
-                fontWeight: 700, fontSize: 13, color: "#111827",
-                flexShrink: 0,
-              }}
-            >
-              {community.percentage.toFixed(1)}%
-            </span>
-          </div>
+          {/* Line 2: community nickname — small, muted green */}
+          <span
+            style={{
+              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+              fontSize: 11.5, fontWeight: 500, color: "#15803d",
+              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+            }}
+          >
+            {community.name}
+          </span>
 
+          {/* Line 3: top artists */}
           {topArtists.length > 0 && (
-            <p
+            <span
               style={{
                 fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
                 fontSize: 11, color: "#9ca3af",
-                margin: "5px 0 0",
                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
               }}
             >
               {topArtists.join(" · ")}
-            </p>
+            </span>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", marginTop: 8 }}>
-            <ArchetypeBadge archetype={community.archetype} size="sm" />
+          {/* Line 4: track count · share % · view on map */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+            <span style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontSize: 11, color: "#6b7280" }}>
+              {community.track_count.toLocaleString()} tracks
+            </span>
+            <span style={{ color: "#d1d5db", fontSize: 11 }}>·</span>
+            <span style={{ fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace", fontWeight: 700, fontSize: 12, color: "#111827" }}>
+              {community.percentage.toFixed(1)}%
+            </span>
+            <span style={{ color: "#d1d5db", fontSize: 11 }}>·</span>
+            <span
+              onClick={goToMap}
+              style={{
+                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                fontSize: 11.5, fontWeight: 600, color: "#111827",
+                cursor: "pointer",
+              }}
+            >
+              View on map →
+            </span>
           </div>
         </div>
       </div>
@@ -632,7 +323,7 @@ function FilterBar({ archetypes, selectedArchetype, onSelectArchetype, searchQue
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search worlds…"
+          placeholder="Search communities…"
           style={{
             width: "100%",
             paddingLeft: 30, paddingRight: searchQuery ? 30 : 12,
@@ -670,11 +361,9 @@ export default function CommunitiesPage() {
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [featuredDetails, setFeaturedDetails] = useState<Record<number, CommunityDetail | null>>({});
-  const [communitiesMeta, setCommunitiesMeta] = useState<CommunitiesMeta | null>(null);
 
   useEffect(() => {
-    document.title = "Worlds · Spotify Atlas";
+    document.title = "Communities · Spotify Atlas";
   }, []);
 
   useEffect(() => {
@@ -685,43 +374,13 @@ export default function CommunitiesPage() {
   }, []);
 
   useEffect(() => {
-    getCommunitiesMeta()
-      .then(setCommunitiesMeta)
-      .catch(() => {});
-  }, []);
+    setVisibleCount(PAGE_SIZE);
+  }, [selectedArchetype, searchQuery]);
 
   const allCommunities = useMemo<Community[]>(
     () => [...(tasteData?.communities ?? [])].sort((a, b) => b.percentage - a.percentage),
     [tasteData],
   );
-
-  const featured = useMemo(() => allCommunities.slice(0, FEATURED_COUNT), [allCommunities]);
-
-  // Fetch full detail (with artist images) for just the featured communities.
-  useEffect(() => {
-    if (featured.length === 0) return;
-    let cancelled = false;
-
-    Promise.all(
-      featured.map((c) =>
-        getCommunityDetail(c.cluster_id)
-          .then((d) => [c.cluster_id, d] as const)
-          .catch(() => [c.cluster_id, null] as const),
-      ),
-    ).then((results) => {
-      if (cancelled) return;
-      setFeaturedDetails(Object.fromEntries(results));
-    });
-
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [featured.map((c) => c.cluster_id).join(",")]);
-
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [selectedArchetype, searchQuery]);
 
   const archetypeBreakdown = useMemo(() => computeArchetypeBreakdown(allCommunities), [allCommunities]);
   const archetypeNames = useMemo(() => archetypeBreakdown.map((a) => a.name), [archetypeBreakdown]);
@@ -746,17 +405,6 @@ export default function CommunitiesPage() {
     ? `${filtered.length} of ${totalCount} communities`
     : `${totalCount} communities`;
 
-  const tasteSummaryText = useMemo(() => {
-    const topGenrePhrases = archetypeBreakdown.slice(0, 3).map((a) => genrePhrase(a.name));
-    const topCanonicalNames = allCommunities.slice(0, 3).map((c) => c.canonical_name);
-    if (topGenrePhrases.length === 0 || topCanonicalNames.length === 0) return null;
-    let text = `Your library leans heavily toward ${formatList(topGenrePhrases)}. The largest communities are ${formatList(topCanonicalNames)}.`;
-    if (communitiesMeta) {
-      text += ` You've entered ${communitiesMeta.new_communities_this_year} new communities so far in ${communitiesMeta.year}.`;
-    }
-    return text;
-  }, [archetypeBreakdown, allCommunities, communitiesMeta]);
-
   return (
     <div style={{ minHeight: "100vh", background: "#f7f8f5" }}>
       <div
@@ -774,82 +422,25 @@ export default function CommunitiesPage() {
           position: "relative", zIndex: 1,
         }}
       >
-        {/* ── Section 1: Page header ───────────────────────────────────────── */}
+        {/* ── Page header ──────────────────────────────────────────────────── */}
         <div style={{ marginBottom: 28 }}>
-          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#1db954", margin: "0 0 8px" }}>
-            Your Worlds
-          </p>
           <h1
             style={{
-              fontFamily: "var(--font-playfair), Georgia, serif",
-              fontSize: "clamp(2rem, 3.6vw, 3rem)",
-              lineHeight: 1.1, letterSpacing: "-0.02em",
+              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
+              lineHeight: 1.15, letterSpacing: "-0.02em",
               color: "#111827", margin: "0 0 8px",
             }}
           >
-            Listening Map
+            Communities
           </h1>
-          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: "0.9375rem", color: "#6b7280", margin: "0 0 10px", lineHeight: 1.5 }}>
-            {loading ? "…" : totalCount} music communities discovered from your Spotify library.
+          <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: "0.9375rem", color: "#6b7280", margin: 0, lineHeight: 1.5 }}>
+            {loading ? "…" : totalCount} music communities discovered from your library.
           </p>
-          {!loading && tasteSummaryText && (
-            <p
-              style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-                fontSize: 15, color: "#374151", lineHeight: 1.6,
-                maxWidth: 680, margin: 0,
-              }}
-            >
-              {tasteSummaryText}
-            </p>
-          )}
         </div>
 
-        {/* ── Section 2: Archetype breakdown bar ───────────────────────────── */}
-        {!loading && archetypeBreakdown.length > 0 && (
-          <ArchetypeBar
-            breakdown={archetypeBreakdown}
-            selected={selectedArchetype}
-            onSelect={setSelectedArchetype}
-          />
-        )}
-
-        {/* ── Section 3: Featured Worlds ────────────────────────────────────── */}
-        {(loading || featured.length > 0) && (
-          <div style={{ marginBottom: 40 }}>
-            <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#9ca3af", margin: "0 0 14px" }}>
-              Featured Communities
-            </p>
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="md:col-span-2"><FeaturedSkeleton large /></div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                  <FeaturedSkeleton />
-                  <FeaturedSkeleton />
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="md:col-span-2">
-                  <FeaturedCard community={featured[0]} detail={featuredDetails[featured[0].cluster_id]} large />
-                </div>
-                {featured.length > 1 && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                    {featured.slice(1, 3).map((c) => (
-                      <FeaturedCard key={c.cluster_id} community={c} detail={featuredDetails[c.cluster_id]} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Section 4: Community Explorer ────────────────────────────────── */}
-        <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#9ca3af", margin: "0 0 14px" }}>
-          Community Explorer
-        </p>
-
+        {/* ── Search + filter pills ─────────────────────────────────────────── */}
         {!loading && archetypeNames.length > 0 && (
           <div style={{ marginBottom: 12 }}>
             <FilterBar
@@ -868,6 +459,7 @@ export default function CommunitiesPage() {
           </p>
         )}
 
+        {/* ── Grid ─────────────────────────────────────────────────────────── */}
         {loading ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             {Array.from({ length: 12 }).map((_, i) => <CardSkeleton key={i} />)}
@@ -876,10 +468,10 @@ export default function CommunitiesPage() {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 0", gap: 12, textAlign: "center" }}>
             <span style={{ fontSize: 32 }} aria-hidden>🌌</span>
             <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontWeight: 600, fontSize: 17, color: "#111827", margin: 0 }}>
-              {searchQuery.trim() ? `No worlds found for "${searchQuery.trim()}"` : "No worlds in this region"}
+              {searchQuery.trim() ? `No communities found for "${searchQuery.trim()}"` : "No communities in this region"}
             </p>
             <p style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 13.5, color: "#9ca3af", maxWidth: 280, lineHeight: 1.55, margin: 0 }}>
-              {searchQuery.trim() ? "Try a different name or clear your search." : "This archetype has no communities in your taste profile."}
+              {searchQuery.trim() ? "Try a different name or clear your search." : "This archetype has no communities in your library."}
             </p>
             {(selectedArchetype !== null || searchQuery.trim()) && (
               <button
@@ -922,7 +514,7 @@ export default function CommunitiesPage() {
                     (e.currentTarget as HTMLButtonElement).style.borderColor = "#e5e7eb";
                   }}
                 >
-                  Load More Worlds
+                  Load More
                   <span aria-hidden>↓</span>
                 </button>
               </div>
@@ -930,7 +522,7 @@ export default function CommunitiesPage() {
 
             {!hasMore && filtered.length > PAGE_SIZE && (
               <p style={{ textAlign: "center", marginTop: 24, fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 12, color: "#9ca3af" }}>
-                All {filtered.length} worlds shown
+                All {filtered.length} communities shown
               </p>
             )}
           </>

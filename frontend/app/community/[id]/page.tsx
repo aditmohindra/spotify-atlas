@@ -308,7 +308,7 @@ export default function CommunityDetailPage() {
                 )}
               </div>
 
-              {/* Community name */}
+              {/* Canonical name — primary title */}
               <h1
                 className="font-hero leading-[1.05]"
                 style={{
@@ -317,16 +317,24 @@ export default function CommunityDetailPage() {
                   color: "#ffffff",
                 }}
               >
-                {detail.name}
+                {detail.canonical_name}
               </h1>
 
-              {/* Canonical name */}
-              <p
-                className="font-ui text-sm mt-2"
-                style={{ color: "rgba(255,255,255,0.45)" }}
+              {/* Community nickname — secondary chip */}
+              <span
+                className="font-ui inline-block mt-3"
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "rgba(255,255,255,0.55)",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.14)",
+                  borderRadius: 20,
+                  padding: "3px 10px",
+                }}
               >
-                {detail.canonical_name}
-              </p>
+                {detail.name}
+              </span>
 
               {/* Description */}
               {detail.description && (
