@@ -73,6 +73,117 @@ function desaturateForNebula(hex: string, satMult = 0.8): string {
   return hslToRgbString(h, s * satMult, l);
 }
 
+const MIN_VISIBLE_POINTS = 15;
+const LABEL_MAX_DRIFT = 25;
+
+type ScreenCentroid = { sx: number; sy: number; count: number };
+
+/** Pick the screen point with the most neighbors — tracks visual density better than mean. */
+function densityPeakCentroid(samples: Array<{ sx: number; sy: number }>): { sx: number; sy: number } {
+  if (samples.length === 0) return { sx: 0, sy: 0 };
+  if (samples.length === 1) return samples[0];
+  const R = 36;
+  let best = samples[0];
+  let bestCount = 0;
+  const step = samples.length > 240 ? Math.ceil(samples.length / 240) : 1;
+  for (let i = 0; i < samples.length; i += step) {
+    const p = samples[i];
+    let count = 0;
+    for (let j = 0; j < samples.length; j += step) {
+      if (Math.hypot(samples[j].sx - p.sx, samples[j].sy - p.sy) <= R) count++;
+    }
+    if (count > bestCount) {
+      bestCount = count;
+      best = p;
+    }
+  }
+  return best;
+}
+
+/** Mean screen position of map points currently inside the canvas viewport. */
+function computeViewportCentroids(
+  points: TrackPoint[],
+  canvas: HTMLCanvasElement,
+  toScreen: (x: number, y: number, canvas: HTMLCanvasElement) => { sx: number; sy: number },
+  bounds: { minSx: number; maxSx: number; minSy: number; maxSy: number }
+): {
+  byCluster: Map<number, ScreenCentroid>;
+} {
+  const samplesByCluster = new Map<number, Array<{ sx: number; sy: number }>>();
+
+  for (const pt of points) {
+    if (pt.cluster_id === -1) continue;
+    const { sx, sy } = toScreen(pt.x, pt.y, canvas);
+    if (sx < bounds.minSx || sx > bounds.maxSx || sy < bounds.minSy || sy > bounds.maxSy) continue;
+
+    const list = samplesByCluster.get(pt.cluster_id) ?? [];
+    list.push({ sx, sy });
+    samplesByCluster.set(pt.cluster_id, list);
+  }
+
+  const byClusterOut = new Map<number, ScreenCentroid>();
+  for (const [clusterId, samples] of samplesByCluster) {
+    const peak = densityPeakCentroid(samples);
+    byClusterOut.set(clusterId, { sx: peak.sx, sy: peak.sy, count: samples.length });
+  }
+
+  return { byCluster: byClusterOut };
+}
+
+/** Per-archetype anchor = centroid of the densest visible cluster in that archetype. */
+function computeArchetypeAnchors(
+  byCluster: Map<number, ScreenCentroid>,
+  clusterArchetypeMap: Map<number, string | null>
+): Map<string, ScreenCentroid> {
+  const best = new Map<string, ScreenCentroid>();
+  for (const [clusterId, centroid] of byCluster) {
+    if (centroid.count < MIN_VISIBLE_POINTS) continue;
+    const archetype = clusterArchetypeMap.get(clusterId) ?? null;
+    if (!archetype || archetype === "Unknown") continue;
+    const prev = best.get(archetype);
+    if (!prev || centroid.count > prev.count) best.set(archetype, centroid);
+  }
+  return best;
+}
+
+/** Push overlapping label anchors apart, clamped to maxDrift px from origin. */
+function resolvePointCollisions(
+  labels: Array<{ cx: number; cy: number; ox: number; oy: number }>,
+  minDist: number,
+  push: number,
+  maxDrift: number,
+  passes = 3
+) {
+  for (let pass = 0; pass < passes; pass++) {
+    for (let i = 0; i < labels.length; i++) {
+      for (let j = i + 1; j < labels.length; j++) {
+        const a = labels[i];
+        const b = labels[j];
+        const dx = b.cx - a.cx;
+        const dy = b.cy - a.cy;
+        const dist = Math.hypot(dx, dy);
+        if (dist < minDist && dist > 0) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          a.cx -= nx * push;
+          a.cy -= ny * push;
+          b.cx += nx * push;
+          b.cy += ny * push;
+        }
+      }
+    }
+    for (const lbl of labels) {
+      const ddx = lbl.cx - lbl.ox;
+      const ddy = lbl.cy - lbl.oy;
+      const d = Math.hypot(ddx, ddy);
+      if (d > maxDrift) {
+        lbl.cx = lbl.ox + (ddx / d) * maxDrift;
+        lbl.cy = lbl.oy + (ddy / d) * maxDrift;
+      }
+    }
+  }
+}
+
 interface GalaxyMapProps {
   /**
    * "true"    → canvas-only embed: hides sidebar + all controls, fixed inset overlay
@@ -447,10 +558,26 @@ export default function GalaxyMap({
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
 
-    // Archetype region labels — always visible in embed modes; otherwise only at zoom < 2.0
-    // These are the "major" landmark labels, so they render larger and more
-    // vividly than the community pills below.
-    if (isEmbed || isSidebar || s < 2.0) {
+    const viewportBounds = {
+      minSx: ATLAS_SIDEBAR + 10,
+      maxSx: canvas.width - 10,
+      minSy: PAD + 10,
+      maxSy: canvas.height - 10,
+    };
+    const { byCluster: visibleClusterCentroids } = computeViewportCentroids(
+      data.points,
+      canvas,
+      toScreen,
+      viewportBounds
+    );
+    const visibleArchetypeAnchors = computeArchetypeAnchors(
+      visibleClusterCentroids,
+      clusterArchetypeMap
+    );
+
+    // Archetype region labels — major landmarks at very low zoom only; community
+    // pills take over once zoomed in enough to distinguish individual clusters.
+    if (isEmbed || isSidebar || s < 0.82) {
       const PILL_PX = 12;
       const PILL_PY = 7;
       const PILL_R = 22;
@@ -459,50 +586,19 @@ export default function GalaxyMap({
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      // Build list of visible labels with initial screen positions
+      // Build list of visible labels anchored to viewport-visible point centroids
       type LabelEntry = { archetype: string; cx: number; cy: number; ox: number; oy: number };
       const labels: LabelEntry[] = [];
-      for (const [archetype, centroid] of archetypeCentroids) {
-        if (archetype === "Unknown") continue;
-        const { sx, sy } = toScreen(centroid.x, centroid.y, canvas);
+      for (const [archetype, centroid] of visibleArchetypeAnchors) {
+        const { sx, sy, count } = centroid;
+        if (count < MIN_VISIBLE_POINTS) continue;
         if (sx < ATLAS_SIDEBAR + 20 || sx > canvas.width - PAD - 20) continue;
         if (sy < PAD + 20 || sy > canvas.height - PAD - 20) continue;
         labels.push({ archetype, cx: sx, cy: sy, ox: sx, oy: sy });
       }
 
-      // 3-pass collision resolution: push overlapping pairs apart
-      const MIN_DIST = 100;
-      const PUSH = 25;
-      const MAX_DRIFT = 60; // never stray more than this from true centroid
-      for (let pass = 0; pass < 3; pass++) {
-        for (let i = 0; i < labels.length; i++) {
-          for (let j = i + 1; j < labels.length; j++) {
-            const a = labels[i];
-            const b = labels[j];
-            const dx = b.cx - a.cx;
-            const dy = b.cy - a.cy;
-            const dist = Math.hypot(dx, dy);
-            if (dist < MIN_DIST && dist > 0) {
-              const nx = dx / dist;
-              const ny = dy / dist;
-              a.cx -= nx * PUSH;
-              a.cy -= ny * PUSH;
-              b.cx += nx * PUSH;
-              b.cy += ny * PUSH;
-            }
-          }
-        }
-        // After each pass clamp every label to MAX_DRIFT from its origin
-        for (const lbl of labels) {
-          const ddx = lbl.cx - lbl.ox;
-          const ddy = lbl.cy - lbl.oy;
-          const d = Math.hypot(ddx, ddy);
-          if (d > MAX_DRIFT) {
-            lbl.cx = lbl.ox + (ddx / d) * MAX_DRIFT;
-            lbl.cy = lbl.oy + (ddy / d) * MAX_DRIFT;
-          }
-        }
-      }
+      // Collision resolution: nudge overlapping pairs, clamp drift from true anchor
+      resolvePointCollisions(labels, 100, 18, LABEL_MAX_DRIFT);
 
       for (const { archetype, cx: sx, cy: sy } of labels) {
 
@@ -554,10 +650,13 @@ export default function GalaxyMap({
       }
     }
 
-    // Community pills — tiered by zoom level
-    if (s >= 1.5) {
-      const PILL_FONT = "600 11px 'DM Sans', system-ui, -apple-system, sans-serif";
-      const PILL_PH = 11 + 8; // fixed pill height
+    // Community pills — show for every dense visible cluster once zoomed in slightly
+    if (s >= 0.75) {
+      const zoomedOut = s < 1.5;
+      const PILL_FONT = zoomedOut
+        ? "600 10px 'DM Sans', system-ui, -apple-system, sans-serif"
+        : "600 11px 'DM Sans', system-ui, -apple-system, sans-serif";
+      const PILL_PH = (zoomedOut ? 10 : 11) + 8; // fixed pill height
       const PILL_PAD_X = 6;
       const PILL_R = PILL_PH / 2;
 
@@ -565,45 +664,36 @@ export default function GalaxyMap({
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      // 1. Filter to candidates visible in viewport, respecting active filter
+      // 1. Dense visible clusters in viewport, respecting active filter
       let candidates = clusters.filter((cl) => {
-        if (cl.track_count < 15) return false;
+        const visible = visibleClusterCentroids.get(cl.cluster_id);
+        if (!visible || visible.count < MIN_VISIBLE_POINTS) return false;
         if (hasClusterFilter && cl.cluster_id !== selectedCluster) return false;
         if (hasArchFilter && (clusterArchetypeMap.get(cl.cluster_id) ?? null) !== selectedArchetype) return false;
-        const { sx, sy } = toScreen(cl.centroid_x, cl.centroid_y, canvas);
+        const { sx, sy } = visible;
         if (sx < ATLAS_SIDEBAR + 10 || sx > canvas.width - 10) return false;
         if (sy < PAD + 10 || sy > canvas.height - 10) return false;
         return true;
       });
 
-      // 2. Sort by track_count descending so higher-priority labels win collisions
-      candidates = candidates.slice().sort((a, b) => b.track_count - a.track_count);
+      // 2. Sort by visible point count so densest in-view clusters win collisions
+      candidates = candidates.slice().sort((a, b) => {
+        const va = visibleClusterCentroids.get(a.cluster_id)?.count ?? 0;
+        const vb = visibleClusterCentroids.get(b.cluster_id)?.count ?? 0;
+        return vb - va || b.track_count - a.track_count;
+      });
 
-      // 3. Zoom-based cap: 1.5–2.5 → top 30 only; >2.5 → all visible
-      if (s < 2.5) candidates = candidates.slice(0, 30);
-
-      // 4. Draw with collision rejection
-      const placed: Array<{ x: number; y: number; w: number; h: number }> = [];
-
+      // 3. Draw every dense visible cluster at its density-peak anchor (no nudging —
+      // collision push was stacking labels off-cluster in crowded regions).
       for (const cl of candidates) {
-        const { sx, sy } = toScreen(cl.centroid_x, cl.centroid_y, canvas);
+        const visible = visibleClusterCentroids.get(cl.cluster_id)!;
+        const sx = visible.sx;
+        const sy = visible.sy;
         const label = cl.name ?? `${cl.cluster_id}`;
         const textW = ctx.measureText(label).width;
         const pillW = textW + PILL_PAD_X * 2;
         const pillX = sx - pillW / 2;
-        const pillY = sy - baseSize - PILL_PH - 2;
-
-        // Collision check against already-placed pills (with 2px gutter)
-        const GUTTER = 2;
-        const overlaps = placed.some(
-          (r) =>
-            pillX - GUTTER < r.x + r.w &&
-            pillX + pillW + GUTTER > r.x &&
-            pillY - GUTTER < r.y + r.h &&
-            pillY + PILL_PH + GUTTER > r.y
-        );
-        if (overlaps) continue;
-        placed.push({ x: pillX, y: pillY, w: pillW, h: PILL_PH });
+        const pillY = sy - PILL_PH / 2;
 
         const color = getArchetypeColor(cl.cluster_archetype ?? null);
         const isSelectedCluster = selectedCluster === cl.cluster_id;
@@ -633,7 +723,7 @@ export default function GalaxyMap({
         ctx.globalAlpha = isSelectedCluster ? 1 : 0.85;
         ctx.fillStyle = isSelectedCluster ? color : desaturateColor(color, 0.5);
         ctx.font = PILL_FONT;
-        ctx.fillText(label, sx, pillY + PILL_PH / 2);
+        ctx.fillText(label, sx, sy);
       }
     }
 
@@ -643,7 +733,6 @@ export default function GalaxyMap({
     clusters,
     clusterArchetypeMap,
     mutedPointColorMap,
-    archetypeCentroids,
     stars,
     nebulaCanvas,
     selectedTrack,
