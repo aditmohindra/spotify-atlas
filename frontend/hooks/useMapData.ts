@@ -29,6 +29,7 @@ export interface TrackPoint {
   y: number;
   cluster_id: number;
   spotify_id: string;
+  image_url?: string | null;
 }
 
 export interface ClusterInfo {
@@ -67,6 +68,7 @@ interface GalaxyTrack {
   cluster_id: number;
   community_name: string;
   assignment_type: "hard" | "soft" | "between_worlds";
+  album_image_url: string | null;
 }
 
 interface GalaxyCommunity {
@@ -115,6 +117,7 @@ export function useMapData(layer: "vibe" | "scene" = "vibe") {
           y: t.y,
           cluster_id: t.cluster_id,
           spotify_id: t.spotify_track_id,
+          image_url: t.album_image_url ?? null,
         }));
 
         const centroidAcc = new Map<

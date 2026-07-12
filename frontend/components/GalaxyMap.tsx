@@ -11,6 +11,9 @@ import { getCommunityDetail } from "@/lib/api";
 import type { CommunityDetail } from "@/lib/types";
 import TrackSidebar from "./TrackSidebar";
 import ClusterSidebar from "./ClusterSidebar";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+
+const SEARCH_MAX_RESULTS = 10;
 
 // Mixes a hex color toward its own gray value to soften saturation — used for
 // map-label text so labels read as subtle cartography, not saturated badges.
@@ -224,6 +227,10 @@ export default function GalaxyMap({
   const [displayScale, setDisplayScale] = useState(1);
   const [showSearch, setShowSearch] = useState(false);
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const flyAnim = useRef<number | null>(null);
+  const pulseAnim = useRef<number | null>(null);
+
   // Full community detail (description, top artists) for the selected
   // region's panel — fetched lazily from the same endpoint /community/[id]
   // uses, and cached per cluster_id so re-selecting a region within the
@@ -311,6 +318,30 @@ export default function GalaxyMap({
     if (!Number.isFinite(minX) || maxX - minX < 1 || maxY - minY < 1) return null;
     return { minX, maxX, minY, maxY };
   }, [data]);
+
+  const searchMatches = useMemo(() => {
+    if (!data || !search.trim()) return [];
+    const q = search.trim().toLowerCase();
+    const buckets: TrackPoint[][] = [[], [], [], []];
+    for (const pt of data.points) {
+      const name = pt.name.toLowerCase();
+      const artist = pt.artist.toLowerCase();
+      if (!name.includes(q) && !artist.includes(q)) continue;
+      let rank = 3;
+      if (name.startsWith(q)) rank = 0;
+      else if (artist.startsWith(q)) rank = 1;
+      else if (name.includes(q)) rank = 2;
+      buckets[rank].push(pt);
+    }
+    const result: TrackPoint[] = [];
+    for (const bucket of buckets) {
+      for (const pt of bucket) {
+        result.push(pt);
+        if (result.length >= SEARCH_MAX_RESULTS) return result;
+      }
+    }
+    return result;
+  }, [data, search]);
 
   // Static background star field in data space (extends past the map bounds).
   // Pure hash of the index — no mutable seed — so it's stable across renders.
@@ -556,6 +587,24 @@ export default function GalaxyMap({
     }
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
+
+    // Pulsing ring on search-selected track so it stays visible after fly-to.
+    if (searchResult) {
+      const { sx, sy } = toScreen(searchResult.x, searchResult.y, canvas);
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 380);
+      ctx.strokeStyle = "#1db954";
+      ctx.lineWidth = 2.5;
+      ctx.globalAlpha = 0.35 + pulse * 0.45;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 12 + pulse * 10, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 0.55 + pulse * 0.35;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#1db954";
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
 
     const viewportBounds = {
       minSx: ATLAS_SIDEBAR + 10,
@@ -854,6 +903,35 @@ export default function GalaxyMap({
     return () => { cancelled = true; };
   }, [selectedTrack, activeLayer, detailCache]);
 
+  useEffect(() => {
+    if (!showSearch) return;
+    const t = setTimeout(() => searchInputRef.current?.focus(), 40);
+    return () => clearTimeout(t);
+  }, [showSearch]);
+
+  // Keep the search-highlight pulse animating until the selection changes.
+  useEffect(() => {
+    if (!searchResult) return;
+    const tick = () => {
+      drawRef.current();
+      pulseAnim.current = requestAnimationFrame(tick);
+    };
+    pulseAnim.current = requestAnimationFrame(tick);
+    return () => {
+      if (pulseAnim.current !== null) {
+        cancelAnimationFrame(pulseAnim.current);
+        pulseAnim.current = null;
+      }
+    };
+  }, [searchResult]);
+
+  useEffect(() => {
+    return () => {
+      if (flyAnim.current !== null) cancelAnimationFrame(flyAnim.current);
+      if (pulseAnim.current !== null) cancelAnimationFrame(pulseAnim.current);
+    };
+  }, []);
+
   const selectedDetail =
     selectedTrack && selectedTrack.cluster_id !== -1
       ? detailCache.get(selectedTrack.cluster_id) ?? null
@@ -960,15 +1038,54 @@ export default function GalaxyMap({
   );
 
   const flyTo = useCallback(
-    (x: number, y: number, zoom = 4) => {
+    (x: number, y: number, zoom = 4, animated = false) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const W = canvas.width - ATLAS_SIDEBAR - PAD;
       const H = canvas.height - PAD * 2;
-      transform.current.scale = zoom;
-      transform.current.offsetX = W / 2 - (x / 1000) * W * zoom;
-      transform.current.offsetY = H / 2 - (y / 1000) * H * zoom;
-      draw();
+      const targetScale = zoom;
+      const targetOffsetX = W / 2 - (x / 1000) * W * zoom;
+      const targetOffsetY = H / 2 - (y / 1000) * H * zoom;
+
+      if (flyAnim.current !== null) {
+        cancelAnimationFrame(flyAnim.current);
+        flyAnim.current = null;
+      }
+
+      if (!animated) {
+        transform.current.scale = targetScale;
+        transform.current.offsetX = targetOffsetX;
+        transform.current.offsetY = targetOffsetY;
+        setDisplayScale(targetScale);
+        draw();
+        return;
+      }
+
+      const start = {
+        scale: transform.current.scale,
+        offsetX: transform.current.offsetX,
+        offsetY: transform.current.offsetY,
+      };
+      const startTime = performance.now();
+      const duration = 720;
+      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+      const step = (now: number) => {
+        const t = Math.min(1, (now - startTime) / duration);
+        const e = easeOutCubic(t);
+        transform.current.scale = start.scale + (targetScale - start.scale) * e;
+        transform.current.offsetX = start.offsetX + (targetOffsetX - start.offsetX) * e;
+        transform.current.offsetY = start.offsetY + (targetOffsetY - start.offsetY) * e;
+        setDisplayScale(transform.current.scale);
+        draw();
+        if (t < 1) {
+          flyAnim.current = requestAnimationFrame(step);
+        } else {
+          flyAnim.current = null;
+        }
+      };
+
+      flyAnim.current = requestAnimationFrame(step);
     },
     [draw, ATLAS_SIDEBAR, PAD]
   );
@@ -998,16 +1115,21 @@ export default function GalaxyMap({
     [archetypeCentroids, flyTo]
   );
 
-  const handleSearch = useCallback(() => {
-    if (!data || !search.trim()) { setSearchResult(null); return; }
-    const q = search.toLowerCase();
-    const found = data.points.find(
-      (p) =>
-        p.name.toLowerCase().includes(q) || p.artist.toLowerCase().includes(q)
-    );
-    setSearchResult(found ?? null);
-    if (found) flyTo(found.x, found.y, 6);
-  }, [data, search, flyTo]);
+  const selectSearchResult = useCallback(
+    (track: TrackPoint) => {
+      setSearchResult(track);
+      setSelectedTrack(track);
+      setSearch("");
+      setShowSearch(false);
+      flyTo(track.x, track.y, 6, true);
+    },
+    [flyTo]
+  );
+
+  const closeSearch = useCallback(() => {
+    setShowSearch(false);
+    setSearch("");
+  }, []);
 
   const handleZoomIn = useCallback(() => {
     const canvas = canvasRef.current;
@@ -1216,44 +1338,87 @@ export default function GalaxyMap({
             </button>
           </div>
 
-          {/* Search input (expands above the icon when showSearch=true) */}
+          {/* Track search panel — opens above the bottom-right icon cluster */}
           {showSearch && (
             <div
-              className="absolute z-10 flex items-center gap-0 overflow-hidden"
+              className="absolute z-20 flex flex-col overflow-hidden"
               style={{
-                bottom: 64, right: 20,
-                background: "rgba(8, 13, 25, 0.9)",
-                backdropFilter: "blur(10px)",
+                bottom: 132,
+                right: 20,
+                width: 340,
+                background: "rgba(5, 10, 20, 0.88)",
+                backdropFilter: "blur(20px)",
                 border: "1px solid rgba(148, 163, 184, 0.18)",
-                borderRadius: 12,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
+                borderRadius: 16,
+                boxShadow: "0 12px 40px rgba(0,0,0,0.55), 0 0 32px rgba(37, 99, 235, 0.06)",
               }}
             >
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); if (e.key === "Escape") { setShowSearch(false); setSearch(""); setSearchResult(null); } }}
-                placeholder="Search tracks or artists…"
-                autoFocus
-                className="bg-transparent text-sm px-4 py-2.5 w-56 focus:outline-none"
-                style={{ color: "#e2e8f0" }}
-              />
-              <button
-                onClick={handleSearch}
-                style={{ padding: "0 12px", height: "100%", background: "none", border: "none", borderLeft: "1px solid rgba(148, 163, 184, 0.18)", cursor: "pointer", color: "#94a3b8", fontSize: 14 }}
+              <div
+                className="flex items-center gap-2 px-4 py-3"
+                style={{ borderBottom: "1px solid rgba(148, 163, 184, 0.12)" }}
               >
-                ↵
-              </button>
-            </div>
-          )}
-          {showSearch && searchResult && (
-            <div
-              className="absolute z-10 text-xs"
-              style={{ bottom: 116, right: 20, background: "rgba(8, 13, 25, 0.9)", border: "1px solid rgba(148, 163, 184, 0.18)", borderRadius: 8, padding: "6px 10px", color: "#94a3b8", boxShadow: "0 4px 16px rgba(0,0,0,0.35)" }}
-            >
-              {searchResult.name} · {searchResult.artist}
-              <button onClick={() => { setSearch(""); setSearchResult(null); }} style={{ marginLeft: 8, color: "#64748b", background: "none", border: "none", cursor: "pointer" }}>✕</button>
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ color: "#64748b", flexShrink: 0 }}>
+                  <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchMatches[0]) selectSearchResult(searchMatches[0]);
+                    if (e.key === "Escape") closeSearch();
+                  }}
+                  placeholder="Search for a track or artist..."
+                  className="bg-transparent text-sm w-full focus:outline-none"
+                  style={{ color: "#e2e8f0" }}
+                />
+              </div>
+
+              {search.trim() && (
+                <div
+                  className="overflow-y-auto"
+                  style={{ maxHeight: 320 }}
+                >
+                  {searchMatches.length === 0 ? (
+                    <div className="px-4 py-5 text-sm text-center" style={{ color: "#64748b" }}>
+                      No tracks found
+                    </div>
+                  ) : (
+                    searchMatches.map((pt) => (
+                      <button
+                        key={pt.id}
+                        type="button"
+                        onClick={() => selectSearchResult(pt)}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
+                        style={{ borderBottom: "1px solid rgba(148, 163, 184, 0.08)" }}
+                      >
+                        <ImageWithFallback
+                          src={pt.image_url}
+                          alt={pt.name}
+                          size={36}
+                          shape="square"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div
+                            className="text-sm font-medium truncate"
+                            style={{ color: "#f1f5f9" }}
+                          >
+                            {pt.name}
+                          </div>
+                          <div
+                            className="text-xs truncate mt-0.5"
+                            style={{ color: "#94a3b8" }}
+                          >
+                            {pt.artist}
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -1263,7 +1428,7 @@ export default function GalaxyMap({
             style={{ bottom: 84, right: 20 }}
           >
             <button
-              onClick={() => { setShowSearch((v) => !v); if (showSearch) { setSearch(""); setSearchResult(null); } }}
+              onClick={() => { setShowSearch((v) => !v); if (showSearch) closeSearch(); }}
               style={{
                 width: 36, height: 36, borderRadius: "50%",
                 background: showSearch ? "rgba(29, 185, 84, 0.16)" : "rgba(8, 13, 25, 0.82)",
