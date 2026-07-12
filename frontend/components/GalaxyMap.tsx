@@ -254,7 +254,7 @@ export default function GalaxyMap({
       if (c.cluster_archetype) archetypes.add(c.cluster_archetype);
     }
     for (const archetype of archetypes) {
-      m.set(archetype, desaturateForNebula(getArchetypeColor(archetype), 0.55));
+      m.set(archetype, desaturateForNebula(getArchetypeColor(archetype), 0.85));
     }
     return m;
   }, [clusters]);
@@ -319,11 +319,11 @@ export default function GalaxyMap({
       const v = Math.sin(n * 12.9898) * 43758.5453;
       return v - Math.floor(v);
     };
-    return Array.from({ length: 260 }, (_, i) => ({
+    return Array.from({ length: 500 }, (_, i) => ({
       x: -150 + hash(i * 4 + 1) * 1300,
       y: -150 + hash(i * 4 + 2) * 1300,
-      r: 0.3 + hash(i * 4 + 3) * 0.9,
-      a: 0.06 + hash(i * 4 + 4) * 0.3,
+      r: 0.35 + hash(i * 4 + 3) * 1.0,
+      a: 0.1 + hash(i * 4 + 4) * 0.38,
     }));
   }, []);
 
@@ -347,7 +347,7 @@ export default function GalaxyMap({
     const nebulaColor = (archetype: string) => {
       let c = nebulaColorCache.get(archetype);
       if (!c) {
-        c = desaturateForNebula(getArchetypeColor(archetype), 0.5);
+        c = desaturateForNebula(getArchetypeColor(archetype), 0.9);
         nebulaColorCache.set(archetype, c);
       }
       return c;
@@ -360,11 +360,11 @@ export default function GalaxyMap({
       const px = (pt.x / 1000) * SIZE;
       const py = (pt.y / 1000) * SIZE;
       octx.fillStyle = nebulaColor(archetype);
-      octx.globalAlpha = 0.0028;
+      octx.globalAlpha = 0.0034;
       octx.beginPath();
       octx.arc(px, py, 8, 0, Math.PI * 2);
       octx.fill();
-      octx.globalAlpha = 0.004;
+      octx.globalAlpha = 0.005;
       octx.beginPath();
       octx.arc(px, py, 3, 0, Math.PI * 2);
       octx.fill();
@@ -373,7 +373,7 @@ export default function GalaxyMap({
     // Tone-map: even at low per-point alpha, thousands of overlapping additive
     // blobs in the densest cluster can still clip a channel to 255 (pure
     // white), erasing hue. Cap each channel so color always survives.
-    const CHANNEL_CAP = 95;
+    const CHANNEL_CAP = 115;
     const imgData = octx.getImageData(0, 0, SIZE, SIZE);
     const px8 = imgData.data;
     for (let i = 0; i < px8.length; i += 4) {
@@ -471,14 +471,14 @@ export default function GalaxyMap({
       const { sx: x0, sy: y0 } = toScreen(0, 0, canvas);
       const { sx: x1, sy: y1 } = toScreen(1000, 1000, canvas);
       ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = 0.24;
+      ctx.globalAlpha = 0.32;
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(nebulaCanvas, x0, y0, x1 - x0, y1 - y0);
       ctx.globalCompositeOperation = "source-over";
       ctx.globalAlpha = 1;
     }
 
-    const baseSize = Math.max(1.4, Math.min(3.6, 1.8 * s)) + (isEmbed && !isSidebar ? 0.5 : 0);
+    const baseSize = Math.max(1.55, Math.min(3.9, 2.05 * s)) + (isEmbed && !isSidebar ? 0.5 : 0);
 
     const hasClusterFilter = selectedCluster !== null;
     const hasArchFilter = selectedArchetype !== null;
@@ -529,12 +529,11 @@ export default function GalaxyMap({
       } else if (!inFilter && hasFilter) {
         alpha = 0.03;
       } else {
-        // Kept dim and desaturated at default zoom so points read as
-        // texture/grain within the nebula rather than standing out as
-        // bright saturated dots — hovered/pinned points above stay at full
-        // brightness/saturation so selection feedback is unaffected.
+        // Softened saturation at default zoom so points read as texture
+        // within the nebula, but opaque enough to stay individually visible
+        // inside dense clusters. Hovered/pinned stay at full brightness.
         color = (archetype && mutedPointColorMap.get(archetype)) || color;
-        alpha = 0.36;
+        alpha = 0.64;
         glow = true;
       }
 
@@ -542,9 +541,9 @@ export default function GalaxyMap({
       // small and faint so individual points stay distinct instead of
       // merging into a bloom with their neighbors.
       if (glow) {
-        ctx.globalAlpha = alpha * 0.1;
+        ctx.globalAlpha = alpha * 0.07;
         ctx.beginPath();
-        ctx.arc(sx, sy, size * 1.15, 0, Math.PI * 2);
+        ctx.arc(sx, sy, size * 1.12, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
       }
