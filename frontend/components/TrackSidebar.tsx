@@ -53,9 +53,9 @@ export default function TrackSidebar({
     <div
       className="absolute flex flex-col z-10"
       style={{
-        top: 132, right: 24,
-        width: 392,
-        maxHeight: "calc(100vh - 172px)",
+        top: 148, right: 24,
+        width: 460,
+        maxHeight: "calc(100vh - 188px)",
         background: "rgba(5, 10, 20, 0.82)",
         backdropFilter: "blur(20px)",
         border: "1px solid rgba(148, 163, 184, 0.18)",
@@ -65,7 +65,7 @@ export default function TrackSidebar({
       }}
     >
       <div
-        className="px-6 pt-6 pb-4 flex items-start justify-between gap-3"
+        className="px-9 pt-8 pb-5 flex items-start justify-between gap-4"
         style={{ borderBottom: "1px solid rgba(148, 163, 184, 0.14)" }}
       >
         <div
@@ -84,32 +84,32 @@ export default function TrackSidebar({
         </button>
       </div>
 
-      <div className="px-6 py-6 flex flex-col gap-6 flex-1 overflow-y-auto">
-        <div>
+      <div className="px-9 py-9 flex flex-col gap-8 flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-3.5">
           <h2
-            className="text-lg font-bold leading-snug"
+            className="text-[22px] font-bold leading-[1.35]"
             style={{ color: "#f1f5f9" }}
           >
             {primaryTitle}
           </h2>
           {nickname && (
             <span
-              className="inline-block mt-2 text-xs px-2.5 py-1 rounded-full font-semibold"
+              className="inline-block w-fit text-sm px-3 py-1.5 rounded-full font-semibold"
               style={{ background: `${color}22`, color }}
             >
               {nickname}
             </span>
           )}
           {trackCount != null && (
-            <p className="text-xs mt-2.5" style={{ color: "#94a3b8" }}>
+            <p className="text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
               {trackCount.toLocaleString()} tracks
               {pct !== null && <> · {pct}% of your library</>}
             </p>
           )}
           {archetype && (
-            <div className="mt-2">
+            <div>
               <span
-                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                className="text-sm px-3 py-1 rounded-full font-medium"
                 style={{ background: `${color}18`, color }}
               >
                 {archetype}
@@ -121,36 +121,36 @@ export default function TrackSidebar({
         {(detailLoading || visibleArtists.length > 0) && (
           <div>
             <div
-              className="text-xs uppercase tracking-widest mb-3 font-semibold"
+              className="text-xs uppercase tracking-widest mb-4 font-semibold"
               style={{ color: "#64748b" }}
             >
               Top Artists
             </div>
             {detailLoading ? (
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
                     style={{
-                      width: 40, height: 40, borderRadius: "50%",
+                      width: 68, height: 68, borderRadius: "50%",
                       background: "rgba(148, 163, 184, 0.12)",
                     }}
                   />
                 ))}
               </div>
             ) : (
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 {visibleArtists.map((artist) => (
-                  <div key={artist.name} className="flex flex-col items-center gap-1.5" style={{ width: 52 }}>
+                  <div key={artist.name} className="flex flex-col items-center gap-2" style={{ width: 72 }}>
                     <ImageWithFallback
                       src={artist.artist_image_url}
                       alt={artist.name}
-                      size={40}
+                      size={68}
                       shape="circle"
                       fallbackText={artist.name}
                     />
                     <span
-                      className="text-[10px] text-center leading-tight truncate w-full"
+                      className="text-[11px] text-center leading-snug truncate w-full"
                       style={{ color: "#94a3b8" }}
                     >
                       {artist.name}
@@ -158,16 +158,16 @@ export default function TrackSidebar({
                   </div>
                 ))}
                 {overflowCount > 0 && (
-                  <div className="flex flex-col items-center gap-1.5" style={{ width: 52 }}>
+                  <div className="flex flex-col items-center gap-2" style={{ width: 72 }}>
                     <div
                       className="flex items-center justify-center"
                       style={{
-                        width: 40, height: 40, borderRadius: "50%",
+                        width: 68, height: 68, borderRadius: "50%",
                         background: "rgba(148, 163, 184, 0.12)",
                         color: "#94a3b8",
                       }}
                     >
-                      <span className="text-xs font-semibold">+{overflowCount}</span>
+                      <span className="text-sm font-semibold">+{overflowCount}</span>
                     </div>
                   </div>
                 )}
@@ -179,19 +179,19 @@ export default function TrackSidebar({
         {(detailLoading || detail?.description) && (
           <div>
             <div
-              className="text-xs uppercase tracking-widest mb-2 font-semibold"
+              className="text-xs uppercase tracking-widest mb-3 font-semibold"
               style={{ color: "#64748b" }}
             >
               About this region
             </div>
             {detailLoading ? (
-              <div className="flex flex-col gap-2">
-                <div style={{ height: 10, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "100%" }} />
-                <div style={{ height: 10, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "85%" }} />
-                <div style={{ height: 10, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "60%" }} />
+              <div className="flex flex-col gap-2.5">
+                <div style={{ height: 12, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "100%" }} />
+                <div style={{ height: 12, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "85%" }} />
+                <div style={{ height: 12, borderRadius: 4, background: "rgba(148, 163, 184, 0.1)", width: "60%" }} />
               </div>
             ) : (
-              <p className="text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
+              <p className="text-sm leading-[1.65]" style={{ color: "#94a3b8" }}>
                 {detail!.description}
               </p>
             )}
@@ -200,7 +200,7 @@ export default function TrackSidebar({
 
         <Link
           href={communityHref}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold transition-all"
+          className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-semibold transition-all"
           style={{ background: `${color}22`, color, border: `1px solid ${color}40` }}
         >
           Explore this community
