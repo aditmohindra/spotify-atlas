@@ -199,3 +199,19 @@
   0%, 100% { transform: scale(1); filter: brightness(1); }
   50% { transform: scale(1.07); filter: brightness(1.12); }
 }
+
+@keyframes atlas-star-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(var(--drift-x, 12px), var(--drift-y, -10px)); }
+}
+
+@keyframes atlas-glow-pulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}

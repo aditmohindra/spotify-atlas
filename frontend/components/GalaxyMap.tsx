@@ -12,8 +12,17 @@ import type { CommunityDetail } from "@/lib/types";
 import TrackSidebar from "./TrackSidebar";
 import ClusterSidebar from "./ClusterSidebar";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import {
+  ATLAS_ENTER_EVENT,
+  ATLAS_ENTERED_KEY,
+} from "@/lib/atlasEntry";
 
 const SEARCH_MAX_RESULTS = 10;
+const ENTRANCE_DURATION_MS = 1500;
+const LABEL_FADE_MS = 300;
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+type CameraTransform = { scale: number; offsetX: number; offsetY: number };
 
 // Mixes a hex color toward its own gray value to soften saturation — used for
 // map-label text so labels read as subtle cartography, not saturated badges.
@@ -230,6 +239,13 @@ export default function GalaxyMap({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const flyAnim = useRef<number | null>(null);
   const pulseAnim = useRef<number | null>(null);
+  const entranceAnim = useRef<number | null>(null);
+  const labelFadeAnim = useRef<number | null>(null);
+  const entrancePlayed = useRef(false);
+  const entrancePending = useRef(false);
+  /** Held false while the Enter Atlas splash is up; unlocks on click or if already entered this session. */
+  const entranceUnlocked = useRef(false);
+  const labelOpacity = useRef(1);
 
   // Full community detail (description, top artists) for the selected
   // region's panel — fetched lazily from the same endpoint /community/[id]
@@ -623,9 +639,11 @@ export default function GalaxyMap({
       clusterArchetypeMap
     );
 
+    const labelAlpha = labelOpacity.current;
+
     // Archetype region labels — major landmarks at very low zoom only; community
     // pills take over once zoomed in enough to distinguish individual clusters.
-    if (isEmbed || isSidebar || s < 0.82) {
+    if (labelAlpha > 0.001 && (isEmbed || isSidebar || s < 0.82)) {
       const PILL_PX = 12;
       const PILL_PY = 7;
       const PILL_R = 22;
@@ -676,13 +694,13 @@ export default function GalaxyMap({
 
         // 1. Fill — dark, muted map-label background
         rr(pillX, pillY, pillW, pillH, PILL_R);
-        ctx.globalAlpha = isDimmed ? 0.55 : 1;
+        ctx.globalAlpha = (isDimmed ? 0.55 : 1) * labelAlpha;
         ctx.fillStyle = isSelected ? `${color}22` : "rgba(8, 13, 25, 0.85)";
         ctx.fill();
 
         // 2. Stroke — hint of archetype color, brighter/thicker when selected
         rr(pillX, pillY, pillW, pillH, PILL_R);
-        ctx.globalAlpha = isDimmed ? 0.18 : isSelected ? 0.9 : 0.4;
+        ctx.globalAlpha = (isDimmed ? 0.18 : isSelected ? 0.9 : 0.4) * labelAlpha;
         ctx.strokeStyle = color;
         ctx.lineWidth = isSelected ? 1.75 : 1.25;
         ctx.stroke();
@@ -690,7 +708,7 @@ export default function GalaxyMap({
         // 3. Text — vivid archetype color so major labels read as prominent
         // landmarks; dims when a different archetype is selected.
         ctx.font = FONT;
-        ctx.globalAlpha = isDimmed ? 0.35 : 1;
+        ctx.globalAlpha = (isDimmed ? 0.35 : 1) * labelAlpha;
         ctx.fillStyle = isSelected ? color : desaturateColor(color, 0.2);
         ctx.fillText(archetype, sx, sy);
 
@@ -699,7 +717,7 @@ export default function GalaxyMap({
     }
 
     // Community pills — show for every dense visible cluster once zoomed in slightly
-    if (s >= 0.75) {
+    if (labelAlpha > 0.001 && s >= 0.75) {
       const zoomedOut = s < 1.5;
       const PILL_FONT = zoomedOut
         ? "600 10px 'DM Sans', system-ui, -apple-system, sans-serif"
@@ -747,7 +765,7 @@ export default function GalaxyMap({
         const isSelectedCluster = selectedCluster === cl.cluster_id;
 
         // Pill background — dark, muted map-label background
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = 1 * labelAlpha;
         ctx.fillStyle = isSelectedCluster ? `${color}22` : "rgba(8, 13, 25, 0.85)";
         ctx.beginPath();
         ctx.moveTo(pillX + PILL_R, pillY);
@@ -762,13 +780,13 @@ export default function GalaxyMap({
         ctx.closePath();
         ctx.fill();
         // Stroke — thin, low-opacity hint of archetype color; brighter if selected
-        ctx.globalAlpha = isSelectedCluster ? 0.85 : 0.3;
+        ctx.globalAlpha = (isSelectedCluster ? 0.85 : 0.3) * labelAlpha;
         ctx.strokeStyle = color;
         ctx.lineWidth = isSelectedCluster ? 1.5 : 1;
         ctx.stroke();
 
         // Pill text — subtle by default; vivid when this community is selected
-        ctx.globalAlpha = isSelectedCluster ? 1 : 0.85;
+        ctx.globalAlpha = (isSelectedCluster ? 1 : 0.85) * labelAlpha;
         ctx.fillStyle = isSelectedCluster ? color : desaturateColor(color, 0.5);
         ctx.font = PILL_FONT;
         ctx.fillText(label, sx, sy);
@@ -796,15 +814,10 @@ export default function GalaxyMap({
   ]);
 
   // Fit the camera to the data's bounding box so the map fills the viewport
-  // dramatically instead of floating in empty space. Runs once per data load.
-  const fitToData = useCallback(() => {
+  // dramatically instead of floating in empty space.
+  const computeFitTransform = useCallback((): CameraTransform | null => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    if (!dataBounds) {
-      transform.current = { scale: 1, offsetX: 0, offsetY: 0 };
-      setDisplayScale(1);
-      return;
-    }
+    if (!canvas || !dataBounds) return null;
     const W = canvas.width - ATLAS_SIDEBAR - PAD;
     const H = canvas.height - PAD * 2;
     const bw = Math.max(1, dataBounds.maxX - dataBounds.minX);
@@ -815,13 +828,141 @@ export default function GalaxyMap({
     const scale = Math.max(0.3, Math.min(25, Math.min(scaleX, scaleY)));
     const cx = (dataBounds.minX + dataBounds.maxX) / 2;
     const cy = (dataBounds.minY + dataBounds.maxY) / 2;
-    transform.current = {
+    return {
       scale,
       offsetX: W / 2 - (cx / 1000) * W * scale,
       offsetY: H / 2 - (cy / 1000) * H * scale,
     };
-    setDisplayScale(scale);
   }, [dataBounds, ATLAS_SIDEBAR, PAD]);
+
+  const fitToData = useCallback(() => {
+    const target = computeFitTransform();
+    if (!target) {
+      transform.current = { scale: 1, offsetX: 0, offsetY: 0 };
+      setDisplayScale(1);
+      return;
+    }
+    transform.current = target;
+    setDisplayScale(target.scale);
+    labelOpacity.current = 1;
+  }, [computeFitTransform]);
+
+  const cancelEntranceAnimations = useCallback(() => {
+    if (entranceAnim.current !== null) {
+      cancelAnimationFrame(entranceAnim.current);
+      entranceAnim.current = null;
+    }
+    if (labelFadeAnim.current !== null) {
+      cancelAnimationFrame(labelFadeAnim.current);
+      labelFadeAnim.current = null;
+    }
+    labelOpacity.current = 1;
+  }, []);
+
+  const playEntranceAnimation = useCallback(() => {
+    const target = computeFitTransform();
+    if (!target || !dataBounds) {
+      fitToData();
+      drawRef.current();
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      fitToData();
+      return;
+    }
+
+    if (entranceAnim.current !== null) cancelAnimationFrame(entranceAnim.current);
+    if (labelFadeAnim.current !== null) cancelAnimationFrame(labelFadeAnim.current);
+
+    const W = canvas.width - ATLAS_SIDEBAR - PAD;
+    const H = canvas.height - PAD * 2;
+    const cx = (dataBounds.minX + dataBounds.maxX) / 2;
+    const cy = (dataBounds.minY + dataBounds.maxY) / 2;
+    const startScale = Math.max(0.3, target.scale * 0.55);
+
+    const start: CameraTransform = {
+      scale: startScale,
+      offsetX: W / 2 - (cx / 1000) * W * startScale,
+      offsetY: H / 2 - (cy / 1000) * H * startScale,
+    };
+
+    transform.current = { ...start };
+    setDisplayScale(start.scale);
+    labelOpacity.current = 0;
+    drawRef.current();
+
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - startTime) / ENTRANCE_DURATION_MS);
+      const e = easeOutCubic(t);
+      transform.current = {
+        scale: start.scale + (target.scale - start.scale) * e,
+        offsetX: start.offsetX + (target.offsetX - start.offsetX) * e,
+        offsetY: start.offsetY + (target.offsetY - start.offsetY) * e,
+      };
+      setDisplayScale(transform.current.scale);
+      drawRef.current();
+
+      if (t < 1) {
+        entranceAnim.current = requestAnimationFrame(step);
+      } else {
+        entranceAnim.current = null;
+        transform.current = { ...target };
+        setDisplayScale(target.scale);
+
+        const fadeStart = performance.now();
+        const fadeStep = (fadeNow: number) => {
+          const ft = Math.min(1, (fadeNow - fadeStart) / LABEL_FADE_MS);
+          labelOpacity.current = ft;
+          drawRef.current();
+          if (ft < 1) {
+            labelFadeAnim.current = requestAnimationFrame(fadeStep);
+          } else {
+            labelOpacity.current = 1;
+            labelFadeAnim.current = null;
+          }
+        };
+        labelFadeAnim.current = requestAnimationFrame(fadeStep);
+      }
+    };
+
+    entranceAnim.current = requestAnimationFrame(step);
+  }, [computeFitTransform, fitToData, dataBounds, ATLAS_SIDEBAR, PAD]);
+
+  const tryStartEntrance = useCallback(() => {
+    if (!entranceUnlocked.current) return;
+    if (!entrancePending.current || entrancePlayed.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas || canvas.width === 0 || canvas.height === 0) return;
+    entrancePending.current = false;
+    entrancePlayed.current = true;
+    playEntranceAnimation();
+  }, [playEntranceAnimation]);
+
+  // Gate the cinematic zoom behind the splash "Enter Atlas" click so audio
+  // unlock and camera entrance fire together. Embeds and same-session revisits
+  // skip the wait.
+  useEffect(() => {
+    if (isEmbed || isSidebar) {
+      entranceUnlocked.current = true;
+      tryStartEntrance();
+      return;
+    }
+    if (sessionStorage.getItem(ATLAS_ENTERED_KEY) === "1") {
+      entranceUnlocked.current = true;
+      tryStartEntrance();
+      return;
+    }
+    const onEnter = () => {
+      entranceUnlocked.current = true;
+      tryStartEntrance();
+    };
+    window.addEventListener(ATLAS_ENTER_EVENT, onEnter);
+    return () => window.removeEventListener(ATLAS_ENTER_EVENT, onEnter);
+  }, [isEmbed, isSidebar, tryStartEntrance]);
 
   // `draw` gets a new identity on every hover/selection change (it's a
   // dependency of itself). Effects that should only run once — resize setup,
@@ -840,9 +981,13 @@ export default function GalaxyMap({
     if (node) {
       node.width = node.offsetWidth;
       node.height = node.offsetHeight;
-      drawRef.current();
+      if (entrancePending.current) {
+        tryStartEntrance();
+      } else {
+        drawRef.current();
+      }
     }
-  }, []);
+  }, [tryStartEntrance]);
 
   useEffect(() => {
     const resize = () => {
@@ -858,15 +1003,18 @@ export default function GalaxyMap({
 
   useEffect(() => { draw(); }, [draw]);
 
-  // Fit the camera once data (and its bounding box) becomes available —
-  // covers both the initial load and every subsequent layer switch. Must
-  // depend ONLY on dataBounds: it should never re-run just because the user
-  // hovered a point (which changes fitToData/draw identity but not the data).
+  // Fit the camera once data (and its bounding box) becomes available.
+  // First load plays a cinematic zoom-in; layer switches snap instantly.
   useEffect(() => {
     if (!dataBounds) return;
-    fitToData();
-    cancelAnimationFrame(raf.current);
-    raf.current = requestAnimationFrame(drawRef.current);
+    if (entrancePlayed.current) {
+      fitToData();
+      cancelAnimationFrame(raf.current);
+      raf.current = requestAnimationFrame(drawRef.current);
+    } else {
+      entrancePending.current = true;
+      tryStartEntrance();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally excludes fitToData/draw, see comment above
   }, [dataBounds]);
 
@@ -929,6 +1077,8 @@ export default function GalaxyMap({
     return () => {
       if (flyAnim.current !== null) cancelAnimationFrame(flyAnim.current);
       if (pulseAnim.current !== null) cancelAnimationFrame(pulseAnim.current);
+      if (entranceAnim.current !== null) cancelAnimationFrame(entranceAnim.current);
+      if (labelFadeAnim.current !== null) cancelAnimationFrame(labelFadeAnim.current);
     };
   }, []);
 
@@ -994,10 +1144,11 @@ export default function GalaxyMap({
   );
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    cancelEntranceAnimations();
     isDragging.current = true;
     dragMoved.current = false;
     lastMouse.current = { x: e.clientX, y: e.clientY };
-  }, []);
+  }, [cancelEntranceAnimations]);
 
   const onMouseUp = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -1018,6 +1169,7 @@ export default function GalaxyMap({
   const onWheel = useCallback(
     (e: React.WheelEvent<HTMLCanvasElement>) => {
       e.preventDefault();
+      cancelEntranceAnimations();
       const canvas = canvasRef.current;
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
@@ -1034,7 +1186,7 @@ export default function GalaxyMap({
       cancelAnimationFrame(raf.current);
       raf.current = requestAnimationFrame(draw);
     },
-    [draw]
+    [draw, cancelEntranceAnimations]
   );
 
   const flyTo = useCallback(
@@ -1164,10 +1316,11 @@ export default function GalaxyMap({
   }, [draw]);
 
   const handleResetView = useCallback(() => {
+    cancelEntranceAnimations();
     fitToData();
     cancelAnimationFrame(raf.current);
     raf.current = requestAnimationFrame(draw);
-  }, [fitToData, draw]);
+  }, [fitToData, draw, cancelEntranceAnimations]);
 
   // Tooltip community info
   const hoveredCluster = hoveredTrack
@@ -1469,11 +1622,11 @@ export default function GalaxyMap({
             </button>
           </div>
 
-          {/* Legend — bottom-right, above the icon stack */}
+          {/* Legend — bottom-right, left of the fixed mute toggle */}
           <div
             className="absolute z-10 flex items-start gap-2"
             style={{
-              bottom: 20, right: 20,
+              bottom: 20, right: 68,
               background: "rgba(8, 13, 25, 0.82)",
               backdropFilter: "blur(10px)",
               border: "1px solid rgba(148, 163, 184, 0.18)",

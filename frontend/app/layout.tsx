@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono, Playfair_Display } from "next/font/google";
 import AppShell from "@/components/AppShell";
+import EnterSplash from "@/components/EnterSplash";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -37,7 +38,9 @@ export default function RootLayout({
       className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="h-full bg-background text-ink">
-        <AppShell>{children}</AppShell>
+        <EnterSplash>
+          <AppShell>{children}</AppShell>
+        </EnterSplash>
       </body>
     </html>
   );
