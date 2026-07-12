@@ -170,14 +170,15 @@ export function getCommunityDetail(
 
 /**
  * Fetch communities most similar to a given community.
- * GET /clusters/{communityId}/related?layer={layer}
+ * GET /clusters/{communityId}/related?layer={layer}&top_n={topN}
  */
 export function getRelatedCommunities(
   communityId: number,
   layer: AtlasLayer = "vibe",
   init?: RequestInit,
+  topN = 5,
 ): Promise<RelatedResponse> {
-  const params = new URLSearchParams({ layer });
+  const params = new URLSearchParams({ layer, top_n: String(topN) });
   return getJson<RelatedResponse>(
     `/clusters/${communityId}/related?${params.toString()}`,
     init,

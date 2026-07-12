@@ -172,6 +172,8 @@ class ClusterLabel(Base):
     description = Column(Text, nullable=True)
     keywords = Column(ARRAY(String), nullable=True)
     cluster_archetype = Column(String, nullable=True)
+    # Average cosine similarity of hard-assigned vibe tracks to the community centroid (0–1).
+    cohesion_score = Column(Float, nullable=True)
     label_version = Column(Integer, default=1, nullable=True)
     source_run_id = Column(Integer, nullable=True, default=18)
     cluster_layer = Column(String, nullable=True, default='scene')

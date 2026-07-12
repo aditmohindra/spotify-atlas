@@ -5,6 +5,17 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/lib/api";
 
+// ── Theme (matches /map NavBar + /communities dark shell) ─────────────────────
+
+const SIDEBAR_BG = "#0a0e1a";
+const BORDER = "rgba(148, 163, 184, 0.12)";
+const TEXT = "#f1f5f9";
+const MUTED = "#94a3b8";
+const ACTIVE_BG = "rgba(29, 185, 84, 0.16)";
+const ACTIVE_TEXT = "#4ade80";
+const HOVER_BG = "rgba(255, 255, 255, 0.05)";
+const FONT = "var(--font-dm-sans), system-ui, sans-serif";
+
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 function GalaxyIcon() {
@@ -77,8 +88,8 @@ export default function Sidebar({ compact = false }: SidebarProps) {
         top: 0,
         width,
         height: "100%",
-        background: "#ffffff",
-        borderRight: "1px solid #dde6dd",
+        background: SIDEBAR_BG,
+        borderRight: `1px solid ${BORDER}`,
         zIndex: 40,
         display: "flex",
         flexDirection: "column",
@@ -93,7 +104,7 @@ export default function Sidebar({ compact = false }: SidebarProps) {
           display: "flex",
           alignItems: "center",
           padding: compact ? "0 20px" : "0 20px",
-          borderBottom: "1px solid #dde6dd",
+          borderBottom: `1px solid ${BORDER}`,
           flexShrink: 0,
         }}
       >
@@ -128,10 +139,10 @@ export default function Sidebar({ compact = false }: SidebarProps) {
           {!compact && (
             <span
               style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                fontFamily: FONT,
                 fontWeight: 600,
                 fontSize: "14.5px",
-                color: "#101828",
+                color: TEXT,
                 letterSpacing: "-0.01em",
                 whiteSpace: "nowrap",
               }}
@@ -167,22 +178,24 @@ export default function Sidebar({ compact = false }: SidebarProps) {
                 padding: compact ? "10px 0" : "9px 10px",
                 borderRadius: 12,
                 textDecoration: "none",
-                background: active ? "#f0fdf4" : "transparent",
-                color: active ? "#166534" : "#374151",
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                background: active ? ACTIVE_BG : "transparent",
+                color: active ? ACTIVE_TEXT : MUTED,
+                fontFamily: FONT,
                 fontSize: 13.5,
-                fontWeight: active ? 500 : 400,
+                fontWeight: active ? 600 : 400,
                 transition: "background 0.12s, color 0.12s",
                 whiteSpace: "nowrap",
               }}
               onMouseEnter={(e) => {
                 if (!active) {
-                  (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
+                  (e.currentTarget as HTMLElement).style.background = HOVER_BG;
+                  (e.currentTarget as HTMLElement).style.color = TEXT;
                 }
               }}
               onMouseLeave={(e) => {
                 if (!active) {
                   (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.color = MUTED;
                 }
               }}
             >
@@ -194,7 +207,7 @@ export default function Sidebar({ compact = false }: SidebarProps) {
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  color: active ? "#166534" : "#6b7280",
+                  color: "inherit",
                 }}
               >
                 {icon}
@@ -212,7 +225,7 @@ export default function Sidebar({ compact = false }: SidebarProps) {
       <div
         style={{
           padding: compact ? "12px 0" : "12px 16px",
-          borderTop: "1px solid #dde6dd",
+          borderTop: `1px solid ${BORDER}`,
           flexShrink: 0,
           display: "flex",
           alignItems: "center",
@@ -226,8 +239,8 @@ export default function Sidebar({ compact = false }: SidebarProps) {
             width: 32,
             height: 32,
             borderRadius: "50%",
-            background: "#e8f8ef",
-            border: "1px solid #dde6dd",
+            background: ACTIVE_BG,
+            border: `1px solid rgba(29, 185, 84, 0.28)`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -236,10 +249,10 @@ export default function Sidebar({ compact = false }: SidebarProps) {
         >
           <span
             style={{
-              fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+              fontFamily: FONT,
               fontSize: 12,
               fontWeight: 600,
-              color: "#166534",
+              color: ACTIVE_TEXT,
               userSelect: "none",
             }}
           >
@@ -251,11 +264,12 @@ export default function Sidebar({ compact = false }: SidebarProps) {
           <div>
             <p
               style={{
-                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                fontFamily: FONT,
                 fontSize: 13,
                 fontWeight: 500,
-                color: "#101828",
+                color: TEXT,
                 lineHeight: 1.2,
+                margin: 0,
               }}
             >
               @adit
@@ -264,9 +278,10 @@ export default function Sidebar({ compact = false }: SidebarProps) {
               style={{
                 fontFamily: "var(--font-jetbrains-mono), ui-monospace, monospace",
                 fontSize: 11,
-                color: "#6b7280",
+                color: MUTED,
                 lineHeight: 1.2,
                 marginTop: 1,
+                marginBottom: 0,
               }}
             >
               {trackTotal !== null

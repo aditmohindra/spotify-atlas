@@ -187,6 +187,13 @@ export interface CommunityDetail {
   /** Parent archetype name, or null if unassigned. */
   archetype: string | null;
   track_count: number;
+  /**
+   * Cohesion on a 0–10 display scale (cosine similarity stretched from the
+   * typical 0.88–1.0 embedding band for readability). Null if not computed.
+   */
+  cohesion_score: number | null;
+  /** Raw average track→centroid cosine similarity (0–1). Null if not computed. */
+  cohesion_raw?: number | null;
   /** Up to 5 top artists by listening weight for this user. */
   top_artists: CommunityTopArtist[];
   /** Representative track samples with Spotify IDs. */

@@ -112,12 +112,13 @@ async def get_archetypes(
 async def get_related_clusters(
     cluster_id: int,
     layer: str = Query(default="vibe"),
+    top_n: int = Query(default=5, ge=1, le=50),
     db: Session = Depends(get_db),
 ):
     from app.services.cluster_relations import get_related_clusters as _get_related
 
     _validate_layer(layer)
-    related = _get_related(cluster_id, db, layer=layer)
+    related = _get_related(cluster_id, db, layer=layer, top_n=top_n)
     return {"cluster_id": cluster_id, "layer": layer, "related": related}
 
 
@@ -132,7 +133,8 @@ async def get_cluster_detail(
 
     label = db.execute(text(
         """
-        SELECT cluster_id, name, canonical_name, description, keywords, cluster_archetype
+        SELECT cluster_id, name, canonical_name, description, keywords,
+               cluster_archetype, cohesion_score
         FROM cluster_labels
         WHERE cluster_id = :id AND cluster_layer = :layer
         """
@@ -233,6 +235,19 @@ async def get_cluster_detail(
     top_artist_rows = all_artist_rows[:5]
     sample_track_rows = random.sample(all_track_rows, min(8, len(all_track_rows)))
 
+    cohesion_raw = label[6]
+    # Display: stretch the typical high cosine band (0.88–1.0) onto 0–10 so
+    # within-library differences are readable. Raw cosine remains in cohesion_raw.
+    # (Vibe embeddings routinely sit ~0.90–0.96 to their centroid.)
+    COHESION_DISPLAY_FLOOR = 0.88
+    if cohesion_raw is not None:
+        cohesion_display = round(
+            max(0.0, min(10.0, (cohesion_raw - COHESION_DISPLAY_FLOOR) / (1.0 - COHESION_DISPLAY_FLOOR) * 10)),
+            2,
+        )
+    else:
+        cohesion_display = None
+
     return {
         "cluster_id": label[0],
         "name": label[1],
@@ -242,6 +257,8 @@ async def get_cluster_detail(
         "archetype": label[5],
         "layer": layer,
         "track_count": track_count,
+        "cohesion_score": cohesion_display,
+        "cohesion_raw": round(cohesion_raw, 4) if cohesion_raw is not None else None,
         "top_artists": [{"name": r[0], "artist_image_url": r[1]} for r in top_artist_rows],
         "sample_tracks": [
             {"name": r[0], "artist": r[1], "spotify_id": r[2], "album_image_url": r[3]}

@@ -976,7 +976,10 @@ export default function CommunitiesPage() {
   const allVisible = sortedFiltered.slice(0, visibleCount);
   const hasMore = visibleCount < sortedFiltered.length;
 
-  const totalCommunities = allCommunities.length;
+  // Grid still uses taste-profile communities (capped at 50 by listening weight).
+  // Header stats use the full vibe galaxy totals so they match the atlas.
+  const gridCommunityCount = allCommunities.length;
+  const headerCommunityCount = stats?.totalCommunities ?? gridCommunityCount;
   const totalTracks = stats?.totalTracks ?? mapData?.total ?? 0;
   const betweenCount = betweenWorldsTracks.length;
   const assignedPct =
@@ -1057,7 +1060,11 @@ export default function CommunitiesPage() {
             <StatCard
               icon={Grid2x2}
               iconColor={GREEN}
-              value={loading ? "—" : String(totalCommunities)}
+              value={
+                mapLoading && !stats
+                  ? "—"
+                  : String(headerCommunityCount)
+              }
               label="Communities"
             />
             <StatCard
@@ -1171,10 +1178,10 @@ export default function CommunitiesPage() {
                 }}
               >
                 {isFiltering
-                  ? `${sortedFiltered.length} of ${totalCommunities} communities`
+                  ? `${sortedFiltered.length} of ${gridCommunityCount} communities`
                   : tab === "overview"
-                    ? `${totalCommunities} communities`
-                    : `All ${totalCommunities} communities`}
+                    ? `${gridCommunityCount} communities`
+                    : `All ${gridCommunityCount} communities`}
               </p>
             )}
 
