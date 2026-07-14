@@ -30,3 +30,6 @@ Thumbs.db
 *.pkl
 *.npy
 *.model
+# Database dumps - never commit these
+*.custom
+*.sql
