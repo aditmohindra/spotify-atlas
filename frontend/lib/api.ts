@@ -23,11 +23,12 @@ import type {
   TasteProfile,
   TasteSummary,
   TasteTimeRange,
+  WrappedBounds,
   WrappedMeta,
+  WrappedRangeParams,
   WrappedTopAlbum,
   WrappedTopArtist,
   WrappedTopTrack,
-  WrappedWindow,
 } from "./types";
 
 /** Base URL for the backend. Override via NEXT_PUBLIC_API_BASE_URL if needed. */
@@ -274,63 +275,84 @@ export function getEraDepth(
 // counts in Task 1, windows anchored to the latest real event timestamp)
 // ---------------------------------------------------------------------------
 
+/** Build the shared `window` or `start_date`/`end_date` query params for a
+ * Wrapped range. */
+function rangeSearchParams(range: WrappedRangeParams): URLSearchParams {
+  return range.window
+    ? new URLSearchParams({ window: range.window })
+    : new URLSearchParams({
+        start_date: range.startDate,
+        end_date: range.endDate,
+      });
+}
+
 /**
- * Fetch ranked top tracks by real play count within one window.
+ * Fetch ranked top tracks by real play count within one window or custom
+ * date range.
  * GET /wrapped/top-tracks?window={window}&limit={limit}
+ * GET /wrapped/top-tracks?start_date={startDate}&end_date={endDate}&limit={limit}
  */
 export function getWrappedTopTracks(
-  window: WrappedWindow,
+  range: WrappedRangeParams,
   limit = 20,
   init?: RequestInit,
 ): Promise<WrappedTopTrack[]> {
-  const params = new URLSearchParams({
-    window,
-    limit: String(limit),
-  });
+  const params = rangeSearchParams(range);
+  params.set("limit", String(limit));
   return getJson<WrappedTopTrack[]>(`/wrapped/top-tracks?${params.toString()}`, init);
 }
 
 /**
- * Fetch ranked top artists by real play count within one window.
+ * Fetch ranked top artists by real play count within one window or custom
+ * date range.
  * GET /wrapped/top-artists?window={window}&limit={limit}
+ * GET /wrapped/top-artists?start_date={startDate}&end_date={endDate}&limit={limit}
  */
 export function getWrappedTopArtists(
-  window: WrappedWindow,
+  range: WrappedRangeParams,
   limit = 20,
   init?: RequestInit,
 ): Promise<WrappedTopArtist[]> {
-  const params = new URLSearchParams({
-    window,
-    limit: String(limit),
-  });
+  const params = rangeSearchParams(range);
+  params.set("limit", String(limit));
   return getJson<WrappedTopArtist[]>(`/wrapped/top-artists?${params.toString()}`, init);
 }
 
 /**
  * Fetch derived top albums, ranked by how many of the real top tracks
- * belong to each album, for one window.
+ * belong to each album, for one window or custom date range.
  * GET /wrapped/top-albums?window={window}&limit={limit}
+ * GET /wrapped/top-albums?start_date={startDate}&end_date={endDate}&limit={limit}
  */
 export function getWrappedTopAlbums(
-  window: WrappedWindow,
+  range: WrappedRangeParams,
   limit = 10,
   init?: RequestInit,
 ): Promise<WrappedTopAlbum[]> {
-  const params = new URLSearchParams({
-    window,
-    limit: String(limit),
-  });
+  const params = rangeSearchParams(range);
+  params.set("limit", String(limit));
   return getJson<WrappedTopAlbum[]>(`/wrapped/top-albums?${params.toString()}`, init);
 }
 
 /**
- * Fetch the real computed date range and event count for one window.
+ * Fetch the real computed date range and event count for one window or
+ * custom date range.
  * GET /wrapped/meta?window={window}
+ * GET /wrapped/meta?start_date={startDate}&end_date={endDate}
  */
 export function getWrappedMeta(
-  window: WrappedWindow,
+  range: WrappedRangeParams,
   init?: RequestInit,
 ): Promise<WrappedMeta> {
-  const params = new URLSearchParams({ window });
+  const params = rangeSearchParams(range);
   return getJson<WrappedMeta>(`/wrapped/meta?${params.toString()}`, init);
+}
+
+/**
+ * Fetch the earliest/latest real extended_history event dates, used to
+ * clamp the custom-range date picker to data that can return results.
+ * GET /wrapped/bounds
+ */
+export function getWrappedBounds(init?: RequestInit): Promise<WrappedBounds> {
+  return getJson<WrappedBounds>("/wrapped/bounds", init);
 }

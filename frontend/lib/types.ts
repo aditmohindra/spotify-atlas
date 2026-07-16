@@ -372,6 +372,22 @@ export interface EraDepth {
 /** Allowed wrapped windows, computed over real extended_history play counts. */
 export type WrappedWindow = "short_term" | "medium_term" | "long_term";
 
+/**
+ * Query params accepted by every Wrapped data endpoint. Either supply a
+ * preset `window`, or both `startDate`/`endDate` (ISO `YYYY-MM-DD`) for a
+ * custom range — never both.
+ */
+export type WrappedRangeParams =
+  | { window: WrappedWindow; startDate?: undefined; endDate?: undefined }
+  | { window?: undefined; startDate: string; endDate: string };
+
+/** Bounds of the user's actual imported extended_history data, for clamping
+ * the custom-range date picker. GET /wrapped/bounds. */
+export interface WrappedBounds {
+  min_date: string | null;
+  max_date: string | null;
+}
+
 /** A ranked top-track entry from GET /wrapped/top-tracks. */
 export interface WrappedTopTrack {
   rank: number;
@@ -403,7 +419,7 @@ export interface WrappedTopAlbum {
 
 /** Real date-range metadata for a window from GET /wrapped/meta. */
 export interface WrappedMeta {
-  window: WrappedWindow;
+  window: WrappedWindow | "custom";
   /** Latest real extended_history event timestamp (window anchor). */
   as_of_date: string | null;
   /** Start of the computed real date range for this window. */

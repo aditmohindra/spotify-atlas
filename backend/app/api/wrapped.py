@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import text
@@ -68,6 +68,47 @@ def _get_window_bounds(db: Session, user_id: int, window: str):
 
     start = anchor - timedelta(days=WINDOW_DAYS[window])
     return start, anchor, anchor
+
+
+def _resolve_bounds(
+    db: Session,
+    user_id: int,
+    window: str | None,
+    start_date: date | None,
+    end_date: date | None,
+):
+    """Resolve (start, end, anchor) for a request, from either an explicit
+    custom date range or a named preset window.
+
+    This is the single entry point every Wrapped endpoint uses to get its
+    query bounds. The preset path defers entirely to `_get_window_bounds`
+    (unchanged), so the three existing presets keep producing byte-identical
+    results. The custom path is additive and only engages when the caller
+    supplies both `start_date` and `end_date`.
+    """
+    if start_date is not None or end_date is not None:
+        if start_date is None or end_date is None:
+            raise HTTPException(
+                status_code=400,
+                detail="start_date and end_date must both be provided for a custom range",
+            )
+        if start_date > end_date:
+            raise HTTPException(
+                status_code=400,
+                detail="start_date must be on or before end_date",
+            )
+        # Calendar-day bounds: include every event on the selected end day.
+        start_dt = datetime.combine(start_date, time.min)
+        end_dt = datetime.combine(end_date, time.max)
+        return start_dt, end_dt, end_dt
+
+    if window is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Either window, or both start_date and end_date, must be provided",
+        )
+    _validate_window(window)
+    return _get_window_bounds(db, user_id, window)
 
 
 def _fetch_track_play_rows(db: Session, user_id: int, start, end):
@@ -147,13 +188,14 @@ def _dedup_and_rank_tracks(rows, limit=None):
 
 @router.get("/wrapped/top-tracks")
 async def get_wrapped_top_tracks(
-    window: str = Query(...),
+    window: str | None = Query(default=None),
+    start_date: date | None = Query(default=None),
+    end_date: date | None = Query(default=None),
     limit: int = Query(default=20, ge=1, le=50),
     user_id: int = 1,
     db: Session = Depends(get_db),
 ):
-    _validate_window(window)
-    start, end, anchor = _get_window_bounds(db, user_id, window)
+    start, end, anchor = _resolve_bounds(db, user_id, window, start_date, end_date)
     if anchor is None:
         return []
 
@@ -176,13 +218,14 @@ async def get_wrapped_top_tracks(
 
 @router.get("/wrapped/top-artists")
 async def get_wrapped_top_artists(
-    window: str = Query(...),
+    window: str | None = Query(default=None),
+    start_date: date | None = Query(default=None),
+    end_date: date | None = Query(default=None),
     limit: int = Query(default=20, ge=1, le=50),
     user_id: int = 1,
     db: Session = Depends(get_db),
 ):
-    _validate_window(window)
-    start, end, anchor = _get_window_bounds(db, user_id, window)
+    start, end, anchor = _resolve_bounds(db, user_id, window, start_date, end_date)
     if anchor is None:
         return []
 
@@ -230,13 +273,14 @@ async def get_wrapped_top_artists(
 
 @router.get("/wrapped/top-albums")
 async def get_wrapped_top_albums(
-    window: str = Query(...),
+    window: str | None = Query(default=None),
+    start_date: date | None = Query(default=None),
+    end_date: date | None = Query(default=None),
     limit: int = Query(default=10, ge=1, le=25),
     user_id: int = 1,
     db: Session = Depends(get_db),
 ):
-    _validate_window(window)
-    start, end, anchor = _get_window_bounds(db, user_id, window)
+    start, end, anchor = _resolve_bounds(db, user_id, window, start_date, end_date)
     if anchor is None:
         return []
 
@@ -283,16 +327,19 @@ async def get_wrapped_top_albums(
 
 @router.get("/wrapped/meta")
 async def get_wrapped_meta(
-    window: str = Query(...),
+    window: str | None = Query(default=None),
+    start_date: date | None = Query(default=None),
+    end_date: date | None = Query(default=None),
     user_id: int = 1,
     db: Session = Depends(get_db),
 ):
-    _validate_window(window)
-    start, end, anchor = _get_window_bounds(db, user_id, window)
+    is_custom = start_date is not None or end_date is not None
+    start, end, anchor = _resolve_bounds(db, user_id, window, start_date, end_date)
+    response_window = "custom" if is_custom else window
 
     if anchor is None:
         return {
-            "window": window,
+            "window": response_window,
             "as_of_date": None,
             "start_date": None,
             "end_date": None,
@@ -319,11 +366,40 @@ async def get_wrapped_meta(
     ).scalar()
 
     return {
-        "window": window,
+        "window": response_window,
         # Anchor = latest real extended_history event, kept as as_of_date for
         # backwards compatibility with existing "as of" UI copy.
         "as_of_date": anchor.isoformat() if anchor else None,
         "start_date": start.isoformat() if start else None,
         "end_date": end.isoformat() if end else None,
         "total_events": total_events or 0,
+    }
+
+
+@router.get("/wrapped/bounds")
+async def get_wrapped_bounds(
+    user_id: int = 1,
+    db: Session = Depends(get_db),
+):
+    """Earliest/latest real extended_history event dates for this user, used
+    by the frontend to clamp the custom-range date picker to data that can
+    actually return results."""
+    row = db.execute(
+        text(
+            """
+            SELECT MIN(played_at) AS earliest, MAX(played_at) AS latest
+            FROM listening_events
+            WHERE user_id = :user_id
+              AND source = :source
+            """
+        ),
+        {"user_id": user_id, "source": EXTENDED_HISTORY_SOURCE},
+    ).first()
+
+    earliest = row.earliest if row else None
+    latest = row.latest if row else None
+
+    return {
+        "min_date": earliest.date().isoformat() if earliest else None,
+        "max_date": latest.date().isoformat() if latest else None,
     }

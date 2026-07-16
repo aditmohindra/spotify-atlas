@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -14,10 +14,18 @@ import {
   User,
   type LucideIcon,
 } from "lucide-react";
+import type { DateRange, Matcher } from "react-day-picker";
 
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { Calendar as DateRangeCalendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   getTasteProfile,
+  getWrappedBounds,
   getWrappedMeta,
   getWrappedTopAlbums,
   getWrappedTopArtists,
@@ -25,7 +33,9 @@ import {
 } from "@/lib/api";
 import type {
   TasteTimeRange,
+  WrappedBounds,
   WrappedMeta,
+  WrappedRangeParams,
   WrappedTopAlbum,
   WrappedTopArtist,
   WrappedTopTrack,
@@ -102,6 +112,13 @@ const WINDOWS: {
   },
 ];
 
+const CUSTOM_RANGE_LABEL = "Custom Range";
+
+/** Fallback selectable bounds while /wrapped/bounds hasn't resolved yet (or
+ * fails), matching the extended streaming history import's real coverage. */
+const FALLBACK_MIN_DATE = new Date(2016, 0, 1);
+const FALLBACK_MAX_DATE = new Date(2026, 11, 31);
+
 const LISTENING_NOTES = [
   "Built from your imported Spotify Extended Streaming History.",
   "Track, artist, and album rankings reflect cumulative listening across your full history.",
@@ -140,6 +157,66 @@ function formatShortDate(value: string | null): string {
 
 function genreLabel(archetype: string): string {
   return ARCHETYPE_GENRE_LABEL[archetype] ?? archetype;
+}
+
+/** Format a local `Date` as `YYYY-MM-DD` using its local calendar fields
+ * (not `toISOString`, which would shift the date across midnight UTC). */
+function toISODateString(value: Date): string {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/** Parse a `YYYY-MM-DD` string into a local midnight `Date`. */
+function parseISODateString(value: string): Date {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/**
+ * Parse a user-typed date, accepting `YYYY-MM-DD` or `M/D/YYYY`. Returns
+ * `null` for anything unparseable or invalid — including calendar overflow
+ * like "02/31/2024", which `new Date(...)` would otherwise silently roll
+ * into March.
+ */
+function parseTypedDate(value: string): Date | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const isoMatch = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(trimmed);
+  const slashMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(trimmed);
+
+  let year: number;
+  let month: number;
+  let day: number;
+  if (isoMatch) {
+    year = Number(isoMatch[1]);
+    month = Number(isoMatch[2]);
+    day = Number(isoMatch[3]);
+  } else if (slashMatch) {
+    month = Number(slashMatch[1]);
+    day = Number(slashMatch[2]);
+    year = Number(slashMatch[3]);
+  } else {
+    return null;
+  }
+
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+  const parsed = new Date(year, month - 1, day);
+  const isRealDate =
+    parsed.getFullYear() === year &&
+    parsed.getMonth() === month - 1 &&
+    parsed.getDate() === day;
+  return isRealDate ? parsed : null;
+}
+
+/** Clamp a date into `[min, max]`. */
+function clampDate(value: Date, min: Date, max: Date): Date {
+  if (value.getTime() < min.getTime()) return min;
+  if (value.getTime() > max.getTime()) return max;
+  return value;
 }
 
 // ── Decorative visuals ────────────────────────────────────────────────────────
@@ -673,8 +750,24 @@ function RankedListCard<T>({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+type RangeMode = "preset" | "custom";
+
 export default function WrappedPage() {
-  const [windowValue, setWindowValue] = useState<WrappedWindow>("short_term");
+  const [mode, setMode] = useState<RangeMode>("preset");
+  const [presetWindow, setPresetWindow] = useState<WrappedWindow>("short_term");
+  const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
+  const [customPickerOpen, setCustomPickerOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState<Date>(FALLBACK_MAX_DATE);
+  const [bounds, setBounds] = useState<WrappedBounds | null>(null);
+
+  // Inline validation messages for the start/end text inputs. The inputs
+  // themselves are uncontrolled (see their `key` props below) and remount
+  // with a fresh `defaultValue` whenever `customRange` changes — from a
+  // calendar click, a successful text commit, or Clear — so they always
+  // reflect the one shared `customRange` state without a syncing effect.
+  const [startTextError, setStartTextError] = useState<string | null>(null);
+  const [endTextError, setEndTextError] = useState<string | null>(null);
+
   const [tracks, setTracks] = useState<WrappedTopTrack[]>([]);
   const [artists, setArtists] = useState<WrappedTopArtist[]>([]);
   const [albums, setAlbums] = useState<WrappedTopAlbum[]>([]);
@@ -688,32 +781,177 @@ export default function WrappedPage() {
     albums: false,
   });
 
-  const activeWindow = useMemo(
-    () => WINDOWS.find((item) => item.value === windowValue) ?? WINDOWS[0],
-    [windowValue],
-  );
+  const activeWindowLabel =
+    mode === "preset"
+      ? WINDOWS.find((item) => item.value === presetWindow)?.label ?? WINDOWS[0].label
+      : CUSTOM_RANGE_LABEL;
+
+  // Resolved query params for the active selection: a preset window, or a
+  // fully-picked custom range. `null` means a custom range is active but
+  // still awaiting a start and/or end date — the fetch effect below treats
+  // that as "don't fetch yet" rather than firing a partial-range request.
+  const resolvedRange: WrappedRangeParams | null = useMemo(() => {
+    if (mode === "preset") return { window: presetWindow };
+    if (customRange?.from && customRange?.to) {
+      return {
+        startDate: toISODateString(customRange.from),
+        endDate: toISODateString(customRange.to),
+      };
+    }
+    return null;
+  }, [mode, presetWindow, customRange]);
+
+  const awaitingCustomRange = mode === "custom" && resolvedRange === null;
+
+  const minSelectableDate = bounds?.min_date
+    ? parseISODateString(bounds.min_date)
+    : FALLBACK_MIN_DATE;
+  const maxSelectableDate = bounds?.max_date
+    ? parseISODateString(bounds.max_date)
+    : FALLBACK_MAX_DATE;
+  const disabledDateMatchers: Matcher[] = [
+    { before: minSelectableDate },
+    { after: maxSelectableDate },
+  ];
 
   const selectWindow = (nextWindow: WrappedWindow) => {
-    if (nextWindow === windowValue) return;
+    setCustomPickerOpen(false);
+    if (mode === "preset" && nextWindow === presetWindow) return;
     setLoading(true);
     setError(null);
     setExpanded({ tracks: false, artists: false, albums: false });
-    setWindowValue(nextWindow);
+    setMode("preset");
+    setPresetWindow(nextWindow);
+  };
+
+  const selectCustomMode = () => {
+    setExpanded({ tracks: false, artists: false, albums: false });
+    setMode("custom");
+    setCalendarMonth(customRange?.from ?? maxSelectableDate);
+    setCustomPickerOpen(true);
+  };
+
+  // Single commit point for the custom range, used by both the calendar
+  // (click) and the text inputs (blur/Enter) — this is the one piece of
+  // state both interaction methods write to, so they can't drift apart.
+  const commitCustomRange = (next: DateRange | undefined) => {
+    setCustomRange(next);
+    if (next?.from && next?.to) {
+      setLoading(true);
+      setError(null);
+    }
+  };
+
+  const handleCustomRangeSelect = (range: DateRange | undefined) => {
+    commitCustomRange(range);
+    // Auto-close once both ends are picked — this is what actually triggers
+    // the recompute fetch below (via `resolvedRange`), so there's no partial
+    // (single-date) request in between.
+    if (range?.from && range?.to) {
+      setCustomPickerOpen(false);
+    }
+  };
+
+  const commitStartDateText = (raw: string) => {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      setStartTextError(null);
+      commitCustomRange(customRange?.to ? { from: undefined, to: customRange.to } : undefined);
+      return;
+    }
+
+    const parsed = parseTypedDate(trimmed);
+    if (!parsed) {
+      setStartTextError("Enter a valid date (YYYY-MM-DD).");
+      return;
+    }
+
+    const clamped = clampDate(parsed, minSelectableDate, maxSelectableDate);
+    if (customRange?.to && clamped.getTime() > customRange.to.getTime()) {
+      setStartTextError("Start date must be on or before end date.");
+      return;
+    }
+
+    setStartTextError(
+      clamped.getTime() !== parsed.getTime() ? "Clamped to available data range." : null,
+    );
+    setCalendarMonth(clamped);
+    commitCustomRange({ from: clamped, to: customRange?.to });
+  };
+
+  const commitEndDateText = (raw: string) => {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      setEndTextError(null);
+      commitCustomRange(customRange?.from ? { from: customRange.from, to: undefined } : undefined);
+      return;
+    }
+
+    const parsed = parseTypedDate(trimmed);
+    if (!parsed) {
+      setEndTextError("Enter a valid date (YYYY-MM-DD).");
+      return;
+    }
+
+    const clamped = clampDate(parsed, minSelectableDate, maxSelectableDate);
+    if (customRange?.from && clamped.getTime() < customRange.from.getTime()) {
+      setEndTextError("End date must be on or after start date.");
+      return;
+    }
+
+    setEndTextError(
+      clamped.getTime() !== parsed.getTime() ? "Clamped to available data range." : null,
+    );
+    setCalendarMonth(clamped);
+    commitCustomRange({ from: customRange?.from, to: clamped });
   };
 
   useEffect(() => {
     document.title = "Wrapped Dashboard · Spotify Atlas";
   }, []);
 
+  // Fetch the real min/max extended_history dates once, to clamp the custom
+  // range picker to a window that can actually return results.
   useEffect(() => {
     let cancelled = false;
-    const tasteRange = WINDOWS.find((w) => w.value === windowValue)?.tasteRange ?? "all";
+    getWrappedBounds()
+      .then((data) => {
+        if (!cancelled) setBounds(data);
+      })
+      .catch(() => {
+        /* Fall back to FALLBACK_MIN_DATE/FALLBACK_MAX_DATE. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!resolvedRange) {
+      // Custom mode, but start/end aren't both picked yet — don't fetch a
+      // partial-range request. Rendering derives the pending state from
+      // `awaitingCustomRange` directly rather than clearing state here.
+      return;
+    }
+
+    let cancelled = false;
+
+    // Genres come from /profile/taste, which is weighted by Spotify API
+    // source tags (top_short_term/top_medium_term/recently_played/...)
+    // rather than by played_at date range — it has no notion of an
+    // arbitrary custom window. Presets map to their closest source-tag
+    // bucket (as before); custom ranges fall back to the full-history mix
+    // since there's no faithful equivalent to request.
+    const tasteRange: TasteTimeRange =
+      mode === "preset"
+        ? WINDOWS.find((w) => w.value === presetWindow)?.tasteRange ?? "all"
+        : "all";
 
     Promise.all([
-      getWrappedTopTracks(windowValue, 20),
-      getWrappedTopArtists(windowValue, 20),
-      getWrappedTopAlbums(windowValue, 10),
-      getWrappedMeta(windowValue),
+      getWrappedTopTracks(resolvedRange, 20),
+      getWrappedTopArtists(resolvedRange, 20),
+      getWrappedTopAlbums(resolvedRange, 10),
+      getWrappedMeta(resolvedRange),
       getTasteProfile(1, tasteRange).catch(() => null),
     ])
       .then(([trackData, artistData, albumData, metaData, tasteData]) => {
@@ -757,15 +995,30 @@ export default function WrappedPage() {
     return () => {
       cancelled = true;
     };
-  }, [windowValue]);
+    // `resolvedRange` already encodes the exact start/end dates for both
+    // presets and custom ranges, so every distinct window (including two
+    // different custom ranges) gets its own fetch here — nothing is cached
+    // across selections, so switching back to a preset can't return a
+    // stale custom result.
+  }, [resolvedRange, mode, presetWindow]);
 
-  const topArtist = artists[0];
-  const topTrack = tracks[0];
-  const topAlbum = albums[0];
+  // Derived at render time (rather than cleared via effect setState) so a
+  // custom range that's still awaiting both dates never shows a stale
+  // result left over from whatever was selected before.
+  const displayTracks = awaitingCustomRange ? [] : tracks;
+  const displayArtists = awaitingCustomRange ? [] : artists;
+  const displayAlbums = awaitingCustomRange ? [] : albums;
+  const displayGenres = awaitingCustomRange ? [] : genres;
+  const displayMeta = awaitingCustomRange ? null : meta;
 
-  const dateRangeSecondary =
-    meta?.start_date && meta?.end_date
-      ? `${formatShortDate(meta.start_date)} – ${formatShortDate(meta.end_date)}`
+  const topArtist = displayArtists[0];
+  const topTrack = displayTracks[0];
+  const topAlbum = displayAlbums[0];
+
+  const dateRangeSecondary = awaitingCustomRange
+    ? "Pick a start & end date"
+    : displayMeta?.start_date && displayMeta?.end_date
+      ? `${formatShortDate(displayMeta.start_date)} – ${formatShortDate(displayMeta.end_date)}`
       : "No history yet";
 
   return (
@@ -912,7 +1165,7 @@ export default function WrappedPage() {
               }}
             >
               {WINDOWS.map((option) => {
-                const active = option.value === windowValue;
+                const active = mode === "preset" && option.value === presetWindow;
                 return (
                   <button
                     key={option.value}
@@ -935,6 +1188,201 @@ export default function WrappedPage() {
                   </button>
                 );
               })}
+
+              <Popover open={customPickerOpen} onOpenChange={setCustomPickerOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={selectCustomMode}
+                    style={{
+                      padding: "6px 15px",
+                      border: "none",
+                      borderRadius: 999,
+                      background: mode === "custom" ? GREEN_BRIGHT : "transparent",
+                      color: mode === "custom" ? "#052e16" : MUTED,
+                      cursor: "pointer",
+                      fontSize: 12,
+                      fontWeight: mode === "custom" ? 700 : 500,
+                      fontFamily: FONT,
+                      transition: "background 0.15s, color 0.15s",
+                    }}
+                  >
+                    {CUSTOM_RANGE_LABEL}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-auto p-0"
+                  style={
+                    {
+                      "--background": "#0b1220",
+                      "--foreground": TEXT,
+                      "--popover": "#0f1729",
+                      "--popover-foreground": TEXT,
+                      "--card": "#0f1729",
+                      "--card-foreground": TEXT,
+                      "--primary": GREEN_BRIGHT,
+                      "--primary-foreground": "#052e16",
+                      "--secondary": "rgba(255,255,255,0.06)",
+                      "--secondary-foreground": TEXT,
+                      "--accent": "rgba(255,255,255,0.08)",
+                      "--accent-foreground": TEXT,
+                      "--muted": "rgba(255,255,255,0.08)",
+                      "--muted-foreground": MUTED,
+                      "--border": CARD_BORDER,
+                      "--input": CARD_BORDER,
+                      "--ring": GREEN_BRIGHT,
+                    } as CSSProperties
+                  }
+                >
+                  <div style={{ padding: 4 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 8,
+                        padding: "8px 10px 6px",
+                      }}
+                    >
+                      <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
+                        <label
+                          htmlFor="wrapped-custom-start"
+                          style={{
+                            fontFamily: FONT,
+                            fontSize: 10,
+                            fontWeight: 600,
+                            color: MUTED,
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          Start date
+                        </label>
+                        <input
+                          id="wrapped-custom-start"
+                          key={`start-${customRange?.from ? toISODateString(customRange.from) : "empty"}`}
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="YYYY-MM-DD"
+                          defaultValue={customRange?.from ? toISODateString(customRange.from) : ""}
+                          onChange={() => setStartTextError(null)}
+                          onBlur={(e) => commitStartDateText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") e.currentTarget.blur();
+                          }}
+                          style={{
+                            fontFamily: MONO,
+                            fontSize: 12,
+                            color: TEXT,
+                            background: "rgba(255,255,255,0.05)",
+                            border: `1px solid ${startTextError ? "#f87171" : CARD_BORDER}`,
+                            borderRadius: 8,
+                            padding: "5px 8px",
+                            width: "100%",
+                            boxSizing: "border-box",
+                            outline: "none",
+                          }}
+                        />
+                        {startTextError && (
+                          <span style={{ fontFamily: FONT, fontSize: 10, color: "#f87171" }}>
+                            {startTextError}
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
+                        <label
+                          htmlFor="wrapped-custom-end"
+                          style={{
+                            fontFamily: FONT,
+                            fontSize: 10,
+                            fontWeight: 600,
+                            color: MUTED,
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          End date
+                        </label>
+                        <input
+                          id="wrapped-custom-end"
+                          key={`end-${customRange?.to ? toISODateString(customRange.to) : "empty"}`}
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="YYYY-MM-DD"
+                          defaultValue={customRange?.to ? toISODateString(customRange.to) : ""}
+                          onChange={() => setEndTextError(null)}
+                          onBlur={(e) => commitEndDateText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") e.currentTarget.blur();
+                          }}
+                          style={{
+                            fontFamily: MONO,
+                            fontSize: 12,
+                            color: TEXT,
+                            background: "rgba(255,255,255,0.05)",
+                            border: `1px solid ${endTextError ? "#f87171" : CARD_BORDER}`,
+                            borderRadius: 8,
+                            padding: "5px 8px",
+                            width: "100%",
+                            boxSizing: "border-box",
+                            outline: "none",
+                          }}
+                        />
+                        {endTextError && (
+                          <span style={{ fontFamily: FONT, fontSize: 10, color: "#f87171" }}>
+                            {endTextError}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <DateRangeCalendar
+                      mode="range"
+                      numberOfMonths={2}
+                      month={calendarMonth}
+                      onMonthChange={setCalendarMonth}
+                      startMonth={minSelectableDate}
+                      endMonth={maxSelectableDate}
+                      disabled={disabledDateMatchers}
+                      selected={customRange}
+                      onSelect={handleCustomRangeSelect}
+                    />
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-end",
+                        gap: 8,
+                        padding: "6px 10px 6px",
+                        borderTop: `1px solid ${CARD_BORDER}`,
+                        marginTop: 4,
+                      }}
+                    >
+                      {(customRange?.from || customRange?.to) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            commitCustomRange(undefined);
+                            setStartTextError(null);
+                            setEndTextError(null);
+                          }}
+                          style={{
+                            fontFamily: FONT,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: "#8fa2b8",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                          }}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div
@@ -956,7 +1404,7 @@ export default function WrappedPage() {
                 }}
               >
                 <Calendar size={12} color={MUTED} aria-hidden />
-                As of {formatDate(meta?.as_of_date ?? meta?.end_date ?? null)}
+                As of {formatDate(displayMeta?.as_of_date ?? displayMeta?.end_date ?? null)}
               </div>
               <span
                 style={{
@@ -970,7 +1418,7 @@ export default function WrappedPage() {
                   background: "rgba(29,185,84,0.10)",
                 }}
               >
-                {activeWindow.badge}
+                Extended Streaming History
               </span>
             </div>
           </div>
@@ -991,15 +1439,17 @@ export default function WrappedPage() {
             icon={User}
             iconColor={PURPLE}
             label="Top Artist"
-            value={loading ? "—" : topArtist?.artist_name ?? "—"}
+            value={awaitingCustomRange ? "—" : loading ? "—" : topArtist?.artist_name ?? "—"}
             secondary={
-              loading
-                ? "…"
-                : topArtist
-                  ? `${topArtist.play_count.toLocaleString()} plays`
-                  : "No data"
+              awaitingCustomRange
+                ? "Pick dates"
+                : loading
+                  ? "…"
+                  : topArtist
+                    ? `${topArtist.play_count.toLocaleString()} plays`
+                    : "No data"
             }
-            imageSrc={loading ? null : topArtist?.artist_image_url ?? null}
+            imageSrc={awaitingCustomRange || loading ? null : topArtist?.artist_image_url ?? null}
             imageShape="circle"
             imageFallback={topArtist?.artist_name}
           />
@@ -1007,46 +1457,50 @@ export default function WrappedPage() {
             icon={Music2}
             iconColor={GREEN}
             label="Top Track"
-            value={loading ? "—" : topTrack?.track_name ?? "—"}
-            secondary={loading ? "…" : topTrack?.artist_name ?? "No data"}
+            value={awaitingCustomRange ? "—" : loading ? "—" : topTrack?.track_name ?? "—"}
+            secondary={
+              awaitingCustomRange ? "Pick dates" : loading ? "…" : topTrack?.artist_name ?? "No data"
+            }
             secondaryColor={MUTED}
             tertiary={
-              loading
+              awaitingCustomRange || loading
                 ? undefined
                 : topTrack
                   ? `${topTrack.play_count.toLocaleString()} plays`
                   : undefined
             }
             tertiaryColor={GREEN}
-            imageSrc={loading ? null : topTrack?.album_image_url ?? null}
+            imageSrc={awaitingCustomRange || loading ? null : topTrack?.album_image_url ?? null}
             imageShape="square"
           />
           <CompactStatCard
             icon={Disc3}
             iconColor={BLUE}
             label="Top Album"
-            value={loading ? "—" : topAlbum?.album_name ?? "—"}
-            secondary={loading ? "…" : topAlbum?.artist_name ?? "No data"}
+            value={awaitingCustomRange ? "—" : loading ? "—" : topAlbum?.album_name ?? "—"}
+            secondary={
+              awaitingCustomRange ? "Pick dates" : loading ? "…" : topAlbum?.artist_name ?? "No data"
+            }
             secondaryColor={MUTED}
             tertiary={
-              loading
+              awaitingCustomRange || loading
                 ? undefined
                 : topAlbum
                   ? `${topAlbum.track_count.toLocaleString()} tracks`
                   : undefined
             }
             tertiaryColor={BLUE}
-            imageSrc={loading ? null : topAlbum?.album_image_url ?? null}
+            imageSrc={awaitingCustomRange || loading ? null : topAlbum?.album_image_url ?? null}
             imageShape="square"
           />
           <CompactStatCard
             icon={Calendar}
             iconColor={ORANGE}
             label="Snapshot Window"
-            value={activeWindow.label}
+            value={activeWindowLabel}
             secondary={dateRangeSecondary}
             secondaryColor={MUTED}
-            tertiary={`Ranked entries: Top ${Math.max(tracks.length, artists.length, 20)}`}
+            tertiary={`Ranked entries: Top ${Math.max(displayTracks.length, displayArtists.length, 20)}`}
             tertiaryColor={ORANGE}
           />
         </div>
@@ -1083,9 +1537,13 @@ export default function WrappedPage() {
             icon={Music2}
             iconColor={GREEN}
             accentColor={GREEN_BRIGHT}
-            items={tracks}
-            loading={loading}
-            emptyMessage="No listening history is available for this window yet."
+            items={displayTracks}
+            loading={loading && !awaitingCustomRange}
+            emptyMessage={
+              awaitingCustomRange
+                ? "Select a start and end date to see this window."
+                : "No listening history is available for this window yet."
+            }
             expanded={expanded.tracks}
             onToggleExpand={() =>
               setExpanded((prev) => ({ ...prev, tracks: !prev.tracks }))
@@ -1113,9 +1571,13 @@ export default function WrappedPage() {
             icon={User}
             iconColor={PURPLE}
             accentColor={PURPLE}
-            items={artists}
-            loading={loading}
-            emptyMessage="No listening history is available for this window yet."
+            items={displayArtists}
+            loading={loading && !awaitingCustomRange}
+            emptyMessage={
+              awaitingCustomRange
+                ? "Select a start and end date to see this window."
+                : "No listening history is available for this window yet."
+            }
             expanded={expanded.artists}
             onToggleExpand={() =>
               setExpanded((prev) => ({ ...prev, artists: !prev.artists }))
@@ -1139,9 +1601,13 @@ export default function WrappedPage() {
             icon={Disc3}
             iconColor={BLUE}
             accentColor={BLUE}
-            items={albums}
-            loading={loading}
-            emptyMessage="No album data is available for this window yet."
+            items={displayAlbums}
+            loading={loading && !awaitingCustomRange}
+            emptyMessage={
+              awaitingCustomRange
+                ? "Select a start and end date to see this window."
+                : "No album data is available for this window yet."
+            }
             expanded={expanded.albums}
             onToggleExpand={() =>
               setExpanded((prev) => ({ ...prev, albums: !prev.albums }))
@@ -1222,9 +1688,11 @@ export default function WrappedPage() {
               </Link>
             </div>
 
-            {loading ? (
+            {awaitingCustomRange ? (
+              <EmptyState message="Select a start and end date to see this window." />
+            ) : loading ? (
               <LoadingRows count={5} />
-            ) : genres.length === 0 ? (
+            ) : displayGenres.length === 0 ? (
               <EmptyState message="Genre mix will appear once taste communities are available." />
             ) : (
               <ul
@@ -1237,7 +1705,7 @@ export default function WrappedPage() {
                   gap: 9,
                 }}
               >
-                {genres.map((genre, index) => {
+                {displayGenres.map((genre, index) => {
                   const color = GENRE_BAR_COLORS[index % GENRE_BAR_COLORS.length];
                   // Absolute share of the top-genre set (already normalized 0–100)
                   const widthPct = Math.max(4, Math.min(100, genre.pct));
