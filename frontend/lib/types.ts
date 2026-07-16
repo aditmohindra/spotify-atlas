@@ -366,10 +366,10 @@ export interface EraDepth {
 }
 
 // ---------------------------------------------------------------------------
-// Wrapped snapshot endpoints (Phase 19)
+// Wrapped endpoints (Phase 19, re-derived from extended_history in Task 1)
 // ---------------------------------------------------------------------------
 
-/** Allowed wrapped snapshot windows backed by Spotify top_* sources. */
+/** Allowed wrapped windows, computed over real extended_history play counts. */
 export type WrappedWindow = "short_term" | "medium_term" | "long_term";
 
 /** A ranked top-track entry from GET /wrapped/top-tracks. */
@@ -377,9 +377,10 @@ export interface WrappedTopTrack {
   rank: number;
   track_name: string;
   artist_name: string;
-  spotify_track_id: string;
+  spotify_track_id: string | null;
   album_name: string | null;
   album_image_url: string | null;
+  play_count: number;
 }
 
 /** A ranked top-artist entry from GET /wrapped/top-artists. */
@@ -388,6 +389,7 @@ export interface WrappedTopArtist {
   artist_name: string;
   spotify_artist_id: string | null;
   artist_image_url: string | null;
+  play_count: number;
 }
 
 /** A derived ranked top-album entry from GET /wrapped/top-albums. */
@@ -399,8 +401,15 @@ export interface WrappedTopAlbum {
   track_count: number;
 }
 
-/** Snapshot freshness metadata from GET /wrapped/meta. */
+/** Real date-range metadata for a window from GET /wrapped/meta. */
 export interface WrappedMeta {
   window: WrappedWindow;
+  /** Latest real extended_history event timestamp (window anchor). */
   as_of_date: string | null;
+  /** Start of the computed real date range for this window. */
+  start_date: string | null;
+  /** End of the computed real date range for this window (== as_of_date). */
+  end_date: string | null;
+  /** Count of qualifying extended_history events in this window. */
+  total_events: number;
 }

@@ -270,11 +270,12 @@ export function getEraDepth(
 }
 
 // ---------------------------------------------------------------------------
-// Wrapped snapshot analytics (Phase 19)
+// Wrapped analytics (Phase 19; re-derived from real extended_history play
+// counts in Task 1, windows anchored to the latest real event timestamp)
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch ranked top tracks for one Spotify top_* snapshot window.
+ * Fetch ranked top tracks by real play count within one window.
  * GET /wrapped/top-tracks?window={window}&limit={limit}
  */
 export function getWrappedTopTracks(
@@ -290,7 +291,7 @@ export function getWrappedTopTracks(
 }
 
 /**
- * Fetch ranked top artists derived from one Spotify top-track snapshot window.
+ * Fetch ranked top artists by real play count within one window.
  * GET /wrapped/top-artists?window={window}&limit={limit}
  */
 export function getWrappedTopArtists(
@@ -306,7 +307,8 @@ export function getWrappedTopArtists(
 }
 
 /**
- * Fetch derived top albums for one Spotify top-track snapshot window.
+ * Fetch derived top albums, ranked by how many of the real top tracks
+ * belong to each album, for one window.
  * GET /wrapped/top-albums?window={window}&limit={limit}
  */
 export function getWrappedTopAlbums(
@@ -322,7 +324,7 @@ export function getWrappedTopAlbums(
 }
 
 /**
- * Fetch freshness metadata for one wrapped snapshot window.
+ * Fetch the real computed date range and event count for one window.
  * GET /wrapped/meta?window={window}
  */
 export function getWrappedMeta(
