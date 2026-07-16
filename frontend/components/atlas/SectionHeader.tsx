@@ -23,11 +23,11 @@ export function SectionHeader({
         <span className="text-eyebrow">{eyebrow}</span>
       )}
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold text-ink leading-snug">{title}</h2>
+        <h2 className="text-xl font-semibold leading-snug" style={{ color: "#101828" }}>{title}</h2>
         {action && <div className="shrink-0">{action}</div>}
       </div>
       {subtitle && (
-        <p className="text-sm text-muted leading-relaxed">{subtitle}</p>
+        <p className="text-sm leading-relaxed" style={{ color: "#667085" }}>{subtitle}</p>
       )}
     </div>
   );

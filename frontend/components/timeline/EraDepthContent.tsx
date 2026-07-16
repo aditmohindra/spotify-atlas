@@ -212,7 +212,7 @@ export function EraDepthContent({
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {depth.representative_tracks.map((t, i) => (
                 <li
-                  key={`${t.name}-${t.artist}`}
+                  key={`${t.name}-${t.artist}-${i}`}
                   className="flex items-center gap-3 px-3 py-2 rounded-xl"
                   style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
                 >

@@ -8,6 +8,8 @@ import { API_BASE_URL } from "@/lib/api";
 const NAV_LINKS = [
   { label: "Atlas", href: "/map" },
   { label: "Communities", href: "/communities" },
+  { label: "Timeline", href: "/timeline" },
+  { label: "Wrapped", href: "/wrapped" },
 ] as const;
 
 export default function NavBar() {

@@ -20,7 +20,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p
       className="font-ui text-[11px] font-semibold tracking-[0.12em] uppercase mb-4"
-      style={{ color: "#98a2b3" }}
+      style={{ color: "rgba(255,255,255,0.45)" }}
     >
       {children}
     </p>
@@ -93,11 +93,11 @@ export default function EraDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ background: "#f7f8f5" }}>
+      <div className="min-h-screen" style={{ background: "#0a0e1a" }}>
         <PageShell maxWidth="xl" className="py-10">
           <div className="space-y-6 animate-pulse">
-            <div className="h-4 w-32 rounded-full" style={{ background: "#dde6dd" }} />
-            <div className="rounded-[28px] h-96" style={{ background: "#0f172a", opacity: 0.35 }} />
+            <div className="h-4 w-32 rounded-full" style={{ background: "#1e293b" }} />
+            <div className="rounded-[28px] h-96" style={{ background: "#0f172a", opacity: 0.6 }} />
           </div>
         </PageShell>
       </div>
@@ -106,16 +106,16 @@ export default function EraDetailPage() {
 
   if (notFound || !era || !depth) {
     return (
-      <div className="min-h-screen" style={{ background: "#f7f8f5" }}>
+      <div className="min-h-screen" style={{ background: "#0a0e1a" }}>
         <PageShell maxWidth="xl" className="py-10">
           <div className="text-center py-24">
-            <h1 className="font-hero text-2xl" style={{ color: "#0f172a" }}>
+            <h1 className="font-hero text-2xl" style={{ color: "#ffffff" }}>
               Era Not Found
             </h1>
             <Link
               href="/timeline"
               className="inline-block mt-4 font-ui text-sm"
-              style={{ color: "#667085" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               ← Back to Timeline
             </Link>
@@ -126,7 +126,7 @@ export default function EraDetailPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#f7f8f5" }}>
+    <div className="min-h-screen" style={{ background: "#0a0e1a" }}>
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 overflow-hidden"
@@ -141,7 +141,7 @@ export default function EraDetailPage() {
           <Link
             href="/timeline"
             className="inline-flex items-center gap-1.5 font-ui text-sm transition-colors hover:opacity-80"
-            style={{ color: "#98a2b3" }}
+            style={{ color: "rgba(255,255,255,0.55)" }}
           >
             <span aria-hidden>←</span>
             Back to Timeline
@@ -199,7 +199,7 @@ export default function EraDetailPage() {
                     >
                       <div
                         className="relative rounded-2xl p-5 h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md overflow-hidden"
-                        style={{ background: "#ffffff", border: "1px solid #dde6dd" }}
+                        style={{ background: "#0f172a", border: "1px solid rgba(255,255,255,0.08)" }}
                       >
                         <div
                           className="absolute left-0 top-0 bottom-0 w-1"
@@ -217,20 +217,20 @@ export default function EraDetailPage() {
                           )}
                           <h3
                             className="font-ui font-semibold text-base mt-2 group-hover:opacity-80"
-                            style={{ color: "#1a2b1a" }}
+                            style={{ color: "#ffffff" }}
                           >
                             {c.name}
                           </h3>
                           <p
                             className="font-ui text-xs mt-0.5"
-                            style={{ color: "#98a2b3" }}
+                            style={{ color: "rgba(255,255,255,0.4)" }}
                           >
                             {c.canonical_name}
                           </p>
                           {c.description && (
                             <p
                               className="font-ui text-sm mt-3 leading-relaxed line-clamp-3"
-                              style={{ color: "#667085" }}
+                              style={{ color: "rgba(255,255,255,0.55)" }}
                             >
                               {c.description}
                             </p>
