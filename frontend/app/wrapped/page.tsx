@@ -113,6 +113,7 @@ const WINDOWS: {
 ];
 
 const CUSTOM_RANGE_LABEL = "Custom Range";
+const PICK_YEAR_LABEL = "Pick a Year";
 
 /** Fallback selectable bounds while /wrapped/bounds hasn't resolved yet (or
  * fails), matching the extended streaming history import's real coverage. */
@@ -750,7 +751,7 @@ function RankedListCard<T>({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-type RangeMode = "preset" | "custom";
+type RangeMode = "preset" | "custom" | "year";
 
 export default function WrappedPage() {
   const [mode, setMode] = useState<RangeMode>("preset");
@@ -758,6 +759,10 @@ export default function WrappedPage() {
   const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
   const [customPickerOpen, setCustomPickerOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState<Date>(FALLBACK_MAX_DATE);
+  // No year selected by default — same "don't fetch until a valid
+  // selection exists" pattern as Custom Range.
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [yearPickerOpen, setYearPickerOpen] = useState(false);
   const [bounds, setBounds] = useState<WrappedBounds | null>(null);
 
   // Inline validation messages for the start/end text inputs. The inputs
@@ -784,14 +789,28 @@ export default function WrappedPage() {
   const activeWindowLabel =
     mode === "preset"
       ? WINDOWS.find((item) => item.value === presetWindow)?.label ?? WINDOWS[0].label
-      : CUSTOM_RANGE_LABEL;
+      : mode === "year"
+        ? selectedYear != null
+          ? String(selectedYear)
+          : PICK_YEAR_LABEL
+        : CUSTOM_RANGE_LABEL;
 
-  // Resolved query params for the active selection: a preset window, or a
-  // fully-picked custom range. `null` means a custom range is active but
-  // still awaiting a start and/or end date — the fetch effect below treats
-  // that as "don't fetch yet" rather than firing a partial-range request.
+  // Resolved query params for the active selection: a preset window, a
+  // fully-picked custom range, or a picked year (Jan 1 – Dec 31 of that
+  // year, via the same start_date/end_date mechanism as Custom Range —
+  // no new backend endpoint needed). `null` means a custom range or year
+  // is active but still awaiting a valid selection — the fetch effect
+  // below treats that as "don't fetch yet" rather than firing a partial
+  // request.
   const resolvedRange: WrappedRangeParams | null = useMemo(() => {
     if (mode === "preset") return { window: presetWindow };
+    if (mode === "year") {
+      if (selectedYear == null) return null;
+      return {
+        startDate: `${selectedYear}-01-01`,
+        endDate: `${selectedYear}-12-31`,
+      };
+    }
     if (customRange?.from && customRange?.to) {
       return {
         startDate: toISODateString(customRange.from),
@@ -799,9 +818,17 @@ export default function WrappedPage() {
       };
     }
     return null;
-  }, [mode, presetWindow, customRange]);
+  }, [mode, presetWindow, selectedYear, customRange]);
 
-  const awaitingCustomRange = mode === "custom" && resolvedRange === null;
+  // Covers both pending selection kinds — Custom Range awaiting a
+  // start/end date, and Pick a Year awaiting a year — so the pending UI
+  // and fetch-gating logic below stay unified.
+  const awaitingSelection = (mode === "custom" || mode === "year") && resolvedRange === null;
+  const pendingMessage =
+    mode === "year"
+      ? "Select a year to see this window."
+      : "Select a start and end date to see this window.";
+  const pendingStatLabel = mode === "year" ? "Pick a year" : "Pick dates";
 
   const minSelectableDate = bounds?.min_date
     ? parseISODateString(bounds.min_date)
@@ -814,8 +841,21 @@ export default function WrappedPage() {
     { after: maxSelectableDate },
   ];
 
+  // Years actually present in the user's imported data (from the same
+  // /wrapped/bounds fetch that clamps the Custom Range calendar), most
+  // recent first — never hardcoded, so this doesn't go stale if more
+  // history gets imported later.
+  const yearOptions = useMemo(() => {
+    const minYear = minSelectableDate.getFullYear();
+    const maxYear = maxSelectableDate.getFullYear();
+    const years: number[] = [];
+    for (let year = maxYear; year >= minYear; year--) years.push(year);
+    return years;
+  }, [minSelectableDate, maxSelectableDate]);
+
   const selectWindow = (nextWindow: WrappedWindow) => {
     setCustomPickerOpen(false);
+    setYearPickerOpen(false);
     if (mode === "preset" && nextWindow === presetWindow) return;
     setLoading(true);
     setError(null);
@@ -825,10 +865,25 @@ export default function WrappedPage() {
   };
 
   const selectCustomMode = () => {
+    setYearPickerOpen(false);
     setExpanded({ tracks: false, artists: false, albums: false });
     setMode("custom");
     setCalendarMonth(customRange?.from ?? maxSelectableDate);
     setCustomPickerOpen(true);
+  };
+
+  const selectYearMode = () => {
+    setCustomPickerOpen(false);
+    setExpanded({ tracks: false, artists: false, albums: false });
+    setMode("year");
+    setYearPickerOpen(true);
+  };
+
+  const commitYear = (year: number) => {
+    setSelectedYear(year);
+    setLoading(true);
+    setError(null);
+    setYearPickerOpen(false);
   };
 
   // Single commit point for the custom range, used by both the calendar
@@ -930,7 +985,7 @@ export default function WrappedPage() {
     if (!resolvedRange) {
       // Custom mode, but start/end aren't both picked yet — don't fetch a
       // partial-range request. Rendering derives the pending state from
-      // `awaitingCustomRange` directly rather than clearing state here.
+      // `awaitingSelection` directly rather than clearing state here.
       return;
     }
 
@@ -1005,18 +1060,20 @@ export default function WrappedPage() {
   // Derived at render time (rather than cleared via effect setState) so a
   // custom range that's still awaiting both dates never shows a stale
   // result left over from whatever was selected before.
-  const displayTracks = awaitingCustomRange ? [] : tracks;
-  const displayArtists = awaitingCustomRange ? [] : artists;
-  const displayAlbums = awaitingCustomRange ? [] : albums;
-  const displayGenres = awaitingCustomRange ? [] : genres;
-  const displayMeta = awaitingCustomRange ? null : meta;
+  const displayTracks = awaitingSelection ? [] : tracks;
+  const displayArtists = awaitingSelection ? [] : artists;
+  const displayAlbums = awaitingSelection ? [] : albums;
+  const displayGenres = awaitingSelection ? [] : genres;
+  const displayMeta = awaitingSelection ? null : meta;
 
   const topArtist = displayArtists[0];
   const topTrack = displayTracks[0];
   const topAlbum = displayAlbums[0];
 
-  const dateRangeSecondary = awaitingCustomRange
-    ? "Pick a start & end date"
+  const dateRangeSecondary = awaitingSelection
+    ? mode === "year"
+      ? "Pick a year"
+      : "Pick a start & end date"
     : displayMeta?.start_date && displayMeta?.end_date
       ? `${formatShortDate(displayMeta.start_date)} – ${formatShortDate(displayMeta.end_date)}`
       : "No history yet";
@@ -1383,6 +1440,102 @@ export default function WrappedPage() {
                   </div>
                 </PopoverContent>
               </Popover>
+
+              <Popover open={yearPickerOpen} onOpenChange={setYearPickerOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={selectYearMode}
+                    style={{
+                      padding: "6px 15px",
+                      border: "none",
+                      borderRadius: 999,
+                      background: mode === "year" ? GREEN_BRIGHT : "transparent",
+                      color: mode === "year" ? "#052e16" : MUTED,
+                      cursor: "pointer",
+                      fontSize: 12,
+                      fontWeight: mode === "year" ? 700 : 500,
+                      fontFamily: FONT,
+                      transition: "background 0.15s, color 0.15s",
+                    }}
+                  >
+                    {PICK_YEAR_LABEL}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-auto p-0"
+                  style={
+                    {
+                      "--background": "#0b1220",
+                      "--foreground": TEXT,
+                      "--popover": "#0f1729",
+                      "--popover-foreground": TEXT,
+                      "--card": "#0f1729",
+                      "--card-foreground": TEXT,
+                      "--primary": GREEN_BRIGHT,
+                      "--primary-foreground": "#052e16",
+                      "--secondary": "rgba(255,255,255,0.06)",
+                      "--secondary-foreground": TEXT,
+                      "--accent": "rgba(255,255,255,0.08)",
+                      "--accent-foreground": TEXT,
+                      "--muted": "rgba(255,255,255,0.08)",
+                      "--muted-foreground": MUTED,
+                      "--border": CARD_BORDER,
+                      "--input": CARD_BORDER,
+                      "--ring": GREEN_BRIGHT,
+                    } as CSSProperties
+                  }
+                >
+                  <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                    <span
+                      style={{
+                        fontFamily: FONT,
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: MUTED,
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      Select a year
+                    </span>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                        gap: 6,
+                        maxHeight: 220,
+                        overflowY: "auto",
+                        paddingRight: 2,
+                      }}
+                    >
+                      {yearOptions.map((year) => {
+                        const active = selectedYear === year;
+                        return (
+                          <button
+                            key={year}
+                            type="button"
+                            onClick={() => commitYear(year)}
+                            style={{
+                              padding: "8px 10px",
+                              borderRadius: 8,
+                              border: `1px solid ${active ? GREEN_BRIGHT : CARD_BORDER}`,
+                              background: active ? GREEN_BRIGHT : "rgba(255,255,255,0.04)",
+                              color: active ? "#052e16" : TEXT,
+                              cursor: "pointer",
+                              fontFamily: MONO,
+                              fontSize: 12,
+                              fontWeight: active ? 700 : 600,
+                            }}
+                          >
+                            {year}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div
@@ -1439,17 +1592,17 @@ export default function WrappedPage() {
             icon={User}
             iconColor={PURPLE}
             label="Top Artist"
-            value={awaitingCustomRange ? "—" : loading ? "—" : topArtist?.artist_name ?? "—"}
+            value={awaitingSelection ? "—" : loading ? "—" : topArtist?.artist_name ?? "—"}
             secondary={
-              awaitingCustomRange
-                ? "Pick dates"
+              awaitingSelection
+                ? pendingStatLabel
                 : loading
                   ? "…"
                   : topArtist
                     ? `${topArtist.play_count.toLocaleString()} plays`
                     : "No data"
             }
-            imageSrc={awaitingCustomRange || loading ? null : topArtist?.artist_image_url ?? null}
+            imageSrc={awaitingSelection || loading ? null : topArtist?.artist_image_url ?? null}
             imageShape="circle"
             imageFallback={topArtist?.artist_name}
           />
@@ -1457,40 +1610,40 @@ export default function WrappedPage() {
             icon={Music2}
             iconColor={GREEN}
             label="Top Track"
-            value={awaitingCustomRange ? "—" : loading ? "—" : topTrack?.track_name ?? "—"}
+            value={awaitingSelection ? "—" : loading ? "—" : topTrack?.track_name ?? "—"}
             secondary={
-              awaitingCustomRange ? "Pick dates" : loading ? "…" : topTrack?.artist_name ?? "No data"
+              awaitingSelection ? pendingStatLabel : loading ? "…" : topTrack?.artist_name ?? "No data"
             }
             secondaryColor={MUTED}
             tertiary={
-              awaitingCustomRange || loading
+              awaitingSelection || loading
                 ? undefined
                 : topTrack
                   ? `${topTrack.play_count.toLocaleString()} plays`
                   : undefined
             }
             tertiaryColor={GREEN}
-            imageSrc={awaitingCustomRange || loading ? null : topTrack?.album_image_url ?? null}
+            imageSrc={awaitingSelection || loading ? null : topTrack?.album_image_url ?? null}
             imageShape="square"
           />
           <CompactStatCard
             icon={Disc3}
             iconColor={BLUE}
             label="Top Album"
-            value={awaitingCustomRange ? "—" : loading ? "—" : topAlbum?.album_name ?? "—"}
+            value={awaitingSelection ? "—" : loading ? "—" : topAlbum?.album_name ?? "—"}
             secondary={
-              awaitingCustomRange ? "Pick dates" : loading ? "…" : topAlbum?.artist_name ?? "No data"
+              awaitingSelection ? pendingStatLabel : loading ? "…" : topAlbum?.artist_name ?? "No data"
             }
             secondaryColor={MUTED}
             tertiary={
-              awaitingCustomRange || loading
+              awaitingSelection || loading
                 ? undefined
                 : topAlbum
                   ? `${topAlbum.track_count.toLocaleString()} tracks`
                   : undefined
             }
             tertiaryColor={BLUE}
-            imageSrc={awaitingCustomRange || loading ? null : topAlbum?.album_image_url ?? null}
+            imageSrc={awaitingSelection || loading ? null : topAlbum?.album_image_url ?? null}
             imageShape="square"
           />
           <CompactStatCard
@@ -1538,10 +1691,10 @@ export default function WrappedPage() {
             iconColor={GREEN}
             accentColor={GREEN_BRIGHT}
             items={displayTracks}
-            loading={loading && !awaitingCustomRange}
+            loading={loading && !awaitingSelection}
             emptyMessage={
-              awaitingCustomRange
-                ? "Select a start and end date to see this window."
+              awaitingSelection
+                ? pendingMessage
                 : "No listening history is available for this window yet."
             }
             expanded={expanded.tracks}
@@ -1572,10 +1725,10 @@ export default function WrappedPage() {
             iconColor={PURPLE}
             accentColor={PURPLE}
             items={displayArtists}
-            loading={loading && !awaitingCustomRange}
+            loading={loading && !awaitingSelection}
             emptyMessage={
-              awaitingCustomRange
-                ? "Select a start and end date to see this window."
+              awaitingSelection
+                ? pendingMessage
                 : "No listening history is available for this window yet."
             }
             expanded={expanded.artists}
@@ -1602,10 +1755,10 @@ export default function WrappedPage() {
             iconColor={BLUE}
             accentColor={BLUE}
             items={displayAlbums}
-            loading={loading && !awaitingCustomRange}
+            loading={loading && !awaitingSelection}
             emptyMessage={
-              awaitingCustomRange
-                ? "Select a start and end date to see this window."
+              awaitingSelection
+                ? pendingMessage
                 : "No album data is available for this window yet."
             }
             expanded={expanded.albums}
@@ -1688,8 +1841,8 @@ export default function WrappedPage() {
               </Link>
             </div>
 
-            {awaitingCustomRange ? (
-              <EmptyState message="Select a start and end date to see this window." />
+            {awaitingSelection ? (
+              <EmptyState message={pendingMessage} />
             ) : loading ? (
               <LoadingRows count={5} />
             ) : displayGenres.length === 0 ? (
