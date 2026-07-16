@@ -1,5 +1,7 @@
 # Spotify Atlas
 
+https://spotify-atlas.vercel.app/map
+
 AI-powered music identity platform that transforms Spotify listening history
 into semantic embeddings, discovers latent music communities, and visualizes
 personal music taste as an interactive galaxy.
